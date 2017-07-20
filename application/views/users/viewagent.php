@@ -1,0 +1,135 @@
+<div class="main-content">
+	<div class="main-content-inner">
+		<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+			<ul class="breadcrumb">
+				<li> <i class="ace-icon fa fa-home home-icon"></i> <a href="#">Home</a> </li>
+				<li> <a href="#">Manage Users</a> </li>
+				<li> <a href="/users/agent">Agents</a> </li>
+				<li> <a href="#"><?php echo $arrAgent->FIRST_NAME ?>&nbsp;&nbsp;<?php echo $arrAgent->LAST_NAME ?></a> </li>
+			</ul>
+		</div>
+
+		<div class="panel">
+			<div class="page-header">
+				<h4>View Agent Details</h4>
+			</div>
+			<div class="panel-body">
+				<div class="page-content">
+					<div class="row m-t-md">
+				<div class="col-sm-12 col-xs-12">
+					<div class="profile-user-info profile-user-info-striped">
+						<div class="profile-info-row">
+							<div class="profile-info-name"> First Name </div>
+							<div class="profile-info-value"><?php echo $arrAgent->FIRST_NAME ?></div>
+							<div class="profile-info-name"> Last Name </div>
+							<div class="profile-info-value"><?php echo $arrAgent->LAST_NAME ?></div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name"> Enrollment Number </div>
+							<div class="profile-info-value"><?php echo $arrAgent->ENROLLMENT_NUMBER ?></div>
+							<div class="profile-info-name"> Enrollment Channel </div>
+							<div class="profile-info-value"><?php echo $arrAgent->ENROLLMENT_CHANNEL ?></div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name"> State </div>
+							<div class="profile-info-value"><?php echo $arrAgent->STATE ?></div>
+							<div class="profile-info-name"> Zipcode </div>
+							<div class="profile-info-value"><?php echo $arrAgent->ZIPCODE ?></div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name"> USAC Form </div>
+							<div class="profile-info-value"> <?php echo $arrAgent->USAC_FORM ?> </div>
+							<div class="profile-info-name">Batch Date </div>
+							<div class="profile-info-value"><?php echo $arrAgent->BATCH_DATE ?></div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name"> Group </div>
+							<div class="profile-info-value"><?php echo $arrAgent->AG_GROUP ?></div>
+							<div class="profile-info-name">DMA</div>
+							<div class="profile-info-value"><?php echo $arrAgent->DMA ?></div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name"> Batch Year </div>
+							<div class="profile-info-value"><?php echo $arrAgent->BATCH_YEAR ?></div>
+							<div class="profile-info-name">Phone</div>
+							<div class="profile-info-value"><?php echo $arrAgent->PHONE ?></div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name"> Qualification Status </div>
+							<div class="profile-info-value"><?php echo $arrAgent->Q_STATUS ?></div>
+							<div class="profile-info-name">Email Id</div>
+							<div class="profile-info-value"><?php echo $arrAgent->EMAILID ?></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<h3 class="header smaller lighter blue"> Upload Documents <small>Upload all your documents properly</small> </h3>
+			<div class="hr-24"></div>
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<div class="form-group p-t">
+					<label class="col-sm-4 control-label text-right p-t">Headshotfile:</label>
+					<div class="col-sm-2">
+						<?php if( $arrAgent->HEADSHOT_FILE != '') { ?>
+						<a title="View file" target="_blank" href="/<?php echo AGENTFILES . $arrAgent->HEADSHOT_FILE ?>">
+							<i class="menu-icon fa fa-2x fa-file-video-o"></i>
+						</a>
+						<?php } else echo "N/A"; ?>
+					</div>
+					<label class="col-sm-4 control-label text-right p-t">Gov ID File:</label>
+					<div class="col-sm-2">
+						<?php if( $arrAgent->GOVID_FILE != '') { ?>
+							<a title="View file" target="_blank" href="/<?php echo AGENTFILES . $arrAgent->GOVID_FILE ?>">
+								<i class="menu-icon fa fa-2x fa-file-text-o"></i>
+							</a>
+						<?php } else echo "N/A"; ?>
+					</div>
+				</div>
+				<div class="form-group p-t">
+					<label class="col-sm-4 control-label text-right p-t">Disclosure File:</label>
+					<div class="col-sm-2">
+						<?php if( $arrAgent->DISCLOSURE_FILE != '') { ?>
+							<a  title="View file" target="_blank" href="/<?php echo AGENTFILES . $arrAgent->DISCLOSURE_FILE ?>">
+								<i class="menu-icon fa fa-2x fa-file-pdf-o"></i>
+							</a>
+						<?php } else echo "N/A"; ?>
+					</div>
+					<label class="col-sm-4 control-label text-right p-t">BG Authentication File:</label>
+					<div class="col-sm-2">
+						<?php if( $arrAgent->BG_AUTH_FILE != '') { ?>
+							<a  title="View file" target="_blank" href="/<?php echo AGENTFILES . $arrAgent->BG_AUTH_FILE ?>">
+								<i class="menu-icon fa fa-2x fa-file-powerpoint-o"></i>
+							</a>
+						<?php } else echo "N/A"; ?>
+					</div>
+				</div>
+				<div class="form-group p-t">
+					<label class="col-sm-4 control-label text-right p-t">Certificate File:</label>
+					<div class="col-sm-2">
+						<?php if( $arrAgent->COMP_CERT_FILE != '') { ?>
+							<a title="View file" target="_blank" href="/<?php echo AGENTFILES . $arrAgent->COMP_CERT_FILE ?>">
+								<i class="menu-icon fa fa-2x fa-file-audio-o"></i>
+							</a>
+						<?php } else echo "N/A"; ?>
+					</div>
+				</div>
+
+
+			</div>
+					<div class="clearfix form-actions">
+						<div class="text-right">
+							<button class="btn btn-success" type="button" onclick="javascript:location.href='/users/agent/edit/<?php echo $arrAgent->USER_ID?>'"> <i class="ace-icon fa fa-fw fa-check"></i> Edit User<span></span> </button>
+							&nbsp;
+							<button class="btn btn-danger" type="button" onclick="javascript:location.href='/users/agent'">
+								<i class="ace-icon fa fa-fw fa-times"></i> Go Back<span></span>
+							</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>

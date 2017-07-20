@@ -1,0 +1,31 @@
+
+#dvLoading {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid;
+    height: 85px;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: -35px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 194px;
+    z-index: 99999;
+    box-shadow: 1px 1px 0 2px #CCCCCC;
+    display: none;
+}
+
+#loadingimg {
+    background: rgba(0, 0, 0, 0) url("../images/loading.gif") no-repeat scroll 0 0;
+    height: 31px;
+    margin-left: 35px;
+    margin-top: 7px;
+    padding: 2px;
+    width: 149px;
+}
+
+.hide { display: none;}
+.show { display: block;}
+.addfieldIcon { padding:5px 20px;}
+.addfieldIcon i{margin-left:10px;}
+.imei_error {font-size: 10px;padding: 2px 0px 0px 6px; display: none;}
