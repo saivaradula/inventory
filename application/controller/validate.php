@@ -8,7 +8,7 @@
 
 		public function checkBlgChekinIMEI() {
             $objInvModel = $this->loadModel('inventory');
-            $arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
 
@@ -46,7 +46,7 @@
 
 		public function checkBlgShipIMEI() {
             $objInvModel = $this->loadModel('inventory');
-            $arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
 
@@ -73,7 +73,7 @@
 
 		public function assignCheckIMEI() {
             $objInvModel = $this->loadModel('inventory');
-            $arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
             //print_r(array_count_values($arrIMEI));
@@ -98,7 +98,7 @@
 
 		public function returnIMEI() {
             $objInvModel = $this->loadModel('inventory');
-            $arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
             //print_r(array_count_values($arrIMEI));
@@ -122,7 +122,7 @@
 
 		public function shipIMEI() {
 			$objInvModel = $this->loadModel('inventory');
-            $arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
             //print_r(array_count_values($arrIMEI));
@@ -148,7 +148,7 @@
         public function receiveIMEI() {
             $objInvModel = $this->loadModel('inventory');
 
-            $arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
             //print_r(array_count_values($arrIMEI));
@@ -173,7 +173,7 @@
 		public function checkIMEI() {
 			$objInvModel = $this->loadModel('inventory');
 
-			$arrIMEI = explode(",", $_POST['imei']);
+            $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
             //print_r(array_count_values($arrIMEI));

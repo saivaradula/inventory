@@ -19,7 +19,7 @@
 
                     case "receive": {
 
-                        $arrIMEI = explode(",", $_POST['imei']);
+                        $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
@@ -62,7 +62,7 @@
 
 				    case "return" : {
 
-                        $arrIMEI = explode(",", $_POST['imei']);
+                        $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
@@ -106,11 +106,17 @@
 
 					case "chekin" : {
 
-                        $arrIMEI = explode(",", $_POST['imei']);
+                        /*print_r( $_POST );
+                        echo "<br /><br />";
+                        $skuList = explode(PHP_EOL, $_POST['imei']);
+                        $skuList2 = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
+                        print_r( $skuList );
+                        print_r( $skuList2 );*/
+
+                        $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
-
 
 
 						$iUnique = $this->randomNumber();
@@ -161,7 +167,7 @@
 
 					case "shipin" : {
 
-                        $arrIMEI = explode(",", $_POST['imei']);
+                        $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
@@ -208,7 +214,7 @@
 
                     case "assign" : {
 
-                        $arrIMEI = explode(",", $_POST['imei']);
+                        $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;

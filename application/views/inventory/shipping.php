@@ -119,26 +119,17 @@
 <script language="javascript">
 	$(function(){
 
-        var iScn = 0;
-        jQuery('#imei').on('paste change input', function() {
-            setTimeout(function(){
-                $('#imei').val( $('#imei').val() + ", ");
-                iScn = $('#imei').val();
-                arrScn = iScn.split(",");
-                var iScnN = 0;
-                for( var i =0; i < arrScn.length; i++ ){
-                    arrScn[i] = $.trim( arrScn[i] );
-                    if( arrScn[i] != '' ) { iScnN += 1; }
-                }
-                $('.imei_scanned').html( iScnN );
-            }, 100);
+        $('#imei').focus();
+        jQuery('#imei').on('paste input', function() {
+            var strIM = $(this).val();
+            var arrIM  = strIM.split(/\s+/);
+            $('.imei_scanned').html( arrIM.length - 1 );
 
         });
 
 
         $('#loc_det').hide();
 		var i = 10;
-        $('#imei').focus();
 		$('.addfieldIcon').css('padding', '3px 10px').click(function(){
 			$("table tr:first").clone().find("input").each(function() {
 				$(this).attr({
