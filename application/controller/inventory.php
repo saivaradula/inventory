@@ -18,7 +18,6 @@
 				switch( $_POST['action'] ) {
 
                     case "receive": {
-
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
@@ -61,6 +60,7 @@
                     }
 
 				    case "return" : {
+
 
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);

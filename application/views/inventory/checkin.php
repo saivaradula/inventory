@@ -86,7 +86,9 @@
 	$(function(){
         var iScn = 0;
         $('#imei').focus();
+        
         jQuery('#imei').on('paste input', function() {
+
             var strIM = $(this).val();
             var arrIM  = strIM.split(/\s+/);
             $('.imei_scanned').html( arrIM.length - 1 );
