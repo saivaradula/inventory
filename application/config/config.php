@@ -24,3 +24,4 @@
 	define( 'PDFLIB', 'application/libs/tcpdf');
 	define( 'AGENTFILES', 'application/agentfiles/');
 	define( 'EMAIL_TEMPLATES', 'application/libs/email_templates.php');
+	define( 'IMP_DATA', 'public/imei_data');

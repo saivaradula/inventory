@@ -3,6 +3,54 @@
 //ini_set('display_errors', 1 );
 	class Inventory extends Controller {
 
+	    public function import() {
+            require VIEW_PATH . '_templates/header.php';
+            $objInvModel = $this->loadModel('inventory');
+            $objLogModel = $this->loadModel('log');
+            $objCompModel = $this->loadModel('company');
+            $objUserModel = $this->loadModel('users');
+
+            $strMsg = '';
+            $bProceed = 0;
+
+            if( $_POST['import'] == 1 ) {
+                $bProceed = 1;
+
+                if( $_FILES['importeddata']['type'] != 'application/vnd.ms-excel' ) {
+                    $strMsg = "Invalid Data File. Please upload ONLY CSV file.";
+                    $bProceed = 0;
+                }
+
+                if( $_FILES['importeddata']['error'] > 0 ) {
+                    $strMsg = "Error in Uploaded file. Please verify and re-upload file.";
+                    $bProceed = 0;
+                }
+
+                if( $bProceed ) {
+                    $tmp_name = $_FILES["importeddata"]["tmp_name"];
+                    $name = basename($_FILES["importeddata"]["name"]);
+                    if( move_uploaded_file($tmp_name, IMP_DATA . "/" . $name) ) {
+                        // Read CSV and add to DB.
+                        $handle = fopen(IMP_DATA . "/" . $name, "r");
+                        $arrData['added_on'] = $this->now();
+                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                            if( $data[0] != 'PO_NUMBER' ){
+                                $arrData['po_num'] = $data[0];
+                                $arrData['imei'] = $data[1];
+                                $objInvModel->importRecord($arrData);
+                            }
+                        }
+                        $strMsg = "Data Import Success. Please verify data.";
+                    }
+                }
+
+            }
+
+            require VIEW_PATH . 'inventory/import.php';
+            require VIEW_PATH . '_templates/footer.php';
+
+        }
+
 		public function index() {
 
 			require VIEW_PATH . '_templates/header.php';

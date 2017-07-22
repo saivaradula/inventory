@@ -142,6 +142,28 @@
 						<b class="arrow"></b>
 					</li>
 				<?php } ?>
+
+                <?php if ( $objC->isAllowedModule('AINV') ) { ?>
+                    <li class="">
+                        <a href="/inventory/assign">
+                            <i class="menu-icon fa fa-caret-right"></i>Assign</a>
+                        <b class="arrow"></b>
+                    </li>
+                <?php } ?>
+                <?php if ( $objC->isAllowedModule('RINV') ) { ?>
+                    <li class="">
+                        <a href="/inventory/return">
+                            <i class="menu-icon fa fa-caret-right"></i>Return</a>
+                        <b class="arrow"></b>
+                    </li>
+                <?php } ?>
+                <?php if ( $objC->isAllowedModule('IMV') ) { ?>
+                    <li class="">
+                        <a href="/inventory/import">
+                            <i class="menu-icon fa fa-caret-right"></i>Import & Verify</a>
+                        <b class="arrow"></b>
+                    </li>
+                <?php } ?>
 			</ul>
 		<?php } ?>
 

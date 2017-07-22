@@ -1,6 +1,13 @@
 <?php
 	class inventoryModel extends Model {
 
+	    function importRecord( $arrPost ) {
+            $arrData['po_number'] = $arrPost['po_num'];
+            $arrData['imei'] = $arrPost['imei'];
+            $arrData['added_on'] = $arrPost['added_on'];
+            $this->addData(IMP, $arrData);
+        }
+
 	    function getPONumberByImei( $strIMEI, $iUserId ) {
             $arrData[ 'FIELDS' ] = "I.PO_NUMBER";
             $arrData[ 'TABLE' ] = INV . " I";
