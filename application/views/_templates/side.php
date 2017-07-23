@@ -164,6 +164,13 @@
                         <b class="arrow"></b>
                     </li>
                 <?php } ?>
+                <?php if ( $objC->isAllowedModule('ACT') ) { ?>
+                    <li class="">
+                        <a href="/inventory/activation">
+                            <i class="menu-icon fa fa-caret-right"></i>Activation</a>
+                        <b class="arrow"></b>
+                    </li>
+                <?php } ?>
 			</ul>
 		<?php } ?>
 

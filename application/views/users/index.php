@@ -55,7 +55,7 @@
                 <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Two</label>
                 <div class="col-sm-4">
                     <input value="<?php echo $arrUser->ADDRESS_TWO?>" type="text"
-                           id="address_two" name="address_two" placeholder="Address Line Two" class="required col-xs-10 col-sm-9" />
+                           id="address_two" name="address_two" placeholder="Address Line Two" class="col-xs-10 col-sm-9" />
                 </div>
             </div>
             <div class="form-group">
@@ -73,7 +73,7 @@
                 <label class="col-sm-2 control-label no-padding-right" for="form-field-1">DL</label>
                 <div class="col-sm-4">
                     <input value="<?php echo $arrUser->DL?>" type="text"
-                           id="dl" id name="dl" placeholder="DL#" class="required col-xs-10 col-sm-9" />
+                           id="dl" id name="dl" placeholder="DL#" class="col-xs-10 col-sm-9" />
                 </div>
 
             </div>

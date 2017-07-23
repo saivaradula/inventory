@@ -4,6 +4,7 @@
     define( 'AGENTS', 'agents' );
     define( 'INV', 'inventory' );
     define( 'IMP', 'import_data' );
+    define( 'ACTIVATE', 'activate_data' );
     define( 'INV_PO', 'inventory_po' );
     define( 'LOG', 'inventory_log' );
     define( 'INV_CHKOUT', 'inventory_checked_out' );//

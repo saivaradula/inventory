@@ -109,7 +109,7 @@
 										?>
 										<tr>
 											<td>
-                                                <a class="tt" href="javascript:void(0)"  title="<?php echo $arrInv->LOG?>">
+                                                <a class="tt" href="javascript:void(0)"  title="<?php echo $arrInv->LOG ?>">
                                                     <?php echo $arrInv->IMEI?>
                                                 </a>
                                             </td>

@@ -1,6 +1,23 @@
 <?php
 	class inventoryModel extends Model {
 
+
+
+	    function getImpRec( $strPO ) {
+            $arrData[ 'FIELDS' ] = "*";
+            $arrData[ 'TABLE' ] = IMP . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+
+            $arrData[ 'WHERE' ] .= " AND I.po_number = '" . $strPO . "'";
+            return $this->getData($arrData, true);
+        }
+
+        function importActivatedRecord( $arrPost ) {
+            $arrData['imei'] = $arrPost['imei'];
+            $arrData['added_on'] = $arrPost['added_on'];
+            $this->addData(ACTIVATE, $arrData);
+        }
+
 	    function importRecord( $arrPost ) {
             $arrData['po_number'] = $arrPost['po_num'];
             $arrData['imei'] = $arrPost['imei'];
@@ -150,6 +167,7 @@
 			$arrData['USER_ID'] = $arrPost['user_id'];
 			$arrData['MODIFIED_ON'] = $arrPost['modified_on'];
 			$arrData['PO_NUMBER'] = $arrPost['ponumber'];
+			$arrData['PER_PO_NUMBER'] = $arrPost['ponumber'];
 			$arrData['ADDED_BY'] = $arrPost['added_by'];
 			$arrData['MODIFIED_BY'] = $arrPost['modified_by'];
 			$arrData['ADDED_ON'] = $arrPost['added_on'];
@@ -190,8 +208,6 @@
 
 		function getInventory( $arrOptions, $isCheck = false ){
 
-
-
 			$arrData[ 'FIELDS' ] = "I.ID, I.IMEI, I.IMEI_STATUS, I.UNIQUE_ID, I.HAVE_ACCESS,
 					( SELECT U.NAME FROM " . LOCATION . " U WHERE U.ID = I.ASSIGNED_TO  ) AS ASSIGNEDTO,
 					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ASSIGNED_TO  ) AS ASSIGNEDTOUSER,
@@ -226,6 +242,9 @@
 			} else {
 				$arrData[ 'WHERE' ] .= ( $arrOptions['ponumber'] != '' ) ? " AND I.PO_NUMBER LIKE '%" . $arrOptions['ponumber'] . "%'" : "";
 			}
+
+
+            $arrData[ 'WHERE' ] .= ( $arrOptions['per_ponumber'] != '' ) ? " AND I.PER_PO_NUMBER = '" . $arrOptions['per_ponumber'] . "'" : "";
 
 			$arrData[ 'WHERE' ] .= ( $arrOptions['imei'] != '' ) ? " AND I.IMEI = '" . $arrOptions['imei'] . "'" : "";
 

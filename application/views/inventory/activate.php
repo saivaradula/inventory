@@ -13,12 +13,12 @@
             <div class="clearfix hr-8"></div>
             <div class="panel">
                 <div class="page-header">
-                    <h4>Import Inventory</h4>
+                    <h4>Import Activation Inventory</h4>
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <form name="import_form" enctype="multipart/form-data" id="import_form" class="form-horizontal"
-                              role="form" method="post" action="/inventory/import">
+                              role="form" method="post" action="/inventory/activation">
                             <input type="hidden" value="1" name="import" />
                             <div class="form-group">
 
@@ -29,10 +29,8 @@
                                     <input  class="btn btn-success" type="submit" value="Import" />
                                     &nbsp;&nbsp;| &nbsp;&nbsp;
                                 </div>
-                                <div class="col-sm-7">
-                                    <input type="text" placeholder="Enter PO Number to verify" id="ponumber" class="col-sm-5" name="ponumber" />
-                                    &nbsp;&nbsp;
-                                    <input  class="btn btn-success" type="button" onclick="verifypo()" value="Verify" />
+                                <div class="col-sm-7">                                 &nbsp;&nbsp;
+                                    <input  class="btn btn-success" type="button" onclick="ativate()" value="Activate" />
                                 </div>
                             </div>
 
@@ -42,7 +40,7 @@
             </div>
             <div class="panel">
                 <div class="page-header">
-                    <h4>Verify Inventory</h4>
+                    <h4>List of Inventory for Activation</h4>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -66,24 +64,4 @@
 
     });
 
-
-    function verifypo() {
-        if( $('#ponumber').val() != '' ){
-            $.ajax({
-                url: "/ajaxcall/getImportInv",
-                type: "POST",
-                data: "po=" + $('#ponumber').val(),
-                success: function (response) {
-                    $('#impreport').html(response);
-                    $('.tt').tooltip({
-                        content:function(){
-                            return $(this).attr('title');
-                        }
-
-                    });
-                }
-            });
-        }
-    }
-    
 </script>
