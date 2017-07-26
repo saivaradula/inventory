@@ -192,16 +192,17 @@
                                 $('#inventory_checkin').unbind().submit();
                             } else {
 
-                                var strExis = '';
-                                for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
-                                    strExis +=  objRes[i].IMEI + " <br />";
+                                if( objRes.error != '' ) {
+                                    $('.imei_error').html(objRes.error).show();
+                                } else {
+                                    var strExis = '';
+                                    for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
+                                        strExis +=  objRes[i].IMEI + " <br />";
+                                    }
+                                    $('.imei_error').html('Below IMEI are already Returned. <br >' + strExis).show();
                                 }
+                                return false;
 
-                                $('.imei_error').html('Below IMEI are already Returned. <br >' + strExis).show();
-
-                                for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
-                                  //  $('#' + objRes[i].IMEI).html("Product already Returned").show();
-                                }
                             }
                         }
                     });

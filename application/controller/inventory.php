@@ -98,26 +98,48 @@
                         $i =0;
                         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                             if( $data[0] != 'PO_NUMBER' ){
-                                $arrVData[$i] = $data[1];
-                                $i++;
+                                $arrEsc = explode("`", $data[1]);
+                                $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+                                if( $data[1] != '' ){
+                                    $arrVData[$i] = $data[1];
+                                    $i++;
+                                }
                             }
                         }
 
                         if( $this->showDups($arrVData) == 1 ) {
                             $strMsg = "Data Import failed. Your data contains duplicate entries. Please check uploaded CSV file and re-upload again.";
                         } else {
-                            $handle = fopen(IMP_DATA . "/" . $name, "r");
-                            $arrData['added_on'] = $this->now();
-                            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                                if( $data[0] != 'PO_NUMBER' ){
-                                    $arrData['po_num'] = $data[0];
-                                    $arrEsc = explode("`", $data[1]);
-                                    $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-                                    $arrData['imei'] = $data[1];
-                                    $objInvModel->importRecord($arrData);
-                                }
+
+                            // remove duplicate IMEI from array which are already in DB.
+                            $strChkImp = '';
+                            for( $i=0; $i < count($arrVData); $i++ ){
+                                $strChkImp .= "'" . $arrVData[$i] . "', ";
                             }
-                            $strMsg = "Data Import Success. Please verify data.";
+                            $strChkImp = substr($strChkImp, 0, strlen($strChkImp)-2);
+                            $arrRes = $objInvModel->getImportRecord($strChkImp);
+                            //var_dump($arrRes ); exit;
+                            //echo count( $arrRes );
+                            if( $arrRes !== false ){
+                                $strMsg = "Data Import failed. Your CSV data contains IMEI numbers which are already uploaded on <strong>" . $this->revDateTime($arrRes->added_on) . "</strong>";
+                            } else {
+                                $handle = fopen(IMP_DATA . "/" . $name, "r");
+                                $arrData['added_on'] = $this->now();
+                                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                                    if( $data[0] != 'PO_NUMBER' ){
+                                        if( $data[1] != '' ){
+                                            $arrData['po_num'] = $data[0];
+                                            $arrEsc = explode("`", $data[1]);
+                                            $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+
+                                            $arrData['imei'] = $data[1];
+                                            $objInvModel->importRecord($arrData);
+                                        }
+
+                                    }
+                                }
+                                $strMsg = "Data Import Success. Please verify data.";
+                            }
                         }
                     }
                 }
@@ -515,7 +537,10 @@
             require VIEW_PATH . '_templates/header.php';
             $objCompanyModel = $this->loadModel('company');
             $bSubC = $_SESSION['HAS_SCS'];
-
+            $bShowLocDet = 1;
+            if( $this->getLoggedUserRoleID() == MANAGER ) {
+                $bShowLocDet = 0;
+            }
             if( $bSubC ) {
                 if( $this->getLoggedUserRole() == 'DIRECTOR' ){
                     $bSubC = 1;

@@ -53,7 +53,7 @@
 											$strMgrR = 'required';
 											if( $bSubC ) { $strMgrR = ''; ?>
 											<select id="shpto_subc" name="shpto_subc" class="required col-sm-8">
-												<option value="">Sub Contractor</option>
+												<option value="">Select Sub Contractor</option>
 												<?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
 													<option value="<?php echo $arrObjCm->USER_ID?>">
 														<?php echo $arrObjCm->NAME?>

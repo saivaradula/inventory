@@ -126,19 +126,19 @@
 						</select>
 					</div>
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Date </label>
 
 					<div class="col-sm-4">
 						<div class="input-group">
-							<input value="<?php echo $arrAgent->BATCH_DATE ?>" class="required form-control input-mask-date" type="text" id="batchdate" name="batchdate">
+							<input value="" class="required form-control input-mask-date" type="text" id="batchdate" name="batchdate">
                     <span class="input-group-btn">
                     <button class="btn btn-sm btn-default" type="button"><i
 		                    class="ace-icon fa fa-calendar bigger-110"></i></button>
                     </span>
 						</div>
 					</div>
-				</div>
+				</div> -->
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1">Group</label>
 

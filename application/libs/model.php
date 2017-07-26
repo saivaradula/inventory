@@ -56,7 +56,6 @@
 				}
 			}
 
-
 			$strQuery = "SELECT " . $fields . " FROM " . $table . $where . $groupby . $orderby . $limit;
             //echo $strQuery . "<br /<br />";
 			$objStmt = $this->objDBConn->prepare($strQuery);

@@ -12,6 +12,7 @@
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
 
+
             $iPC = 0;
             for( $i=0;$i <= count($arrIMEI); $i++){
                 if( $arrIMEI[$i] != '' ){
@@ -28,14 +29,16 @@
                 $arrR = $objInvModel->checkInvBelongsAssignTo($strIMEI, $this->loggedInUserId());
             }
 
-
-
             if( count( $arrR ) != $iPC ) {
                 $objJSON = json_encode( array('proceed' => false, 'reason' => 'Some of IMEI are not shipped to you yet.' ) );
             } else {
-                $arrPO = $objInvModel->getPONumberByImei($strIMEI, $this->loggedInUserId());
+                if($this->getLoggedUserRoleID() == MANAGER ) {
+                    $arrPO = $objInvModel->getPONumberByImeiToLOC($strIMEI, $this->loggedInUserId());
+                } else {
+                    $arrPO = $objInvModel->getPONumberByImei($strIMEI, $this->loggedInUserId());
+                }
+                //$arrPO = $objInvModel->getPONumberByImei($strIMEI, $this->loggedInUserId());
                 if( $arrPO->PO_NUMBER != $_POST['ponumber']) {
-
                     $objJSON = json_encode( array('proceed' => false, 'reason' => 'Invalid PO Number' ) );
                 } else {
                     $objJSON = json_encode( array('proceed' => true ) );
@@ -109,13 +112,24 @@
             }
             $strIMEI = substr($strIMEI, 0, strlen($strIMEI)-1);
             $strIMEI = "(" . $strIMEI . ")";
-            $arrR = $objInvModel->returnCheckInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
-            //echo $arrR;
-            if( count($arrR) ){
+            // if this belongs to returner.
+            $arrR = $objInvModel->returnBelongInventory($strIMEI, $this->loggedInUserId());
+
+
+            if( count( $arrR ) == 0 ){
                 $arrR['proceed'] = false;
+                $arrR['error'] = 'Some of IMEI does not belong to You';
                 $objJSON = json_encode($arrR);
             } else {
-                $objJSON = json_encode( array('proceed' => true ) );
+                $arrR = $objInvModel->returnCheckInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
+                //echo $arrR;
+                if( count($arrR) ){
+                    $arrR['proceed'] = false;
+                    $arrR['error'] = 'Some of IMEI does not belong to You';
+                    $objJSON = json_encode($arrR);
+                } else {
+                    $objJSON = json_encode( array('proceed' => true ) );
+                }
             }
             echo $objJSON;
         }

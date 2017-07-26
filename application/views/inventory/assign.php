@@ -30,7 +30,7 @@
 
                                                     <tr>
                                                         <td>
-                                                            <textarea id="imei" name="imei" class="col-sm-12" cols="25" rows="10"></textarea>
+                                                            <textarea id="imei" name="imei" class="required col-sm-12" cols="25" rows="10"></textarea>
                                                             <span class="imei_error">Error Message</span>
                                                         </td>
                                                     </tr>
@@ -125,9 +125,6 @@
 <script language="javascript">
     $(function(){
 
-       /* jQuery('#imei').on('propertychange change paste input', function() {
-            $(this).val( $(this).val() + ", ");
-        });*/
 
         var iScn = 0;
         $('#imei').focus();
@@ -141,16 +138,7 @@
         $('#loc_det').hide();
         var i = 10;
 
-        $('.addfieldIcon').css('padding', '3px 10px').click(function(){
-            $("table tr:first").clone().find("input").each(function() {
-                $(this).attr({
-                    'id': function(_, id) { return id + i },
-                    'name': function(_, name) { return name },
-                    'value': ''
-                });
-            }).end().appendTo("table");
-            $("table tr:last").find('input').focus().val('');
-        });
+
 
         $('.imei').blur(function(){
             if($(this).val() != '' ){
@@ -205,24 +193,26 @@
             }
         });
 
-        $('#shpto_manager').change(function(){
-            if( $(this).val() != '' ){
-                $.ajax({
-                    url: "/ajaxcall/getLocationID",
-                    type: "POST",
-                    data: "id=" + $('#shpto_manager').val(),
-                    success: function (response) {
-                        var objRes = JSON.parse(response);
-                        $('#manager_name').html(objRes.MANAGER_NAME);
-                        $('#location_address').html(objRes.ADDRESS);
-                        $('#loc_det').show();
-                    }
-                });
-            } else {
-                $('#loc_det').hide();
-            }
 
-        });
+        <?php if( $bShowLocDet ) { ?>
+            $('#shpto_manager').change(function(){
+                if( $(this).val() != '' ){
+                    $.ajax({
+                        url: "/ajaxcall/getLocationID",
+                        type: "POST",
+                        data: "id=" + $('#shpto_manager').val(),
+                        success: function (response) {
+                            var objRes = JSON.parse(response);
+                            $('#manager_name').html(objRes.MANAGER_NAME);
+                            $('#location_address').html(objRes.ADDRESS);
+                            $('#loc_det').show();
+                        }
+                    });
+                } else {
+                    $('#loc_det').hide();
+                }
+            });
+        <?php } ?>
 
         <?php if( $bSubC ) { $strMgrR = ''; ?>
         $('#shpto_subc').change(function(){

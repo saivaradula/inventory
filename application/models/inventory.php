@@ -1,6 +1,14 @@
 <?php
 	class inventoryModel extends Model {
 
+	    function getImportRecord( $strString ) {
+            $arrData[ 'FIELDS' ] = "*";
+            $arrData[ 'TABLE' ] = IMP . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.imei IN (" . $strString . ")";
+            return $this->getData($arrData);
+        }
+
 	    function setActive($id, $arrPost ) {
             $strWhere = 'IMEI IN (' . $id . ')';
             $arrUData[ 'IMEI_STATUS' ] = 'ACTIVATED';
@@ -45,6 +53,18 @@
             $this->addData(IMP, $arrData);
         }
 
+
+
+        function getPONumberByImeiToLOC( $strIMEI, $iUserId ) {
+            $arrData[ 'FIELDS' ] = "I.PO_NUMBER";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = ( SELECT ID FROM " . LOCATION . " L WHERE L.MANAGER = '" . $iUserId . "' AND L.STATUS = " . ACTIVE . " ) ";
+            $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
+            $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = 'SHIPPED_IN'";
+            return $this->getData($arrData, false);
+        }
+
 	    function getPONumberByImei( $strIMEI, $iUserId ) {
             $arrData[ 'FIELDS' ] = "I.PO_NUMBER";
             $arrData[ 'TABLE' ] = INV . " I";
@@ -59,7 +79,7 @@
             $arrData[ 'FIELDS' ] = "I.IMEI";
             $arrData[ 'TABLE' ] = INV . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
-            $arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = ( SELECT ID FROM " . LOCATION . " L WHERE L.MANAGER = '" . $iUserId . "') ";
+            $arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = ( SELECT ID FROM " . LOCATION . " L WHERE L.MANAGER = '" . $iUserId . "' AND L.STATUS = " . ACTIVE . " ) ";
             $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
             $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = 'SHIPPED_IN'";
             return $this->getData($arrData, true);
@@ -106,6 +126,15 @@
             $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
             $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
             $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = 'RECEIVE'";
+            return $this->getData($arrData, true);
+        }
+
+        function returnBelongInventory( $strIMEI, $iUserId ) {
+            $arrData[ 'FIELDS' ] = "I.IMEI";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCESS LIKE '%" . $iUserId . "'";
+            $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
             return $this->getData($arrData, true);
         }
 
