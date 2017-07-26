@@ -3,6 +3,19 @@
 //ini_set('display_errors', 1 );
 	class Inventory extends Controller {
 
+        function showDups($array) {
+            $array_temp = array();
+            $bDup = 0;
+            foreach($array as $val) {
+                if (!in_array($val, $array_temp)){
+                    $array_temp[] = $val;
+                }  else {
+                    $bDup = 1;
+                }
+            }
+            return $bDup;
+        }
+
 	    public function activation() {
             require VIEW_PATH . '_templates/header.php';
             $objInvModel = $this->loadModel('inventory');
@@ -31,17 +44,24 @@
                         // Read CSV and add to DB.
                         $handle = fopen(IMP_DATA . "/" . $name, "r");
                         $arrData['added_on'] = $this->now();
+                        $i = 0;
                         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                             if( $data[0] != 'IMEI' ){
                                 $arrData['imei'] = $data[0];
                                 $objInvModel->importActivatedRecord($arrData);
+
                             }
                         }
-                        $strMsg = "Data Import Success. Please verify data.";
+                        $strMsg = "Data Import Success. Please Activate by Checking data.";
                     }
                 }
             }
 
+            $arrUnActivated = $objInvModel->getActData();
+
+            for( $i=0; $i < count($arrUnActivated); $i++ ){
+                $arrUnActivated[$i]->added_on = $this->revDateTimeWT($arrUnActivated[$i]->added_on);
+            }
             require VIEW_PATH . 'inventory/activate.php';
             require VIEW_PATH . '_templates/footer.php';
         }
@@ -73,17 +93,32 @@
                     $tmp_name = $_FILES["importeddata"]["tmp_name"];
                     $name = basename($_FILES["importeddata"]["name"]);
                     if( move_uploaded_file($tmp_name, IMP_DATA . "/" . $name) ) {
-                        // Read CSV and add to DB.
+
                         $handle = fopen(IMP_DATA . "/" . $name, "r");
-                        $arrData['added_on'] = $this->now();
+                        $i =0;
                         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                             if( $data[0] != 'PO_NUMBER' ){
-                                $arrData['po_num'] = $data[0];
-                                $arrData['imei'] = $data[1];
-                                $objInvModel->importRecord($arrData);
+                                $arrVData[$i] = $data[1];
+                                $i++;
                             }
                         }
-                        $strMsg = "Data Import Success. Please verify data.";
+
+                        if( $this->showDups($arrVData) == 1 ) {
+                            $strMsg = "Data Import failed. Your data contains duplicate entries. Please check uploaded CSV file and re-upload again.";
+                        } else {
+                            $handle = fopen(IMP_DATA . "/" . $name, "r");
+                            $arrData['added_on'] = $this->now();
+                            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                                if( $data[0] != 'PO_NUMBER' ){
+                                    $arrData['po_num'] = $data[0];
+                                    $arrEsc = explode("`", $data[1]);
+                                    $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+                                    $arrData['imei'] = $data[1];
+                                    $objInvModel->importRecord($arrData);
+                                }
+                            }
+                            $strMsg = "Data Import Success. Please verify data.";
+                        }
                     }
                 }
             }
@@ -100,8 +135,6 @@
 			$objLogModel = $this->loadModel('log');
 			$objCompModel = $this->loadModel('company');
 			$objUserModel = $this->loadModel('users');
-
-
 
 			if( $_POST['action'] ){
 

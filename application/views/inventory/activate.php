@@ -30,7 +30,7 @@
                                     &nbsp;&nbsp;| &nbsp;&nbsp;
                                 </div>
                                 <div class="col-sm-7">                                 &nbsp;&nbsp;
-                                    <input  class="btn btn-success" type="button" onclick="ativate()" value="Activate" />
+                                    <input  class="btn btn-success" type="button" onclick="activate()" value="Activate" />
                                 </div>
                             </div>
 
@@ -44,7 +44,25 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div id="impreport"></div>
+                        <div id="impreport">
+                            <table width="70%" class="table-bordered" id="acttable">
+                                <tr>
+                                    <th><input type="checkbox" class="checkbox chkall" value="0"></th>
+                                    <th>IMEI</th>
+                                    <th>Date</th>
+                                </tr>
+                                <?php for( $i=0; $i < count($arrUnActivated); $i++ ){
+                                    ?>
+                                        <tr>
+                                            <td><input type="checkbox" class="chkbox checkbox"
+                                                       value="<?php echo $arrUnActivated[$i]->imei?>"></td>
+                                            <td><?php echo $arrUnActivated[$i]->imei?></td>
+                                            <td><?php echo $arrUnActivated[$i]->added_on?></td>
+                                        </tr>
+                                    <?php
+                                } ?>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,6 +80,38 @@
             }
         });
 
+        $(".chkall").click(function () {
+            if ($(".chkall").is(':checked')) {
+                $(".chkbox").prop("checked", true);
+            } else {
+                $(".chkbox").prop("checked", false);
+            }
+        });
+
     });
+    
+    function activate() {
+        var proceed = 0;
+        var strACTID = '';
+        $(".chkbox").each(function(){
+            if($(this).is(':checked')) {
+                proceed = 1;
+                strACTID += $(this).val() + ", ";
+            }
+        });
+        if( proceed == 1 ){
+            $.ajax({
+                url: "/ajaxcall/activate",
+                type: "POST",
+                data: "id=" + strACTID,
+                success: function (response) {
+                    location.href = '/inventory/activation';
+                }
+            });
+        } else {
+            alert('Check atleast one IMEI to Activate !!! ');
+        }
+
+    }
 
 </script>

@@ -1,11 +1,25 @@
 <?php
-
+//ini_set('display_errors', 1 );
 	class AjaxCall extends Controller {
+
+	    public function activate() {
+            $objInvModel = $this->loadModel('inventory');
+            $objLogModel = $this->loadModel('log');
+            $arrID = explode( ",", $_POST['id']);
+            foreach($arrID AS $key => $value ) {
+                if( $value != '' ){
+                    $strID .= "'" . trim( $value ). "', ";
+                }
+            }
+            $strID = substr($strID, 0, strlen( $strID ) - 6 );
+            $arrP['modified_on'] = $this->now();
+            $arrP['modified_by'] = $this->loggedInUserId();
+            $objInvModel->setActive( $strID, $arrP );
+        }
 
         public function getIMEILog( $objLogModel, $strIMEI) {
             $arrLog = $objLogModel->getLog( $strIMEI );
             $strLog = '<ul>';
-
             $strLog .= "<li>" . $arrLog->DESCRIPTION . "</li>";
             $strLog .= '</ul>';
             return $strLog;

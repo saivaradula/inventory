@@ -1,7 +1,27 @@
 <?php
 	class inventoryModel extends Model {
 
+	    function setActive($id, $arrPost ) {
+            $strWhere = 'IMEI IN (' . $id . ')';
+            $arrUData[ 'IMEI_STATUS' ] = 'ACTIVATED';
+            $arrUData[ 'STATUS' ] = INACTIVE;
+            $arrUData[ 'MODIFIED_ON' ] = $arrPost[ 'modified_on' ];
+            $arrUData[ 'MODIFIED_BY' ] = $arrPost[ 'modified_by' ];
+            $arrUData['HAVE_ACCESS'] = '';
+            $this->updateData(INV, $arrUData, $strWhere);
 
+            $strWhere = 'imei IN (' . $id . ')';
+            $arrData['act_status'] = 'ACTIVATED';
+            $arrData[ 'status' ] = INACTIVE;
+            $this->updateData(ACTIVATE, $arrData, $strWhere);
+        }
+
+	    function getActData() {
+            $arrData[ 'FIELDS' ] = "*";
+            $arrData[ 'TABLE' ] = ACTIVATE . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            return $this->getData($arrData, true);
+        }
 
 	    function getImpRec( $strPO ) {
             $arrData[ 'FIELDS' ] = "*";
