@@ -29,7 +29,11 @@
 											<option value="">By Status</option>
 											<option value="CHECKED_IN">Checked In </option>
 											<option value="SHIPPED_IN">Shipped</option>
-											<option value="RETURN">Returned</option>
+                                            <?php if ( $objC->isAllowedModule('AINV') ) { ?>
+                                                <option value="ASSIGNED">Assigned</option>
+                                            <?php } ?>
+                                            <option value="RECEIVE">Re-Checkin</option>
+											<option value="SHIPPED [R]">Returned</option>
 										</select>
 									</div>
 									<div class="col-sm-7">
