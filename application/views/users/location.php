@@ -41,7 +41,47 @@
 
 					<div class="">
 						<div class="clearfix hr-8"></div>
-						<table id="simple-table" class="table  table-bordered table-hover">
+						<?php if( $iAdmin ) { ?>
+                            <table id="simple-table" class="table  table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Address</th>
+                                    <th>Company</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                if ( count($arrLocations) ) {
+                                    foreach ( $arrLocations AS $arrLocation ) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $arrLocation->NAME?></td>
+                                            <td title="<?php echo $arrLocation->ADDRESS?>"><?php echo substr( $arrLocation->ADDRESS, 0, 40 )?> ...</td>
+                                            <td><?php echo $arrLocation->COMPANY?></td>
+                                            <td align="center">
+                                                <div class="hidden-sm hidden-xs btn-group">
+                                                    <a href="/users/location/edit/<?php echo $arrLocation->ID?>" title="Edit Details" class="text-success"><i class="ace-icon fa fa-edit bigger-120"></i></a> &nbsp;&nbsp;
+                                                    <a href="/users/location/view/<?php echo $arrLocation->ID?>" title="View"><i class="ace-icon fa fa-search bigger-120"></i></a> &nbsp;&nbsp;
+
+                                                    <a href="javascript:deleteCUser(<?php echo $arrLocation->ID?>)" title="Delete Agent" class="text-danger"><i class="ace-icon fa fa-times bigger-120"></i></a>
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    ?>
+                                    <tr>
+                                        <td colspan="5">No <?php echo ucfirst($strType)?> Found</td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        <?php } else { ?>
+                        <table id="simple-table" class="table  table-bordered table-hover">
 							<thead>
 							<tr>
 								<th>Name</th>
@@ -49,40 +89,42 @@
 								<th>Manager</th>
 								<?php if( $bSubCShow ) {?><th>Sub Contractor</th> <?php } ?>
 
-								<th>Action</th>
-							</tr>
-							</thead>
-							<tbody>
-							<?php
-								if ( count($arrLocations) ) {
-									foreach ( $arrLocations AS $arrLocation ) {
-										?>
-										<tr>
-											<td><?php echo $arrLocation->NAME?></td>
-											<td title="<?php echo $arrLocation->ADDRESS?>"><?php echo substr( $arrLocation->ADDRESS, 0, 40 )?> ...</td>
-											<td><?php echo $arrLocation->MANAGER_NAME?></td>
-											<?php if( $bSubCShow ) {?><td><?php echo $arrLocation->SCNAME?></td><?php } ?>
+                        <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        if ( count($arrLocations) ) {
+                            foreach ( $arrLocations AS $arrLocation ) {
+                                ?>
+                                <tr>
+                                    <td><?php echo $arrLocation->NAME?></td>
+                                    <td title="<?php echo $arrLocation->ADDRESS?>"><?php echo substr( $arrLocation->ADDRESS, 0, 40 )?> ...</td>
+                                    <td><?php echo $arrLocation->MANAGER_NAME?></td>
+                                    <?php if( $bSubCShow ) {?><td><?php echo $arrLocation->SCNAME?></td><?php } ?>
 
-											<td align="center">
-												<div class="hidden-sm hidden-xs btn-group">
-													<a href="/users/location/edit/<?php echo $arrLocation->ID?>" title="Edit Details" class="text-success"><i class="ace-icon fa fa-edit bigger-120"></i></a> &nbsp;&nbsp;
-													<a href="/users/location/view/<?php echo $arrLocation->ID?>" title="View"><i class="ace-icon fa fa-search bigger-120"></i></a> &nbsp;&nbsp;
+                                    <td align="center">
+                                        <div class="hidden-sm hidden-xs btn-group">
+                                            <a href="/users/location/edit/<?php echo $arrLocation->ID?>" title="Edit Details" class="text-success"><i class="ace-icon fa fa-edit bigger-120"></i></a> &nbsp;&nbsp;
+                                            <a href="/users/location/view/<?php echo $arrLocation->ID?>" title="View"><i class="ace-icon fa fa-search bigger-120"></i></a> &nbsp;&nbsp;
 
-													<a href="javascript:deleteCUser(<?php echo $arrLocation->ID?>)" title="Delete Agent" class="text-danger"><i class="ace-icon fa fa-times bigger-120"></i></a>
-											</td>
-										</tr>
-									<?php
-									}
-								} else {
-									?>
-									<tr>
-										<td colspan="5">No <?php echo ucfirst($strType)?> Found</td>
-									</tr>
-								<?php
-								}
-							?>
-							</tbody>
-						</table>
+                                            <a href="javascript:deleteCUser(<?php echo $arrLocation->ID?>)" title="Delete Agent" class="text-danger"><i class="ace-icon fa fa-times bigger-120"></i></a>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="5">No <?php echo ucfirst($strType)?> Found</td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        </tbody>
+                        </table>
+                       <?php } ?>
+
 
 
 					</div>

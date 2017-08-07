@@ -16,7 +16,7 @@
         <input type="hidden" id="selecState" value="<?php echo $arrUser->STATE?>" />
 		<?php
 
-			//print_r( $arrUser );
+			///print_r( $arrUser );
 
 			$arrOptions['strtype'] = strtolower($strType);
 			$arrOptions['action'] = '/users/'. strtolower($strType) . '/edit';
@@ -42,7 +42,8 @@
         $( "#dob" ).datepicker({
             changeMonth: true,
             changeYear: true,
-            dateFormat: "dd/mm/yy"
+            dateFormat: "dd/mm/yy",
+            maxDate: '0'
         });
 
         $('#state option[value="' + $('#selecState').val() +'"]').prop('selected', true);
@@ -68,6 +69,7 @@
 		$('#company_user_add_form').validate({
 			errorPlacement: function (error, element) {},
 			rules: {
+
 				email: {
 					required: true,
 					email: true
@@ -86,13 +88,14 @@
 							if (response == 0) {
 								//$('#company_user_add_form').unbind().submit();
 
-								<?php if( $bSubCShow ) { ?>
+								<?php //if( $bSubCShow ) { ?>
 									if( $('#presentLocId').val() != $('#location').val() ) {
 										$.ajax({
 											url: "/ajaxcall/getLocationManager",
 											type: "POST",
 											data: "loc=" + $('#location').val(),
 											success: function (response) {
+
 												if (response != '' ) {
 													if( confirm("This Location has been assigned to " + response + ". Do you want to replace ? !!!") ) {
 														$('#company_user_add_form').unbind().submit();
@@ -106,11 +109,11 @@
 											}
 										});
 									} else {
-										$('#company_user_add_form').unbind().submit();
+										//$('#company_user_add_form').unbind().submit();
 									}
-								<?php } else {
+								<?php  /* } else {
 									?>$('#company_user_add_form').unbind().submit();<?php
-								} ?>
+								 }  */ ?>
 
 							}
 							else {
@@ -121,7 +124,7 @@
 					});
 				} else {
 
-					<?php if( $bSubCShow ) { ?>
+					<?php //if( $bSubCShow ) { ?>
 						if( $('#presentLocId').val() != $('#location').val() ) {
 							$.ajax({
 								url: "/ajaxcall/getLocationManager",
@@ -143,9 +146,9 @@
 						} else {
 							$('#company_user_add_form').unbind().submit();
 						}
-					<?php } else {
+					<?php /* } else {
 						?>$('#company_user_add_form').unbind().submit();<?php
-					} ?>
+					}*/ ?>
 				}
 
 			}

@@ -1,3 +1,4 @@
+<?php ?>
 <div class="main-content">
     <div class="main-content-inner">
         <div class="breadcrumbs ace-save-state" id="breadcrumbs">
@@ -19,6 +20,7 @@
                         <form name="inventory_checkin" id="inventory_checkin" class="form-horizontal"
                               role="form" method="post" action="/inventory">
                             <input type="hidden" name="action" value="receive" />
+                            <input type="hidden" name="isM" value="1" />
                             <div class="col-sm-7">
                                 <div class="panel">
                                     <div class="page-header">
@@ -28,12 +30,12 @@
                                         <div class="row m-b">
                                             <table width="100%">
 
-                                                    <tr>
-                                                        <td>
-                                                            <textarea id="imei" name="imei" class="col-sm-12" cols="25" rows="10"></textarea>
-                                                            <span class="imei_error">Error Message</span>
-                                                        </td>
-                                                    </tr>
+                                                <tr>
+                                                    <td>
+                                                        <textarea id="imei" name="imei" class="col-sm-12" cols="25" rows="10"></textarea>
+                                                        <span class="imei_error">Error Message</span>
+                                                    </td>
+                                                </tr>
 
                                             </table>
                                         </div>
@@ -46,18 +48,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-5">
-                                <div class="panel">
-                                    <div class="page-header">
-                                        <h4>Purchase Order Number</h4>
-                                    </div>
-                                    <div class="panel-body">
-                                        <input value="" id="ponumber" name="ponumber" placeholder="P.O. Number"
-                                               class="required col-sm-12" aria-required="true" type="text">
 
-                                    </div>
-                                </div>
-                            </div>
                             <div class="clearfix"></div>
                             <div class="f-right m-r">
                                 <button class="btn btn-success" type="submit" id="checkin_inv">
@@ -135,17 +126,15 @@
                             if( objRes.proceed == true ) {
                                 $('#inventory_checkin').unbind().submit();
                             } else {
-
-                                /*var strExis = '';
-                                for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
+                                var strExis = '';
+                                /*for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
                                     strExis +=  objRes[i].IMEI + " <br />";
                                 }*/
-
                                 $('.imei_error').html( objRes.reason ).show();
 
-                                /*for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
-                               //     $('#' + objRes[i].IMEI).html("Product already added to receive list").show();
-                                }*/
+                                for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
+                                    //     $('#' + objRes[i].IMEI).html("Product already added to receive list").show();
+                                }
                             }
                         }
                     });

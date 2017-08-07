@@ -15,6 +15,30 @@
             $arrP['modified_on'] = $this->now();
             $arrP['modified_by'] = $this->loggedInUserId();
             $objInvModel->setActive( $strID, $arrP );
+
+            $arrPost['user_type'] = $this->getLoggedUserRole();
+            $arrPost['status'] = 'ACTIVATED';
+            $arrPost['user_id'] = $this->loggedInUserId();
+            $arrPost['modified_on'] = $this->now();
+            $arrPost['assigned_to'] = 0;
+            $arrPost['desc'] = "IMEI has been activated.";
+            $arrPost['reason'] = '';
+            foreach($arrID AS $key => $value ) {
+                $value = trim($value);
+                ///echo $value . "<br />";
+                if( $value != '' ){
+                    $arrInv = $objInvModel->getImeiDetails($value);
+                    $arrPost['imei'] = $value;
+                    $arrPost['unique'] = $arrInv->UNIQUE_ID;
+                    $arrPost['ponumber'] = $arrInv->PO_NUMBER;
+                    $arrPost['tracking'] = $arrInv->TRACKING;
+                    $objLogModel->logInventory($arrPost);
+                }
+            }
+
+           //
+
+
         }
 
         public function getIMEILog( $objLogModel, $strIMEI) {
@@ -28,22 +52,19 @@
 	    function getImportInv() {
             $objInvModel = $this->loadModel('inventory');
             $objLogModel = $this->loadModel('log');
-            $arrImpRec = $objInvModel->getImpRec( $_POST['po']);
+            $arrImpRec = $objInvModel->getImpRec( $_POST['po'], $this->loggedInUserId(), $this->getLoggedInUserCompanyID() );
             $arrOption['per_ponumber'] = $_POST['po'];
 
             $arrMyInv = $objInvModel->getInventory($arrOption);
-
 
             for( $i=0; $i < count( $arrImpRec ); $i++ ){
                 $arrSImpRec[] = $arrImpRec[$i]->imei;
             }
 
-
             for( $i=0; $i < count( $arrMyInv ); $i++ ){
                 $arrSMyInv[] = $arrMyInv[$i]->IMEI;
                 $arrMyInv[$i]->LOG = $this->getIMEILog( $objLogModel, $arrMyInv[$i]->IMEI );
             }
-
 
             $strMInv = '';
             for( $i=0; $i < count( $arrMyInv ); $i++ ){
@@ -52,11 +73,13 @@
 
             $strMInv = substr($strMInv, 0, strlen($strMInv) - 2);
 
-
             $arrUnMInv = array_diff($arrSImpRec, $arrSMyInv );
             $arrUnMInv = array_values($arrUnMInv);
             $strUMInv = '';
-            if( count($arrUnMInv) == 0) {
+
+            $x = is_array($arrUnMInv);
+
+            if( $x === false ) {
                 if( count( $arrSImpRec ) > 0){
                     $iUNC = count( $arrSImpRec );
                     for( $i=0; $i < count( $arrSImpRec ); $i++ ){
@@ -70,10 +93,17 @@
                 }
             }
 
-
-
             $strUMInv = substr($strUMInv, 0, strlen($strUMInv) - 2);
 
+
+
+            $arrMImp = array_diff($arrSMyInv, $arrSImpRec);
+            $arrMImp = array_values($arrMImp);
+            $strMImpInv = '';
+            for( $i=0; $i < count( $arrMImp ); $i++ ){
+                $strMImpInv .= $arrMImp[$i] . ", ";
+            }
+            $strMImpInv = substr($strMImpInv, 0, strlen($strMImpInv) - 2);
             require VIEW_PATH . 'inventory/impreport.php';
         }
 

@@ -89,6 +89,9 @@
 					break;
 				}
 				case "add" : {
+                    $iAdmin = 0;
+                    if($this->getLoggedUserRoleID() == SUPERADMIN ){$iAdmin = 1;}
+                    $arrObjC = $objCompanyModel->getCompanies('COMPANY');
 					require VIEW_PATH . 'users/addlocation.php';
 					break;
 				}
@@ -112,6 +115,12 @@
 				}
 
 				default: {
+                    $iAdmin = 0;
+				    if( $this->getLoggedUserRoleID() == SUPERADMIN ) {
+                        $arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
+                            -1, $this->loggedInUserId(), $this->getLoggedUserRoleID() );
+                        $iAdmin = 1 ;
+                    }
 					$arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
                             $_SESSION['HAS_SCS'], $this->loggedInUserId(), $this->getLoggedUserRoleID() );
 					require VIEW_PATH . 'users/location.php';
@@ -330,6 +339,7 @@
 					if($_POST['user_id'] != ''){
 						$iUserId = $_POST['user_id'];
 						$arrPost = $_POST;
+                        $arrPost['dob'] = $this->swapDate($arrPost['dob']);
 						$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
 						$objCompanyModel->updateCUser( $arrPost );
 						header('Location:' . URL . 'users/manager'); exit;
@@ -338,7 +348,9 @@
 					}
 					$arrUser = $objCompanyModel->getCUserDetails( $iUserId );
                     $arrUser->DOB  = $this->revDate( $arrUser->DOB  );
+
 					$arrL = $objCompanyModel->getManagerLocation( $iUserId );
+
 					  $arrUser->LOCNAME = $arrL->NAME;
 					  $arrUser->LOCSUBCONTRACTOR = $arrL->SUBCONTRACTOR;
 					  $arrUser->LOCID = $arrL->ID;
@@ -514,7 +526,6 @@
 
 				case "edit" : {
 					if($_POST['user_id'] != ''){
-						//$iUserId = $_POST['user_id'];
 						$arrPost = $_POST;
                         $arrPost['dob'] = $this->swapDate($arrPost['dob']);
 						$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
@@ -736,9 +747,11 @@
 						header('Location: /users/agent');
 
 					}
+                    if($this->getLoggedUserRoleID() > SUPERADMIN  ){
+                        $arrOptions['company'] = $this->getLoggedInUserCompanyID();
+                        $arrOptions['created'] =  $this->loggedInUserId();
+                    }
 
-					$arrOptions['company'] = $this->getLoggedInUserCompanyID();
-					$arrOptions['created'] =  $this->loggedInUserId();
 					$arrAgents = $objAgentsModel->getAgents($arrOptions);
 					$arrAgents = $this->classifyStatus( $arrAgents );
 					require VIEW_PATH . 'users/agents.php';

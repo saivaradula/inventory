@@ -1,12 +1,24 @@
 <?php
 	class inventoryModel extends Model {
 
-	    function getImportRecord( $strString ) {
+	    function checkInventoryBelongToMe( $strIMEI, $iUserId ) {
+
+        }
+
+        function getImportActivationRecord( $strString ) {
             $arrData[ 'FIELDS' ] = "*";
-            $arrData[ 'TABLE' ] = IMP . " I";
-            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
-            $arrData[ 'WHERE' ] .= " AND I.imei IN (" . $strString . ")";
+            $arrData[ 'TABLE' ] = ACTIVATE . " I";
+           // $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " I.imei IN (" . $strString . ")";
             return $this->getData($arrData);
+        }
+
+	    function getImportRecord( $strString ) {
+            $arrData[ 'FIELDS' ] = "imei";
+            $arrData[ 'TABLE' ] = IMP . " I";
+            // $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " I.imei IN (" . $strString . ")";
+            return $this->getData($arrData, true);
         }
 
 	    function setActive($id, $arrPost ) {
@@ -19,30 +31,38 @@
             $this->updateData(INV, $arrUData, $strWhere);
 
             $strWhere = 'imei IN (' . $id . ')';
-            $arrData['act_status'] = 'ACTIVATED';
             $arrData[ 'status' ] = INACTIVE;
+            $this->updateData(IMP, $arrData, $strWhere);
+            $arrData['act_status'] = 'ACTIVATED';
             $this->updateData(ACTIVATE, $arrData, $strWhere);
         }
 
-	    function getActData() {
+	    function getActData($iCompany, $iUserId ) {
             $arrData[ 'FIELDS' ] = "*";
             $arrData[ 'TABLE' ] = ACTIVATE . " I";
-            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] = "I.status = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.company = " . $iCompany;
+            $arrData[ 'WHERE' ] .= " AND I.added_by = " . $iUserId;
             return $this->getData($arrData, true);
         }
 
-	    function getImpRec( $strPO ) {
+	    function getImpRec( $strPO, $iUserId, $iCompanyId ) {
             $arrData[ 'FIELDS' ] = "*";
             $arrData[ 'TABLE' ] = IMP . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
 
             $arrData[ 'WHERE' ] .= " AND I.po_number = '" . $strPO . "'";
+            $arrData[ 'WHERE' ] .= " AND I.company = '" . $iCompanyId . "'";
+            $arrData[ 'WHERE' ] .= " AND I.added_by = '" . $iUserId . "'";
             return $this->getData($arrData, true);
         }
 
         function importActivatedRecord( $arrPost ) {
             $arrData['imei'] = $arrPost['imei'];
+            $arrData['promocode'] = $arrPost['promocode'];
             $arrData['added_on'] = $arrPost['added_on'];
+            $arrData['added_by'] = $arrPost['added_by'];
+            $arrData['company'] = $arrPost['company'];
             $this->addData(ACTIVATE, $arrData);
         }
 
@@ -50,6 +70,8 @@
             $arrData['po_number'] = $arrPost['po_num'];
             $arrData['imei'] = $arrPost['imei'];
             $arrData['added_on'] = $arrPost['added_on'];
+            $arrData['company'] = $arrPost['company'];
+            $arrData['added_by'] = $arrPost['added_by'];
             $this->addData(IMP, $arrData);
         }
 
@@ -91,7 +113,6 @@
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
             $arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = '" . $iUserId . "'";
             $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
-
             $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = 'SHIPPED_IN'";
             return $this->getData($arrData, true);
         }
@@ -103,7 +124,7 @@
             $arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
             $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
             $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
-            $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = '"  . $strType . "'";
+            $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS IN ("  . $strType . ")";
             return $this->getData($arrData, true);
         }
 
@@ -118,6 +139,16 @@
 			return $this->getData($arrData, true);
 		}
 
+		function recheckinBelongToYou( $strIMEI, $iUserId ) {
+            $arrData[ 'FIELDS' ] = "I.IMEI";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCESS LIKE '%" . $iUserId . "'";
+            //$arrData[ 'WHERE' ] .= " AND ( I.IMEI_STATUS = 'CHECKED_IN' OR I.IMEI_STATUS = 'RECEIVE' ) ";
+            $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
+            return $this->getData($arrData, true);
+        }
+
         function shipReceiveInventory( $strIMEI, $iUserId, $strUserType ) {
             $arrData[ 'FIELDS' ] = "I.IMEI";
             $arrData[ 'TABLE' ] = INV . " I";
@@ -129,11 +160,20 @@
             return $this->getData($arrData, true);
         }
 
-        function returnBelongInventory( $strIMEI, $iUserId ) {
+        function returnBelongInventory( $strIMEI, $iUserId, $iRole = 0 ) {
+
             $arrData[ 'FIELDS' ] = "I.IMEI";
             $arrData[ 'TABLE' ] = INV . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
             $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCESS LIKE '%" . $iUserId . "'";
+            //$arrData[ 'WHERE' ] .= " AND ( I.IMEI_STATUS = 'CHECKED_IN' OR I.IMEI_STATUS = 'RECEIVE' ) ";
+            if( $iRole == MANAGER ) {
+                //$arrData[ 'WHERE' ] .= " AND I.HAVE_AC ";
+            } else {
+                //$arrData[ 'WHERE' ] .= " AND ( I.IMEI_STATUS = 'CHECKED_IN' OR I.IMEI_STATUS = 'RECEIVE' ) ";
+                //$arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = " . $iUserId;
+
+            }
             $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
             return $this->getData($arrData, true);
         }
@@ -161,14 +201,25 @@
         }
 
 		function checkInventory( $strIMEI, $iUserId, $strUserType ) {
-			$arrData[ 'FIELDS' ] = "I.IMEI";
+
+            /*$arrData[ 'FIELDS' ] = "I.IMEI";
 			$arrData[ 'TABLE' ] = INV . " I";
 			$arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
 			$arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
 			$arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
 			$arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
 			$arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = 'CHECKED_IN'";
-			return $this->getData($arrData, true);
+			return $this->getData($arrData, true);*/
+
+            $arrData[ 'FIELDS' ] = "DISTINCT( I.IMEI )";
+            $arrData[ 'TABLE' ] = LOG . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
+            /*$arrData[ 'WHERE' ] .= " AND I.ADDED_BY = '" . $iUserId . "'";
+            $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
+            $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
+            $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS = 'CHECKED_IN'";*/
+            return $this->getData($arrData, true);
 		}
 
 		function getPONumber( $strPON ) {
@@ -248,16 +299,26 @@
 		}
 
 		function isInvenCheckedIn( $iIMEI) {
-            $arrData[ 'FIELDS' ] = "I.ID, I.IMEI, I.UNIQUE_ID, I.HAVE_ACCESS";
+            $arrData[ 'FIELDS' ] = "I.ID, I.IMEI, I.UNIQUE_ID, I.HAVE_ACCESS, I.PO_NUMBER";
             $arrData[ 'TABLE' ] = INV . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
             $arrData[ 'WHERE' ] .= " AND I.IMEI = '" . $iIMEI . "'";
             return $this->getData($arrData);
         }
 
+        function getInventoryBySearch( $arrOptions ) {
+            $arrData[ 'FIELDS' ] = "DISTINCT(I.IMEI),
+            ( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ADDED_BY  ) AS ADDEDBY, I.ADDED_ON, I.ADDED_ON AS MODIFIED_ON";
+            $arrData[ 'TABLE' ] = LOG . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= ( $arrOptions['ponumber'] != '' ) ? " AND I.PO_NUMBER = '" . $arrOptions['ponumber'] . "'" : "";
+
+            return $this->getData($arrData, true);
+        }
+
 		function getInventory( $arrOptions, $isCheck = false ){
 
-			$arrData[ 'FIELDS' ] = "I.ID, I.IMEI, I.IMEI_STATUS, I.UNIQUE_ID, I.HAVE_ACCESS,
+			$arrData[ 'FIELDS' ] = "DISTINCT ( I.ID ), I.IMEI, I.IMEI_STATUS, I.UNIQUE_ID, I.HAVE_ACCESS,
 					( SELECT U.NAME FROM " . LOCATION . " U WHERE U.ID = I.ASSIGNED_TO  ) AS ASSIGNEDTO,
 					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ASSIGNED_TO  ) AS ASSIGNEDTOUSER,
 					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.USER_ID  ) AS CU,
@@ -286,11 +347,19 @@
 
 			$arrData[ 'WHERE' ] .= ( $arrOptions['added_by'] != '' ) ? " AND I.ADDED_BY = '" . $arrOptions['added_by'] . "'" : "";
 
-			if($arrOptions['EXACT'] == true ) {
+			/*if($arrOptions['EXACT'] == true ) {
 				$arrData[ 'WHERE' ] .= ( $arrOptions['ponumber'] != '' ) ? " AND I.PO_NUMBER = '" . $arrOptions['ponumber'] . "'" : "";
 			} else {
 				$arrData[ 'WHERE' ] .= ( $arrOptions['ponumber'] != '' ) ? " AND I.PO_NUMBER LIKE '%" . $arrOptions['ponumber'] . "%'" : "";
-			}
+			}*/
+
+			if( $arrOptions['ponumber'] != '' ) {
+                $arrData[ 'TABLE' ] .= ", " . LOG . " L";
+                $arrData[ 'WHERE' ] .= " AND L.PO_NUMBER = '" . $arrOptions['ponumber'] . "'";
+                $arrData[ 'WHERE' ] .= " AND I.IMEI = L.IMEI ";
+                $arrData['ORDER'] = 'L.ID DESC';
+                ///$arrData[ 'WHERE' ] .= " AND L.USER_TYPE = '". $arrOptions['user_type'] ."'";
+            }
 
 
             $arrData[ 'WHERE' ] .= ( $arrOptions['per_ponumber'] != '' ) ? " AND I.PER_PO_NUMBER = '" . $arrOptions['per_ponumber'] . "'" : "";
@@ -303,7 +372,7 @@
 		}
 
 		function getPO( $arrOptions ){
-			$arrData[ 'FIELDS' ] = "I.PO_NUMBER, I.PO_STATUS,
+			$arrData[ 'FIELDS' ] = "I.PO_NUMBER, I.PO_STATUS, I.UNIQUE_ID, 
 					( SELECT COUNT(K.IMEI) FROM " . INV . " K WHERE K.PO_NUMBER = I.PO_NUMBER ) AS NUM_INV,
 					( SELECT U.NAME FROM " . LOCATION . " U WHERE U.ID = I.ASSIGNED_TO  ) AS ASSIGNEDTO,
 					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ADDED_BY  ) AS ADDEDBY, I.ADDED_ON";
@@ -319,4 +388,11 @@
 			$arrData[ 'WHERE' ] .= ( $arrOptions['q_status'] != '' ) ? " AND I.PO_STATUS = '" . $arrOptions['q_status'] . "'" : "";
 			return $this->getData($arrData, true);
 		}
+
+		function getImeiDetails( $iIMEI ) {
+            $arrData[ 'FIELDS' ] = "*";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] = " I.IMEI = '" . $iIMEI . "'";
+            return $this->getData($arrData, false);
+        }
 	}

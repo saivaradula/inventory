@@ -14,7 +14,13 @@
 			</ul>
 		</div>
 		<div class="col-sm-12 page-Title">
-			<h4><i class="fa fa-fw fa-user"></i> Add Location</h4>
+			<h4><i class="fa fa-fw fa-user"></i>
+                <?php if( $arrLoc->ID != '' ){ ?>
+                    Update
+                <?php } else { ?>
+                    Add
+                <?php } ?>
+                Location</h4>
 		</div>
 		<form id="location_add_form" class="form-horizontal" role="form" method="post" action="/users/location">
 			<?php if( $arrLoc->ID != '' ){ ?>
@@ -40,13 +46,26 @@
                 </div>
             </div>
 			<div class="form-group">
+
+                <?php if( $iAdmin ) {?>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Company</label>
+                    <div class="col-sm-2">
+                        <select class="form-control required" id="company" name="company">
+                            <option value="">Select</option>
+                            <?php foreach ( $arrObjC AS $arrObjCm ) { ?>
+                                <option value="<?php echo $arrObjCm->ID?>"><?php echo $arrObjCm->NAME?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+
 				<?php if( $bSubCShow ) { ?>
 					<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Sub Contractor</label>
 					<div class="col-sm-2">
 						<select class="form-control required" id="subc" name="subc">
 							<option value="">Select</option>
 							<?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
-								<option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->NAME?></option>
+								<option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->USER_LOGIN_ID?></option>
 							<?php } ?>
 						</select>
 					</div>

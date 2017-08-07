@@ -74,9 +74,9 @@
 	<![endif]-->
 
 	<script src="<?php echo PUBLIC_URL ?>js/jquery.validate.min.js"></script>
+	<script src="<?php echo PUBLIC_URL ?>js/additional-methods.js"></script>
 	<script src="<?php echo PUBLIC_URL ?>js/application.js"></script>
 	<script src="<?php echo PUBLIC_URL ?>js/mf.js"></script>
-
 	<script type="text/javascript" src="<?php echo PUBLIC_URL ?>js/bootstrap-datepicker.min.js"></script>
 
 

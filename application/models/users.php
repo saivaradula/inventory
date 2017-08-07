@@ -16,7 +16,6 @@
 				$arrData[ 'WHERE' ] .= " AND LOWER( U.EMAIL_ID ) = '" . strtolower($strEmail) . "'";
 				$arrUser =  $this->getData($arrData);
 			}
-
 			return $arrUser;
 		}
 

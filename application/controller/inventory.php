@@ -1,7 +1,27 @@
 <?php
-
+ob_start();
 //ini_set('display_errors', 1 );
 	class Inventory extends Controller {
+
+        public function clean() {
+            $objCleanModel = $this->loadModel('clean');
+            $objCleanModel->cleanInventory();
+            require VIEW_PATH . '_templates/header.php';
+            $strD = "Data Cleaning Complete";
+            require VIEW_PATH . 'home/index.php';
+            require VIEW_PATH . '_templates/footer.php';
+        }
+
+        function removeDups($array) {
+            $array_temp = array();
+            $bDup = 0;
+            foreach($array as $val) {
+                if (!in_array($val, $array_temp)){
+                    $array_temp[] = $val;
+                }
+            }
+            return $array_temp;
+        }
 
         function showDups($array) {
             $array_temp = array();
@@ -20,6 +40,7 @@
             require VIEW_PATH . '_templates/header.php';
             $objInvModel = $this->loadModel('inventory');
             $objLogModel = $this->loadModel('log');
+            $objAgentModel = $this->loadModel('agents');
 
             $strMsg = '';
             $bProceed = 0;
@@ -41,7 +62,82 @@
                     $tmp_name = $_FILES["importeddata"]["tmp_name"];
                     $name = basename($_FILES["importeddata"]["name"]);
                     if( move_uploaded_file($tmp_name, IMP_DATA . "/" . $name) ) {
-                        // Read CSV and add to DB.
+
+                        $handle = fopen(IMP_DATA . "/" . $name, "r");
+                        $i =0;
+                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                            if( $data[0] != 'IMEI' ){
+                                $arrEsc = explode("`", $data[0]);
+                                $data[0] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+                                if( $data[0] != '' ){
+                                    $arrVData[$i] = $data[0];
+
+                                    $i++;
+                                }
+                            }
+                        }
+
+                        $handle = fopen(IMP_DATA . "/" . $name, "r");
+                        $i =0;
+                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                            if( $data[0] != 'IMEI' ){
+                                $arrEsc = explode("`", $data[0]);
+                                $data[0] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+                                if( $data[0] != '' ){
+                                    $arrPData[$i] = $data[1];
+
+                                    $i++;
+                                }
+                            }
+                        }
+
+                        $arrPData = $this->removeDups($arrPData);
+
+
+                        if( $this->showDups($arrVData) == 1 ) {
+                            $strMsg = "Data Import failed. Your data contains duplicate entries. 
+                                    Please check uploaded CSV file and re-upload again.";
+                        } else {
+                            $strChkImp = '';
+                            for( $i=0; $i < count($arrVData); $i++ ){
+                                $strChkImp .= "'" . $arrVData[$i] . "', ";
+                                $strChkPImp .= "'" . $arrPData[$i] . "', ";
+                            }
+                            $strChkImp = substr($strChkImp, 0, strlen($strChkImp)-2);
+                            $strChkPImp = substr($strChkPImp, 0, strlen($strChkPImp)-2);
+
+                            $arrRes = $objInvModel->getImportActivationRecord($strChkImp);
+
+                            if( $arrRes !== false ){
+                                $strMsg = "Data Import failed. Your CSV data contains IMEI numbers which are already uploaded or Activated.";
+                            } else {
+
+                                $arrRes = $objAgentModel->getAgentPromocodes($strChkPImp);
+
+                                if( count($arrRes) == count( $arrPData ) ){
+                                    $handle = fopen(IMP_DATA . "/" . $name, "r");
+                                    $arrData['added_on'] = $this->now();
+                                    $arrData['added_by'] = $this->loggedInUserId();
+                                    $arrData['company'] = $this->getLoggedInUserCompanyID();
+                                    $i = 0;
+                                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                                        if( $data[0] != 'IMEI' ){
+                                            $arrEsc = explode("`", $data[0]);
+                                            $data[0] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+                                            $arrData['imei'] = $data[0];
+                                            $arrData['promocode'] = $data[1];
+                                            $objInvModel->importActivatedRecord($arrData);
+                                        }
+                                    }
+                                    $strMsg = "Data Import Success. Please Activate by Checking data.";
+                                } else {
+                                    $strMsg = "Data Import failed. Your CSV data contains Invalid PROMOCODES";
+                                }
+                            }
+
+                        }
+
+                        /*// Read CSV and add to DB.
                         $handle = fopen(IMP_DATA . "/" . $name, "r");
                         $arrData['added_on'] = $this->now();
                         $i = 0;
@@ -52,12 +148,12 @@
 
                             }
                         }
-                        $strMsg = "Data Import Success. Please Activate by Checking data.";
+                        $strMsg = "Data Import Success. Please Activate by Checking data.";*/
                     }
                 }
             }
 
-            $arrUnActivated = $objInvModel->getActData();
+            $arrUnActivated = $objInvModel->getActData($this->getLoggedInUserCompanyID(), $this->loggedInUserId());
 
             for( $i=0; $i < count($arrUnActivated); $i++ ){
                 $arrUnActivated[$i]->added_on = $this->revDateTimeWT($arrUnActivated[$i]->added_on);
@@ -96,50 +192,76 @@
 
                         $handle = fopen(IMP_DATA . "/" . $name, "r");
                         $i =0;
+
+                        $bProceed = 0;
                         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                             if( $data[0] != 'PO_NUMBER' ){
-                                $arrEsc = explode("`", $data[1]);
-                                $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-                                if( $data[1] != '' ){
-                                    $arrVData[$i] = $data[1];
-                                    $i++;
+                                if( $data[0] != '' ){
+                                    if( $data[1] != '' ){
+                                        $bProceed = 1;
+                                    } else {
+                                        $bProceed = 0;
+                                    }
+                                } else {
+                                    $bProceed = 0;
                                 }
                             }
                         }
 
-                        if( $this->showDups($arrVData) == 1 ) {
-                            $strMsg = "Data Import failed. Your data contains duplicate entries. Please check uploaded CSV file and re-upload again.";
-                        } else {
-
-                            // remove duplicate IMEI from array which are already in DB.
-                            $strChkImp = '';
-                            for( $i=0; $i < count($arrVData); $i++ ){
-                                $strChkImp .= "'" . $arrVData[$i] . "', ";
-                            }
-                            $strChkImp = substr($strChkImp, 0, strlen($strChkImp)-2);
-                            $arrRes = $objInvModel->getImportRecord($strChkImp);
-                            //var_dump($arrRes ); exit;
-                            //echo count( $arrRes );
-                            if( $arrRes !== false ){
-                                $strMsg = "Data Import failed. Your CSV data contains IMEI numbers which are already uploaded on <strong>" . $this->revDateTime($arrRes->added_on) . "</strong>";
-                            } else {
-                                $handle = fopen(IMP_DATA . "/" . $name, "r");
-                                $arrData['added_on'] = $this->now();
-                                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                                    if( $data[0] != 'PO_NUMBER' ){
-                                        if( $data[1] != '' ){
-                                            $arrData['po_num'] = $data[0];
-                                            $arrEsc = explode("`", $data[1]);
-                                            $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-
-                                            $arrData['imei'] = $data[1];
-                                            $objInvModel->importRecord($arrData);
-                                        }
-
+                        if( $bProceed  ) {
+                            $handle = fopen(IMP_DATA . "/" . $name, "r");
+                            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                                if( $data[0] != 'PO_NUMBER' ){
+                                    $arrEsc = explode("`", $data[1]);
+                                    $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+                                    if( $data[1] != '' ){
+                                        $arrVData[$i] = $data[1];
+                                        $i++;
                                     }
                                 }
-                                $strMsg = "Data Import Success. Please verify data.";
                             }
+
+                            if( $this->showDups($arrVData) == 1 ) {
+                                $strMsg = "Data Import failed. Your data contains duplicate entries. Please check uploaded CSV file and re-upload again.";
+                            } else {
+                                // remove duplicate IMEI from array which are already in DB.
+                                $strChkImp = '';
+                                for( $i=0; $i < count($arrVData); $i++ ){
+                                    $strChkImp .= "'" . $arrVData[$i] . "', ";
+                                }
+                                $strChkImp = substr($strChkImp, 0, strlen($strChkImp)-2);
+                                $arrRes = $objInvModel->getImportRecord($strChkImp);
+                                //var_dump($arrRes ); exit;
+                                //echo count( $arrRes );
+
+
+                                //if( $arrRes !== false ){
+                                if( count( $arrRes ) ){
+                                    $strMsg = "Data Import failed. Your CSV data contains 
+                                            IMEI numbers which are already uploaded on <strong>" . $this->revDateTime($arrRes->added_on) . "</strong>";
+                                } else {
+                                    $handle = fopen(IMP_DATA . "/" . $name, "r");
+                                    $arrData['added_on'] = $this->now();
+                                    $arrData['added_by'] = $this->loggedInUserId();
+                                    $arrData['company'] = $this->getLoggedInUserCompanyID();
+                                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                                        if( $data[0] != 'PO_NUMBER' ){
+                                            if( $data[1] != '' ){
+                                                $arrData['po_num'] = $data[0];
+                                                $arrEsc = explode("`", $data[1]);
+                                                $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
+
+                                                $arrData['imei'] = $data[1];
+                                                $objInvModel->importRecord($arrData);
+                                            }
+
+                                        }
+                                    }
+                                    $strMsg = "Data Import Success. Please verify data.";
+                                }
+                            }
+                        } else {
+                            $strMsg = "Error in Uploaded file. Please verify and re-upload file. Some data is empty!!";
                         }
                     }
                 }
@@ -151,7 +273,6 @@
         }
 
 		public function index() {
-
 			require VIEW_PATH . '_templates/header.php';
 			$objInvModel = $this->loadModel('inventory');
 			$objLogModel = $this->loadModel('log');
@@ -167,9 +288,16 @@
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
-
                         $arrPost['status'] = "RECEIVE";
-                        $arrPost['ponumber'] = $_POST['ponumber'];
+
+                        if( $_POST['isM'] == 1 ){
+                            //$arrPost['ponumber'] = $_POST['ponumber'];
+                        } else {
+                            $arrPost['ponumber'] = $_POST['ponumber'];
+                        }
+
+
+
                         $arrPost['user_type'] = $this->getLoggedUserRole();
                         $arrPost['user_id'] = $this->loggedInUserId();
                         $arrU = $objUserModel->getUserDetailsByUserId(  $this->loggedInUserId() );
@@ -182,31 +310,36 @@
                             if( $_POST['imei'][$i] != '' ) {
                                 $arrC = $objInvModel->isInvenCheckedIn( $_POST['imei'][$i] );
                                 $arrPost['imei'] = $_POST['imei'][$i];
-                                    $arrPost['added_on'] = $this->now();
+                                    //$arrPost['added_on'] = $this->now();
                                     $arrPost['modified_by'] = $this->loggedInUserId();
                                     $arrPost['have_access'] = $this->loggedInUserId();
                                     $arrPost['unique'] = $arrC->UNIQUE_ID;
                                     $objInvModel->updateInventory($arrPost);
+                                    $arrPost['ponumber'] = $arrC->PO_NUMBER;
                                 $objLogModel->logInventory($arrPost);
                             }
                         }
 
-                        $arrCOptions['ponumber'] = $_POST['ponumber'];
-                        $arrCOptions['EXACT'] = true;
-                        $arrGotPO = $objInvModel->getPO($arrCOptions);
-                        if( count($arrGotPO) == 0 ){
-                            $arrPOPost = $arrPost;
-                            $arrPOPost['added_on'] = $this->now();
-                            $arrPOPost['added_by'] = $this->loggedInUserId();
-                            $objInvModel->addPO($arrPOPost);
+                        if( $_POST['isM'] == 1 ){
+                            //$arrPost['ponumber'] = $_POST['ponumber'];
+                        } else {
+                            $arrCOptions['ponumber'] = $_POST['ponumber'];
+                            $arrCOptions['EXACT'] = true;
+                            $arrGotPO = $objInvModel->getPO($arrCOptions);
+                            if( count($arrGotPO) == 0 ){
+                                $arrPOPost = $arrPost;
+                                $arrPOPost['added_on'] = $this->now();
+                                $arrPOPost['added_by'] = $this->loggedInUserId();
+                                $objInvModel->addPO($arrPOPost);
+                            }
                         }
+
+
 
                         break;
                     }
 
 				    case "return" : {
-
-
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
@@ -236,6 +369,8 @@
                         $arrPost['unique'] = $arrC[0]->UNIQUE_ID;
 
                         $arrPost['tracking'] = date('YmdHims');
+                        $arrPost['reason'] = $_POST['reason'];
+                        $arrPost['reason_small'] = $_POST['reason_small'];
 
                         for($i=0; $i < count($_POST['imei']); $i++) {
                             if( $_POST['imei'][$i] != '' ) {
@@ -275,6 +410,12 @@
 						$arrPost[ 'assigned_to' ] = 0;
                         //$arrPost['tracking'] = date('YmdHims');
 
+                        $arrCOptions['ponumber'] = $_POST['ponumber'];
+                        $arrCOptions['EXACT'] = true;
+                        $arrGotPO = $objInvModel->getPO($arrCOptions);
+                        if( count($arrGotPO) > 0 ){
+                            $iUnique = $arrGotPO[0]->UNIQUE_ID;
+                        }
 						for($i=0; $i < count($_POST['imei']); $i++){
 							if( $_POST['imei'][$i] != '' ) {
 								$arrC = $objInvModel->isInvenCheckedIn( $_POST['imei'][$i] );
@@ -297,9 +438,6 @@
 							}
 						}
 
-                        $arrCOptions['ponumber'] = $_POST['ponumber'];
-                        $arrCOptions['EXACT'] = true;
-                        $arrGotPO = $objInvModel->getPO($arrCOptions);
                         if( count($arrGotPO) == 0 ){
                             $arrPOPost = $arrPost;
                             $arrPOPost['added_on'] = $this->now();
@@ -400,14 +538,24 @@
                     }
 				}
 
-				//header("Location: /inventory");
+				header("Location: /inventory");
 			}
-			$strPO = $this->getParameters(0);
+			 $strPO = $this->getParameters(0);
+            $bSearch = 0;
+            if( $_POST['ponumber'] != '' ){
+              //  $bSearch = 1;
+            }
+
+            if( $_POST['q_status'] != '' ){
+                //$bSearch = 1;
+            }
+
+
 
 			if( $strPO != '' ) {
 				$arrOptions['ponumber'] = $strPO;
 				$arrOptions['added_by'] = $this->loggedInUserId();
-				$arrInventory = $objInvModel->getInventory($arrOptions);
+				$arrInventory = $objInvModel->getInventoryBySearch($arrOptions);
 
 				foreach ( $arrInventory AS $arrInv ) {
 					$arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
@@ -430,35 +578,62 @@
 				}
 				require VIEW_PATH . 'inventory/poinv.php';
 			} else {
+                if( $bSearch ) {
+                    $arrOptions['ponumber'] = $_POST['ponumber'];
+                    $arrOptions['q_status'] = $_POST['q_status'];
+                    $arrInventory = $objInvModel->getInventoryBySearch($arrOptions);
 
-				$arrOptions['ponumber'] = $_POST['ponumber'];
-				$arrOptions['q_status'] = $_POST['q_status'];
-				$arrOptions['user_id'] = $this->loggedInUserId();
-				//$arrInventory = $objInvModel->getPO($arrOptions);
-				$arrInventory = $objInvModel->getInventory($arrOptions);
-				//print_r( $arrInventory );
-
-				foreach ( $arrInventory AS $arrInv ) {
-					$arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
-					$arrInv->MODIFIED_ON = $this->revDateTime($arrInv->MODIFIED_ON);
-					$arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
-					switch( $arrInv->IMEI_STATUS ) {
-						case "CHECKED_IN" : $arrInv->IMEI_STATUS = "Checked In"; break;
-						case "SHIPPED_IN" : $arrInv->IMEI_STATUS = "Shipped"; break;
-						case "RECEIVE" : $arrInv->IMEI_STATUS = "Checked In"; break;
-					}
-
-                    /*if( $arrInv->IMEI_STATUS == 'SHIPPED [R]'){
-                        $arrLPO = $objInvModel->getPOPONUM( $this->loggedInUserId() );
-                        $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
-                    }*/
-
-                    if( $arrInv->PO_NUMBER == '' ) {
-                        // GET the latest pO number from inventory instead inv_po
-                        $arrLPO = $objInvModel->getPONumber($arrInv->IMEI);
-                        $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
+                    foreach ( $arrInventory AS $arrInv ) {
+                        $arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
+                        $arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
+                        switch ($arrInv->IMEI_STATUS) {
+                            case "CHECKED_IN" :
+                                $arrInv->IMEI_STATUS = "Checked In";
+                                break;
+                            case "SHIPPED_IN" :
+                                $arrInv->IMEI_STATUS = "Shipped";
+                                break;
+                            case "RECEIVE" :
+                                $arrInv->IMEI_STATUS = "Checked In";
+                                break;
+                        }
+                        $arrInv->PO_NUMBER = $_POST['ponumber'];
                     }
-				}
+
+                } else {
+                    $arrOptions['ponumber'] = $_POST['ponumber'];
+                    $arrOptions['q_status'] = $_POST['q_status'];
+                    $arrOptions['user_id'] = $this->loggedInUserId();
+                    $arrOptions['user_type'] = $this->getLoggedUserRole();
+                    //$arrInventory = $objInvModel->getPO($arrOptions);
+                    $arrInventory = $objInvModel->getInventory($arrOptions);
+                    //print_r( $arrInventory );
+
+                    foreach ( $arrInventory AS $arrInv ) {
+                        $arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
+                        $arrInv->MODIFIED_ON = $this->revDateTime($arrInv->MODIFIED_ON);
+                        $arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
+                        switch( $arrInv->IMEI_STATUS ) {
+                            case "CHECKED_IN" : $arrInv->IMEI_STATUS = "Checked In"; break;
+                            case "SHIPPED_IN" : $arrInv->IMEI_STATUS = "Shipped"; break;
+                            case "RECEIVE" : $arrInv->IMEI_STATUS = "Re Checked In"; break;
+                        }
+
+                        /*if( $arrInv->IMEI_STATUS == 'SHIPPED [R]'){
+                            $arrLPO = $objInvModel->getPOPONUM( $this->loggedInUserId() );
+                            $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
+                        }*/
+
+                        if( $arrInv->PO_NUMBER == '' ) {
+                            //GET the latest pO number from inventory instead inv_po
+                            $arrLPO = $objInvModel->getPONumber($arrInv->IMEI);
+                            $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
+                        }
+                    }
+                }
+
+
+
                 $bShowShippin = true;
                 if( $this->getLoggedUserRoleID() == MANAGER ){
                     $bShowShippin = false;
@@ -469,8 +644,8 @@
                     $bShowAssign = true;
                 }
 
-				require VIEW_PATH . 'inventory/index.php';
-			}
+                require VIEW_PATH . 'inventory/index.php';
+            }
 
 			require VIEW_PATH . '_templates/footer.php';
 		}
@@ -505,7 +680,13 @@
 
         public function receive(){
             require VIEW_PATH . '_templates/header.php';
-            require VIEW_PATH . 'inventory/receive.php';
+            $iRoleId = $this->getLoggedUserRoleID();
+            if($iRoleId == MANAGER ){
+                require VIEW_PATH . 'inventory/receiveM.php';
+            } else {
+                require VIEW_PATH . 'inventory/receive.php';
+            }
+
             require VIEW_PATH . '_templates/footer.php';
         }
 
@@ -559,9 +740,10 @@
                     $strSelTxt = "Select Agent";
                     $objAgentModel = $this->loadModel('agents');
                     $arrOptions['location'] = $arrL->ID;
+                    $arrOptions['q_status'] = 'QUALIFIED';
                     $arrObj = $objAgentModel->getAgents( $arrOptions );
                     for( $i=0; $i < count($arrObj); $i++ ) {
-                        $arrObj[$i]->NAME = $arrObj[$i]->FIRST_NAME . " " . $arrObj[$i]->FIRST_NAME;
+                        $arrObj[$i]->NAME = $arrObj[$i]->FIRST_NAME . " " . $arrObj[$i]->LAST_NAME;
                         $arrObj[$i]->ID = $arrObj[$i]->USER_ID;
                     }
                 } else {

@@ -59,8 +59,8 @@
 		}
 
 		function getLocationManager($iLid = 0) {
-
-			$arrData[ 'FIELDS' ] = "L.MANAGER, ( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.MANAGER AND M.STATUS = " . ACTIVE . " ) AS MANAGER_NAME";
+			$arrData[ 'FIELDS' ] = "L.MANAGER, ( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.MANAGER 
+			        AND M.STATUS = " . ACTIVE . " ) AS MANAGER_NAME";
 			$arrData[ 'TABLE' ] = LOCATION . " L";
 			if( $iLid ){
 				$arrData[ 'WHERE' ] = "L.ID = " . $iLid;
@@ -72,28 +72,43 @@
 
 		function getLocationsList($iCmpny = 0, $bHasSubc = 1, $iUserId = 0, $iUserRoleId = 0 ) {
 
+		    if( $iUserRoleId == 1 ) {
+                $arrData[ 'FIELDS' ] = "L.NAME, L.ADDRESS, L.ID,					
+					( SELECT C.NAME FROM " . COMPANY . " C WHERE L.COMPANY = C.ID AND C.STATUS = " . ACTIVE . " ) AS COMPANY";
+                $arrData[ 'TABLE' ] = LOCATION . " L";
+                $arrData[ 'WHERE' ] .= " L.status = " . ACTIVE;
+                if( $iCmpny > 0 ){
+                    $arrData[ 'WHERE' ] .= " AND L.COMPANY = " . $iCmpny;
+                }
+                $arrData[ 'ORDER' ] = " L.ID DESC";
+            } else {
+                if( $bHasSubc ) {
+                    $arrData[ 'FIELDS' ] = "L.NAME, L.ADDRESS, L.ID, L.SUBCONTRACTOR, U.NAME AS SCNAME,
+					( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.MANAGER AND M.STATUS = " . ACTIVE . " ) AS MANAGER_NAME,
+					( SELECT C.NAME FROM " . COMPANY . " C WHERE L.COMPANY = C.ID AND C.STATUS = " . ACTIVE . " ) AS COMPANY";
+                    $arrData[ 'TABLE' ] = COMPANY_USERS . " U, " . LOCATION . " L";
+                    $arrData[ 'WHERE' ] = "U.status = " . ACTIVE;
+                    $arrData[ 'WHERE' ] .= " AND L.status = " . ACTIVE;
+                    if( $iCmpny > 0 ){
+                        $arrData[ 'WHERE' ] .= " AND L.COMPANY = " . $iCmpny;
+                    }
+                    $arrData[ 'WHERE' ] .= " AND L.SUBCONTRACTOR = U.USER_ID";
+                    $arrData[ 'ORDER' ] = " U.ID DESC";
+                } else {
+                    $arrData[ 'FIELDS' ] = "L.NAME, L.ADDRESS, L.ID,
+				( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.MANAGER ) AS MANAGER_NAME,
+				( SELECT C.NAME FROM " . COMPANY . " C WHERE L.COMPANY = C.ID AND C.STATUS = " . ACTIVE . " ) AS COMPANY
+				";
+                    $arrData[ 'TABLE' ] = LOCATION . " L";
+                    $arrData[ 'WHERE' ] = " L.status = " . ACTIVE;
+                    if( $iCmpny > 0 ){
+                        $arrData[ 'WHERE' ] .= " AND L.COMPANY = " . $iCmpny;
+                    }
+                    $arrData[ 'ORDER' ] = " L.ID DESC";
+                }
+            }
 
-			if( $bHasSubc ) {
-				$arrData[ 'FIELDS' ] = "L.NAME, L.ADDRESS, L.ID, L.SUBCONTRACTOR, U.NAME AS SCNAME,
-					( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.MANAGER AND M.STATUS = " . ACTIVE . " ) AS MANAGER_NAME";
-				$arrData[ 'TABLE' ] = COMPANY_USERS . " U, " . LOCATION . " L";
-				$arrData[ 'WHERE' ] = "U.status = " . ACTIVE;
-				$arrData[ 'WHERE' ] .= " AND L.status = " . ACTIVE;
-				if( $iCmpny > 0 ){
-					$arrData[ 'WHERE' ] .= " AND L.COMPANY = " . $iCmpny;
-				}
-				$arrData[ 'WHERE' ] .= " AND L.SUBCONTRACTOR = U.USER_ID";
-				$arrData[ 'ORDER' ] = " U.ID DESC";
-			} else {
-				$arrData[ 'FIELDS' ] = "L.NAME, L.ADDRESS, L.ID,
-				( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.MANAGER ) AS MANAGER_NAME";
-				$arrData[ 'TABLE' ] = LOCATION . " L";
-				$arrData[ 'WHERE' ] = " L.status = " . ACTIVE;
-				if( $iCmpny > 0 ){
-					$arrData[ 'WHERE' ] .= " AND L.COMPANY = " . $iCmpny;
-				}
-				$arrData[ 'ORDER' ] = " L.ID DESC";
-			}
+
 
             /*if( $iUserRoleId <= DIRECTOR ){
                 if( $iCmpny > 0 ){

@@ -94,6 +94,25 @@
                                             <?php } ?>
                                         </select>
 
+
+
+                                    </div>
+                                </div>
+
+                                <div class="panel">
+                                    <div class="page-header">
+                                        <h4>Reason</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <select id="reason_ddl" name="reason_small" class="required col-sm-8">
+                                            <option value="">Select</option>
+                                            <option value="DAMAGED">Damaged</option>
+
+                                        </select>
+                                        <div>&nbsp;</div>
+                                        <br />
+                                        <textarea class="required" name="reason"
+                                                  placeholder="Enter reason for returning items" cols="55" rows="5"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -191,7 +210,6 @@
                             if( objRes.proceed == true ) {
                                 $('#inventory_checkin').unbind().submit();
                             } else {
-
                                 if( objRes.error != '' ) {
                                     $('.imei_error').html(objRes.error).show();
                                 } else {

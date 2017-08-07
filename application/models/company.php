@@ -51,7 +51,12 @@
 			$arrData[ 'FIELDS' ] = "L.NAME, L.ID, L.SUBCONTRACTOR, U.NAME AS SUBNAME";
 			$arrData[ 'TABLE' ] = LOCATION . " L, " . COMPANY_USERS . " U";
 			$arrData[ 'WHERE' ] = " L.MANAGER = ". $iUserId;
-			$arrData[ 'WHERE' ] .= " AND L.SUBCONTRACTOR = U.USER_ID ";
+            if($_SESSION['HAS_SCS'] ) {
+                $arrData[ 'WHERE' ] .= " AND L.SUBCONTRACTOR = U.USER_ID ";
+            } else {
+                $arrData[ 'WHERE' ] .= " AND L.MANAGER = U.USER_ID ";
+            }
+
 			return $this->getData($arrData);
 		}
 
@@ -121,7 +126,8 @@
 
 		function getCompanyUsers($strType, $iCompany = 0, $iLoggedInUser = 0, $arrOptions = array() ) {
 			$arrData[ 'FIELDS' ] = "U.NAME, U.EMAIL_ID, U.USER_ID, U.PHONE, C.NAME AS COMPANY";
-			$arrData[ 'TABLE' ] = COMPANY_USERS . " U, " . COMPANY . " C";
+			$arrData[ 'FIELDS' ] .= ", (SELECT CR.USER_NAME FROM " . CREDS . " CR WHERE U.USER_ID = CR.USER_ID AND CR.STATUS = 1 ) AS USER_LOGIN_ID";
+			$arrData[ 'TABLE' ] = COMPANY_USERS . " U, " . COMPANY . " C ";
 			$arrData[ 'WHERE' ] = "U.status = " . ACTIVE;
 			$arrData[ 'WHERE' ] .= " AND C.status = " . ACTIVE;
 			//$arrData[ 'WHERE' ] .= " AND U.ID > 1";

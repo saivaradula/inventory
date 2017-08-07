@@ -38,7 +38,7 @@
 													</td>
 												</tr>
 											<?php } */ ?>
-                                            <textarea id="imei" name="imei" class="col-sm-12" cols="25" rows="10"></textarea>
+                                            <textarea id="imei" name="imei" class="required col-sm-12" cols="25" rows="10"></textarea>
                                             <span class="imei_error">Error Message</span>
 										</table>
 										</div>
@@ -127,8 +127,8 @@
 				e.preventDefault();
 				var chkIM = true;
 
-				<?php if( $iRoleId > DIRECTOR ) { ?>
-                    $.ajax({
+				<?php // if( $iRoleId > DIRECTOR ) { ?>
+                    /* $.ajax({
                         url: "/validate/checkBlgChekinIMEI",
                         type: "POST",
                         data: $('#inventory_checkin').serialize(),
@@ -150,9 +150,7 @@
                                             }
 
                                             $('.imei_error').html('Below IMEI already checked in. <br >' + strExis).show();
-                                            /*for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
-                                             $('#' + objRes[i].IMEI).html("Product already Checked in").show();
-                                             }*/
+
                                         }
                                     }
                                 });
@@ -161,30 +159,30 @@
 
                             }
                         }
-                    });
-                <?php } else { ?>
+                    }); */
+                <?php /* } else { */ ?>
+
                     $.ajax({
                         url: "/validate/checkIMEI",
                         type: "POST",
                         data: $('#inventory_checkin').serialize(),
                         success: function (response) {
+
                             var objRes = JSON.parse(response);
+
                             if( objRes.proceed == true ) {
                                 $('#inventory_checkin').unbind().submit();
                             } else {
                                 var strExis = '';
-                                for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
+                                for( var i=0; i < Object.keys(objRes).length - 2; i++ ){
                                     strExis +=  objRes[i].IMEI + " <br />";
                                 }
+                                $('.imei_error').html( objRes.reason + '<br >' + strExis).show();
 
-                                $('.imei_error').html('Below IMEI already checked in. <br >' + strExis).show();
-                                /*for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
-                                 $('#' + objRes[i].IMEI).html("Product already Checked in").show();
-                                 }*/
                             }
                         }
                     });
-                <?php } ?>
+                <?php // } ?>
 
 
 

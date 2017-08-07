@@ -12,6 +12,8 @@
 			$arrData['ASSIGNED_TO'] = $arrPost['assigned_to'];
 			$arrData['DESCRIPTION'] = $arrPost['desc'];
 			$arrData['UNIQUE_ID'] = $arrPost['unique'];
+			$arrData['REASON'] = $arrPost['reason'];
+			$arrData['REASON_SMALL'] = $arrPost['reason_small'];
 			$this->addData(LOG, $arrData);
 		}
 

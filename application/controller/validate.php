@@ -98,7 +98,6 @@
             echo $objJSON;
         }
 
-
 		public function returnIMEI() {
             $objInvModel = $this->loadModel('inventory');
             $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
@@ -113,8 +112,8 @@
             $strIMEI = substr($strIMEI, 0, strlen($strIMEI)-1);
             $strIMEI = "(" . $strIMEI . ")";
             // if this belongs to returner.
-            $arrR = $objInvModel->returnBelongInventory($strIMEI, $this->loggedInUserId());
 
+            $arrR = $objInvModel->returnBelongInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRoleID() );
 
             if( count( $arrR ) == 0 ){
                 $arrR['proceed'] = false;
@@ -122,7 +121,6 @@
                 $objJSON = json_encode($arrR);
             } else {
                 $arrR = $objInvModel->returnCheckInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
-                //echo $arrR;
                 if( count($arrR) ){
                     $arrR['proceed'] = false;
                     $arrR['error'] = 'Some of IMEI does not belong to You';
@@ -131,6 +129,10 @@
                     $objJSON = json_encode( array('proceed' => true ) );
                 }
             }
+
+
+
+
             echo $objJSON;
         }
 
@@ -174,19 +176,28 @@
 
             $strIMEI = substr($strIMEI, 0, strlen($strIMEI)-1);
             $strIMEI = "(" . $strIMEI . ")";
-            $arrR = $objInvModel->shipReceiveInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
-            if( count($arrR) ){
-                $arrR['proceed'] = false;
-                $objJSON = json_encode($arrR);
+            $arrR = $objInvModel->recheckinBelongToYou( $strIMEI, $this->loggedInUserId() );
+            if( count( $arrR ) ){
+                $arrR = $objInvModel->shipReceiveInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
+                if( count($arrR) ){
+                    $arrR['proceed'] = false;
+                    $arrR['reason'] = "Some of IMEIs are already received.";
+                    $objJSON = json_encode($arrR);
+                } else {
+                    $objJSON = json_encode( array('proceed' => true ) );
+                }
             } else {
-                $objJSON = json_encode( array('proceed' => true ) );
+                $arrR['proceed'] = false;
+                $arrR['reason'] = "Some of IMEIs does not belong to you.";
+                $objJSON = json_encode($arrR);
             }
+
             echo $objJSON;
         }
 
 		public function checkIMEI() {
-			$objInvModel = $this->loadModel('inventory');
 
+		    $objInvModel = $this->loadModel('inventory');
             $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
             $arrIMEI = array_unique($arrIMEI);
@@ -201,7 +212,30 @@
 			$arrR = $objInvModel->checkInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
 			if( count($arrR) ){
 				$arrR['proceed'] = false;
-				$objJSON = json_encode($arrR);
+				$arrR['reason'] = "Below IMEI already checked in.";
+                //$objInvModel->checkInventoryBelongToMe( $strIMEI, $this->loggedInUserId() );
+                if($this->getLoggedUserRoleID() == MANAGER ) {
+                    $arrR1 = $objInvModel->checkInvBelongsAssignToLoc($strIMEI, $this->loggedInUserId());
+                } else {
+                    $arrR1 = $objInvModel->checkInvBelongsAssignTo($strIMEI, $this->loggedInUserId());
+                }
+
+                if( count( $arrR1 ) ){
+                    if($this->getLoggedUserRoleID() == MANAGER ) {
+                        $arrPO = $objInvModel->getPONumberByImeiToLOC($strIMEI, $this->loggedInUserId());
+                    } else {
+                        $arrPO = $objInvModel->getPONumberByImei($strIMEI, $this->loggedInUserId());
+                    }
+
+                    if( $arrPO->PO_NUMBER != $_POST['ponumber']) {
+                        $objJSON = json_encode( array('proceed' => false, 'reason' => 'Invalid PO Number' ) );
+                    } else {
+                        $objJSON = json_encode( array('proceed' => true ) );
+                    }
+                } else {
+                    $objJSON = json_encode($arrR);
+                }
+
 			} else {
 				$objJSON = json_encode( array('proceed' => true ) );
 			}
@@ -218,6 +252,17 @@
 				echo 0;
 			}
 		}
+
+		function checkPromocode(){
+            $objUserModel = $this->loadModel('agents');
+            $arrUser = $objUserModel->validatePromocode($this->validateUserInput($_POST['em']));
+            print_r($arrUser);
+            if( $arrUser->USER_ID != '' ){
+                echo 1;
+            } else {
+                echo 0;
+            }
+        }
 
 		public function checkUser() {
 			$objUserModel = $this->loadModel('users');

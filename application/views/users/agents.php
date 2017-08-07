@@ -57,7 +57,8 @@
 					<th>Status</th>
 					<th>Phone</th>
 					<th>Email</th>
-					<th>Role</th>
+					<th>Promocode</th>
+					<th>Company</th>
 					<th>Action</th>
 				</tr>
 				</thead>
@@ -71,12 +72,13 @@
 						<td><?php echo $arrAgent->Q_STATUS?></td>
 						<td><?php echo $arrAgent->PHONE?></td>
 						<td><a href="#"><?php echo $arrAgent->EMAILID?></a></td>
-						<td>Agent</td>
+						<td><?php echo $arrAgent->PROMOCODE?></td>
+						<td><?php echo $arrAgent->COMPANY?></td>
 						<td align="center">
 							<div class="hidden-sm hidden-xs btn-group">
 								<a href="/users/agent/edit/<?php echo $arrAgent->USER_ID?>" title="Edit Details"><i class="ace-icon fa fa-edit"></i></a> &nbsp;&nbsp;
 								<a href="/users/agent/view/<?php echo $arrAgent->USER_ID?>" title="View"><i class="ace-icon fa fa-search"></i></a> &nbsp;&nbsp;
-								<a href="#" title="Show Details"><i class="ace-icon fa fa-bars"></i></a> &nbsp;&nbsp;
+								<!-- <a href="#" title="Show Details"><i class="ace-icon fa fa-bars"></i></a> &nbsp;&nbsp; -->
 								<a href="javascript:deleteCUser(<?php echo $arrAgent->USER_ID?>)" title="Delete Agent"><i class="ace-icon fa fa-times"></i></a>
 							</div>
 						</td>

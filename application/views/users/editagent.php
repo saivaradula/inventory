@@ -111,7 +111,7 @@
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-4">Zip Code</label>
 
 					<div class="col-sm-9">
-						<input value="<?php echo $arrAgent->ZIPCODE ?>" class="required input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
+						<input value="<?php echo $arrAgent->ZIPCODE ?>" class="required zipcodeUS input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -153,7 +153,7 @@
 						<input type="text" id="dma" value="<?php echo $arrAgent->DMA ?>"  name="dma" placeholder="DMA" class="required col-xs-10 col-sm-5"/>
 					</div>
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Year </label>
 
 					<div class="col-sm-4">
@@ -165,7 +165,7 @@
                         </span>
 						</div>
 					</div>
-				</div>
+				</div> -->
 
 
 				<div class="form-group">
@@ -182,10 +182,20 @@
 					<label class="col-sm-3 control-label no-padding-right">Phone</label>
 
 					<div class="col-sm-9"> <span class="input-icon">
-                     <input value="<?php echo $arrAgent->PHONE ?>"  type="text" class="required col-xs-10 col-sm-12" id="phone" name="phone">
+                     <input value="<?php echo $arrAgent->PHONE ?>"  type="text" class="required phoneUS col-xs-10 col-sm-12" id="phone" name="phone">
                      <i class="ace-icon fa fa-envelope-o blue"></i> </span>
 					</div>
 				</div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Promo Code</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" value="<?php echo $arrAgent->PROMOCODE ?>" class="required col-sm-3" id="promocode" name="promocode">
+                        </div>
+                    </div>
+
+
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right">Status</label>
 
@@ -284,7 +294,24 @@
 				}
 			},
 			submitHandler: function (form, e) {
-				$('#agent_add_form').submit();
+                e.preventDefault();
+                $.ajax({
+                    url: "/validate/checkPromocode",
+                    type: "POST",
+                    data: "t=a&em=" + $('#promocode').val(),
+                    success: function (response) {
+                        if (response == 0) {
+                            $('#agent_add_form').submit();
+                        }
+                        else {
+                            alert(" Promocode " + $('#promocode').val() + " already taken. !!!");
+                            $('#promocode').focus()
+                            return false;
+                        }
+                    }
+                });
+
+
 			}
 		});
 	});

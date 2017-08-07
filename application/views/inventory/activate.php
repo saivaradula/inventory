@@ -4,7 +4,7 @@
             <ul class="breadcrumb">
                 <li> <i class="ace-icon fa fa-home home-icon"></i> <a href="/home">Home</a> </li>
                 <li> <a href="/inventory">Manage Inventory</a> </li>
-                <li> <a href="#">Import & Verify</a> </li>
+                <li> <a href="#">Activation</a> </li>
             </ul>
         </div>
 
@@ -49,6 +49,7 @@
                                 <tr>
                                     <th><input type="checkbox" class="checkbox chkall" value="0"></th>
                                     <th>IMEI</th>
+                                    <th>Promocode</th>
                                     <th>Date</th>
                                 </tr>
                                 <?php for( $i=0; $i < count($arrUnActivated); $i++ ){
@@ -57,6 +58,7 @@
                                             <td><input type="checkbox" class="chkbox checkbox"
                                                        value="<?php echo $arrUnActivated[$i]->imei?>"></td>
                                             <td><?php echo $arrUnActivated[$i]->imei?></td>
+                                            <td><?php echo $arrUnActivated[$i]->promocode?></td>
                                             <td><?php echo $arrUnActivated[$i]->added_on?></td>
                                         </tr>
                                     <?php
@@ -105,6 +107,7 @@
                 type: "POST",
                 data: "id=" + strACTID,
                 success: function (response) {
+               //     alert( response );
                     location.href = '/inventory/activation';
                 }
             });

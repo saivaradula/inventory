@@ -34,7 +34,8 @@
         $( "#dob" ).datepicker({
             changeMonth: true,
             changeYear: true,
-            dateFormat: "dd/mm/yy"
+            dateFormat: "dd/mm/yy",
+            maxDate: '0'
         });
 
 
@@ -83,6 +84,7 @@
 												type: "POST",
 												data: "loc=" + $('#location').val(),
 												success: function (response) {
+
 													if (response != '' ) {
 														if( confirm("This Location has been assigned to " + response + ". Do you want to replace ? !!!") ) {
 															$('#company_user_add_form').unbind().submit();

@@ -53,7 +53,7 @@
                                                 </button>
                                             <?php } ?>
 
-                                            <?php if( $bShowAssign ) { ?>
+                                            <?php if ( $objC->isAllowedModule('AINV') ) { ?>
                                                 <button class="btn btn-default" type="button"
                                                         onclick="javascript:location.href='/inventory/assign'">
                                                     <i class="ace-icon fa fa-fw fa-truck"></i>
@@ -61,17 +61,21 @@
                                                 </button>
                                             <?php } ?>
 
-                                            <button class="btn btn-primary" type="button"
-                                                    onclick="javascript:location.href='/inventory/receive'">
-                                                <i class="ace-icon fa fa-fw fa-repeat"></i>
-                                                Re-Checkin
-                                            </button>
+                                            <?php if ( $objC->isAllowedModule('INVD') ) { ?>
+                                                <button class="btn btn-primary" type="button"
+                                                        onclick="javascript:location.href='/inventory/receive'">
+                                                    <i class="ace-icon fa fa-fw fa-repeat"></i>
+                                                    Re-Checkin
+                                                </button>
+                                            <?php } ?>
 
-											<button class="btn btn-primary" type="button"
-											        onclick="javascript:location.href='/inventory/returnItem'">
-												<i class="ace-icon fa fa-fw fa-repeat"></i>
-												Return
-											</button>
+                                            <?php if ( $objC->isAllowedModule('RINV') ) { ?>
+                                                <button class="btn btn-primary" type="button"
+                                                        onclick="javascript:location.href='/inventory/returnItem'">
+                                                    <i class="ace-icon fa fa-fw fa-repeat"></i>
+                                                    Return
+                                                </button>
+                                            <?php } ?>
 										</div>
 									</div>
 								</div>
@@ -97,7 +101,6 @@
 								<th>CURRENT USER</th>
 								<th>CREATED BY</th>
 								<th>CREATED DATE</th>
-
 								<th>MODIFIED DATE</th>
 								<th>Action</th>
 							</tr>
@@ -163,21 +166,19 @@
 
 	<script type="text/javascript">
 		$(function () {
-
             $('.tt').tooltip({
                 content:function(){
                     return $(this).attr('title');
                 }
 
             });
-
 			applyTS();
 			$('#q_status').find("[value='<?php echo $_POST['q_status']?>']").prop("selected", true);
 		});
 		function applyTS() {
 			$('#simple-table').dataTable({
 				"aoColumnDefs": [{
-					'bSortable': false, 'aTargets': [6]
+					'bSortable': false, 'aTargets': [7]
 				}]
 			});
 		}

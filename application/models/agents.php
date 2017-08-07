@@ -1,6 +1,24 @@
 <?php
 	class agentsModel extends Model {
 
+	    function getAgentPromocodes( $strChkPImp ) {
+            $arrData[ 'FIELDS' ] = "U.USER_ID ";
+            $arrData[ 'TABLE' ] = AGENTS . " U";
+            $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            $arrData[ 'WHERE' ] .= " AND U.PROMOCODE IN (" . $strChkPImp . ")";
+            $arrUser = $this->getData($arrData, true);
+            return $arrUser;
+        }
+
+        function validatePromocode($strPromocode ) {
+            $arrData[ 'FIELDS' ] = "U.USER_ID, 'AGENT' ";
+            $arrData[ 'TABLE' ] = AGENTS . " U";
+            $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            $arrData[ 'WHERE' ] .= " AND LOWER( U.PROMOCODE ) = '" . strtolower($strPromocode) . "'";
+            $arrUser = $this->getData($arrData);
+            return $arrUser;
+        }
+
 		function deleteAgentRecord($iUserId) {
 			$arrData[ 'STATUS' ] = INACTIVE;
 			$this->updateData(AGENTS, $arrData, "USER_ID = '" . $iUserId . "' ");
@@ -14,16 +32,18 @@
 		}
 
 		function getAgents( $arrOptions = array() ) {
-			$arrData[ 'FIELDS' ] = "FIRST_NAME, LAST_NAME, EMAILID, Q_STATUS, ID, USER_ID, PHONE";
-			$arrData[ 'TABLE' ] = AGENTS;
+			$arrData[ 'FIELDS' ] = "A.FIRST_NAME, A.LAST_NAME, A.EMAILID, A.Q_STATUS, A.ID, A.USER_ID, A.PHONE, A.PROMOCODE";
+			$arrData[ 'FIELDS' ] .= ", ( SELECT C.NAME  FROM " . COMPANY . " C   WHERE
+			                             A.PARENT_CMPNY = C.ID   ) AS COMPANY";
+			$arrData[ 'TABLE' ] = AGENTS . " A";
 			$arrData[ 'WHERE' ] = "STATUS = " . ACTIVE;
-			$arrData[ 'WHERE' ] .= ($arrOptions['q_status']) ? " AND Q_STATUS = '" . $arrOptions['q_status'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['agent_type']) ? " AND AGENT_TYPE = '" . $arrOptions['agent_type'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['company']) ? " AND PARENT_CMPNY = '" . $arrOptions['company'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['created'] > 0) ? " AND CREATED_BY = '" . $arrOptions['created'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['action'] != '' ) ? " AND ACTION = '" . $arrOptions['action'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['location'] != '' ) ? " AND LOCATION_ID = '" . $arrOptions['location'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['id'] != '' ) ? " AND USER_ID = '" . $arrOptions['id'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['q_status']) ? " AND A.Q_STATUS = '" . $arrOptions['q_status'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['agent_type']) ? " AND A.AGENT_TYPE = '" . $arrOptions['agent_type'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['company']) ? " AND A.PARENT_CMPNY = '" . $arrOptions['company'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['created'] > 0) ? " AND A.CREATED_BY = '" . $arrOptions['created'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['action'] != '' ) ? " AND A.ACTION = '" . $arrOptions['action'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['location'] != '' ) ? " AND A.LOCATION_ID = '" . $arrOptions['location'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['id'] != '' ) ? " AND A.USER_ID = '" . $arrOptions['id'] . "'" : "";
 
 			return $this->getData($arrData, true);
 		}
@@ -44,6 +64,7 @@
 			$arrData['Q_STATUS'] = $arrPost['qstatus'];
 
 			$arrData['STATUS_ID'] = $arrPost['status_id'];
+            $arrData['PROMOCODE'] = $arrPost['promocode'];
 
 			if( $arrPost['HEADSHOT_FILE']!= '' ){
 				$arrData['HEADSHOT_FILE'] = $arrPost['HEADSHOT_FILE'];
@@ -83,12 +104,12 @@
 			$arrData['BATCH_YEAR'] = $arrPost['batchyear'];
 			$arrData['PARENT_CMPNY'] = $arrPost['parent'];
 			$arrData['LOCATION_ID'] = $arrPost['location'];
-
+			$arrData['PROMOCODE'] = $arrPost['promocode'];
 
 			$arrData['ENROLLMENT_NUMBER'] = $arrPost['enrollnumber'];
 			$arrData['ENROLLMENT_CHANNEL'] = $arrPost['enrollchannel'];
-			$arrData['Q_STATUS'] = 'PENDING';
-			$arrData['STATUS_ID'] = 0;
+			$arrData['Q_STATUS'] = 'QUALIFIED';
+			$arrData['STATUS_ID'] = 1;
 			$arrData['CREATED_ON'] = $arrPost['createdon'];
 			$arrData['CREATED_BY'] = $arrPost['createdby'];
 			$arrData['HEADSHOT_FILE'] = $arrPost['HEADSHOT_FILE'];

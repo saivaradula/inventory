@@ -47,12 +47,12 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address One</label>
+                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 1</label>
                 <div class="col-sm-4">
                     <input value="<?php echo $arrUser->ADDRESS_ONE?>" type="text"
                            id="address_one" name="address_one" placeholder="Address Line One" class="required col-xs-10 col-sm-9" />
                 </div>
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Two</label>
+                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 2</label>
                 <div class="col-sm-4">
                     <input value="<?php echo $arrUser->ADDRESS_TWO?>" type="text"
                            id="address_two" name="address_two" placeholder="Address Line Two" class="col-xs-10 col-sm-9" />
@@ -66,7 +66,7 @@
                 <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Zip Code</label>
                 <div class="col-sm-4">
                     <input value="<?php echo $arrUser->ZIP_CODE?>" type="text"
-                           id="zipcode" id name="zipcode" placeholder="Zip Code" class="required col-xs-10 col-sm-9" />
+                           id="zipcode" id name="zipcode" placeholder="Zip Code" class="required zipcodeUS col-xs-10 col-sm-9" />
                 </div>
             </div>
             <div class="form-group">
@@ -80,7 +80,7 @@
 			<div class="form-group">
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Phone</label>
 				<div class="col-sm-4">
-					<input value="<?php echo $arrUser->PHONE?>" type="text" id="phone" id name="phone" placeholder="Phone Number" class="col-xs-10 col-sm-9" />
+					<input value="<?php echo $arrUser->PHONE?>" type="text" id="phone" id name="phone" placeholder="Phone Number" class="phoneUS col-xs-10 col-sm-9" />
 				</div>
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Login Name/Username</label>
 				<div class="col-sm-4">

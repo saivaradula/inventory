@@ -18,7 +18,7 @@
                     <div class="row">
                         <form id="inventory_checkin" class="form-horizontal" role="form" method="post" action="/inventory">
                             <input type="hidden" name="action" value="assign" />
-                            <input type="hidden" name="prevcheckaction" value="CHECKED_IN" />
+                            <input type="hidden" name="prevcheckaction" value="'CHECKED_IN', 'RECEIVE', 'ASSIGNED'" />
                             <div class="col-sm-7">
                                 <div class="panel">
                                     <div class="page-header">
@@ -74,7 +74,7 @@
                                             <option value=""><?php echo $strSelTxt?></option>
                                             <?php foreach ( $arrObj AS $arrObjCMm ) { ?>
                                                 <option value="<?php echo $arrObjCMm->ID?>">
-                                                    <?php echo $arrObjCMm->NAME?>
+                                                    <?php echo $arrObjCMm->NAME?>( <?php echo $arrObjCMm->PROMOCODE?> )
                                                 </option>
                                             <?php } ?>
                                         </select>

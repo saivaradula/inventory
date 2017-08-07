@@ -110,7 +110,7 @@
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-4">Zip Code</label>
 
 	<div class="col-sm-9">
-		<input class="required input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
+		<input class="required zipcodeUS input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
 	</div>
 </div>
 <div class="form-group">
@@ -205,9 +205,16 @@
 	<label class="col-sm-3 control-label no-padding-right">Phone</label>
 
 	<div class="col-sm-9"> <span class="input-icon">
-                     <input type="text" class="required col-xs-10 col-sm-12" id="phone" name="phone">
+                     <input type="text" class="required phoneUS col-xs-10 col-sm-12" id="phone" name="phone">
                      <i class="ace-icon fa fa-envelope-o blue"></i> </span>
 	</div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Promo Code</label>
+
+    <div class="col-sm-9">
+        <input type="text" class="required col-sm-3" id="promocode" name="promocode">
+    </div>
 </div>
 <h3 class="header smaller lighter blue">
 	Upload Documents
@@ -295,7 +302,22 @@
 					data: "t=a&em=" + $('#email').val(),
 					success: function (response) {
 						if (response == 0) {
-							$('#agent_add_form').unbind().submit();
+
+                            $.ajax({
+                                url: "/validate/checkPromocode",
+                                type: "POST",
+                                data: "t=a&em=" + $('#promocode').val(),
+                                success: function (response) {
+                                    if (response == 0) {
+                                        $('#agent_add_form').unbind().submit()
+                                    }
+                                    else {
+                                        alert(" Promocode " + $('#promocode').val() + " already taken. !!!");
+                                        $('#promocode').focus()
+                                        return false;
+                                    }
+                                }
+                            });
 						}
 						else {
 							alert("User with EmailID " + $('#email').val() + " already exists. !!!");

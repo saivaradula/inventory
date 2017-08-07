@@ -184,7 +184,7 @@
 
 		function revDate($strDate, $strSprt = '-') {
 			$arrDate = explode($strSprt, $strDate);
-			return $arrDate[ 1 ] . "/" . $arrDate[ 2 ] . "/" . $arrDate[ 0 ];
+			return $arrDate[ 2 ] . "/" . $arrDate[ 1 ] . "/" . $arrDate[ 0 ];
 		}
 
 		function revDateTime($strDate, $strSprt = '-') {
@@ -205,7 +205,7 @@
 
 		function swapDate($strDate) {
 			$arrDate = explode('/', $strDate);
-			return trim($arrDate[ 2 ]) . "-" . trim($arrDate[ 0 ]) . "-" . trim($arrDate[ 1 ]);
+			return trim($arrDate[ 2 ]) . "-" . trim($arrDate[ 1 ]) . "-" . trim($arrDate[ 0 ]);
 		}
 
 		function stripString($strString) {
