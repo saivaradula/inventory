@@ -78,9 +78,7 @@
 
 <script type="text/javascript">
 	$(function () {
-		applyTS();
-		//$('#q_status').find("[value='<?php echo $_POST['q_status']?>']").prop("selected", true);
-		//$('#agent_type').find("[value='<?php echo $_POST['agent_type']?>']").prop("selected", true);
+		//applyTS();
 
 		$('#company_add_form').validate({
 			errorPlacement: function (error, element) {
@@ -100,7 +98,7 @@
 	function applyTS() {
 		$('#simple-table').dataTable({
 			"aoColumnDefs": [{
-				'bSortable': false, 'aTargets': [5]
+				'bSortable': false, 'aTargets': [4]
 			}]
 		});
 	}

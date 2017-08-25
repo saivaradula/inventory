@@ -196,9 +196,13 @@
                 e.preventDefault();
                 var chkIM = true;
 
-                $('.imei').each(function(){
+                <?php
+                    if( $iRoleId == SUPERADMIN ) {
+                        ?>chkIM = false;<?php
+                    }
+                ?>
 
-                });
+
 
                 if( chkIM ){
                     $.ajax({
@@ -224,6 +228,8 @@
                             }
                         }
                     });
+                } else {
+                    $('#inventory_checkin').unbind().submit();
                 }
 
             }

@@ -29,24 +29,53 @@
 			}
 
 			$bSubCShow = false;
-			if( $_SESSION['HAS_SCS'] ){
-			    if( $this->getLoggedUserRole() == 'DIRECTOR' ){
-                    $bSubCShow = true;
+            if($this->getLoggedUserRoleID() == SUPERADMIN ){$bSubCShow = true;} else {
+                if( $_SESSION['HAS_SCS'] ){
+                    if( $this->getLoggedUserRole() == 'DIRECTOR' ){
+                        $bSubCShow = true;
+                    }
                 }
-			}
+            }
 
 			$objLocationModel = $this->loadModel('location');
 			$objCompanyModel = $this->loadModel('company');
             $objUserModel = $this->loadModel('users');
-			$arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
+			$arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(),
+                    $this->loggedInUserId(), $arrOptions);
 
 			if( $_POST['location_id'] != '' ){
 				$arrPost = $this->validateUserInput($_POST);
 				$arrPost['director'] = $this->loggedInUserId();
-				$arrPost['subc'] = $_POST['subc'];
+				//$arrPost['subc'] = $_POST['subc'];
+				$arrPost['address'] = $_POST['address_1'] . " " . $_POST['address_1'] . " " . $_POST['zipcode'];
 				//$arrPost['manager'] = 0;
                 $arrPost['is_self'] = ( $_POST['is_self'] == 'on') ? 1: 0;
 				$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
+
+
+
+                switch ($this->getLoggedUserRole()) {
+
+                    case "SUPERADMIN" : {
+                        $arrCD = $objCompanyModel->getCompanyDirector( $arrPost['company']);
+                        $arrPost['director'] = $arrCD->USER_ID;
+                        $arrPost['subc'] = $_POST['subc'];
+                        break;
+                    }
+
+                    case "DIRECTOR" : {
+                        $arrPost['director'] = $this->loggedInUserId();
+                        $arrPost['subc'] = $_POST['subc'];
+                        break;
+                    }
+
+                    case "SUB CONTRACTOR" : {
+                        $arrPost['subc'] = $this->loggedInUserId();
+                        $arrD = $objUserModel->getUserDetailsByUserId( $this->loggedInUserId() );
+                        $arrPost['director'] = $arrD->PARENT;
+                        break;
+                    }
+                }
 
 				$objLocationModel->updateLocation( $arrPost );
 				header("Location:" . URL . "users/location/");
@@ -55,6 +84,14 @@
 					$arrPost = $this->validateUserInput($_POST);
 
 					switch ($this->getLoggedUserRole()) {
+
+                        case "SUPERADMIN" : {
+                            $arrCD = $objCompanyModel->getCompanyDirector( $arrPost['company']);
+                            $arrPost['director'] = $arrCD->USER_ID;
+                            $arrPost['subc'] = $_POST['subc'];
+                            break;
+                        }
+
                         case "DIRECTOR" : {
                             $arrPost['director'] = $this->loggedInUserId();
                             $arrPost['subc'] = $_POST['subc'];
@@ -72,6 +109,7 @@
 					//$arrPost['director'] = $this->loggedInUserId();
 
 					$arrPost['manager'] = 0;
+                    $arrPost['address'] = $_POST['address_1'] . " " . $_POST['address_1'] . " " . $_POST['zipcode'];
                     $arrPost['is_self'] = ( $_POST['is_self'] == 'on') ? 1: 0;
 					$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
 					$arrPost['ADDED_BY'] = $this->loggedInUserId();
@@ -120,9 +158,11 @@
                         $arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
                             -1, $this->loggedInUserId(), $this->getLoggedUserRoleID() );
                         $iAdmin = 1 ;
-                    }
-					$arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
+                    } else {
+                        $arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
                             $_SESSION['HAS_SCS'], $this->loggedInUserId(), $this->getLoggedUserRoleID() );
+                    }
+
 					require VIEW_PATH . 'users/location.php';
 					break;
 				}
@@ -133,9 +173,22 @@
 		public function staff(){
 			require VIEW_PATH . '_templates/header.php';
 			$strType = "Staff";
+            $iDisplayAddress = 1;
 			$objUserModel = $this->loadModel('users');
 			$objCompanyModel = $this->loadModel('company');
 			$arrObjC = $objCompanyModel->getCompanies('COMPANY', $this->getLoggedInUserCompanyID());
+
+            if($this->getLoggedUserRoleID() == SUPERADMIN ){$bSubCShow = true;} else {
+                if( $_SESSION['HAS_SCS'] ){
+                    if( $this->getLoggedUserRole() == 'DIRECTOR' ){
+                        $bSubCShow = true;
+                    }
+                }
+            }
+            if( $this->isSuperAdmin() ){
+                $bShowCmpny = true;
+            }
+
 			switch( $this->getParameters() ){
 
 				case "delete" : {
@@ -207,6 +260,7 @@
 			$objUserModel = $this->loadModel('users');
 			$objCompanyModel = $this->loadModel('company');
 			$strType = "Employee";
+            $iDisplayAddress = 1;
 			$arrObjC = $objCompanyModel->getCompanies('COMPANY', $this->getLoggedInUserCompanyID());
 			$bShowCmpny = false;
 			if( $this->isSuperAdmin() ){
@@ -224,6 +278,7 @@
 
 				case "view" : {
 					$arrUser = $objCompanyModel->getCUserDetails( $this->getParameters(2) );
+                    $arrUser->DOB = $this->revDate( $arrUser->DOB );
 					require VIEW_PATH . 'users/view.php';
 					break;
 				}
@@ -299,18 +354,29 @@
 			$objLocationModel = $this->loadModel('location');
 
 			$strType = "Manager";
+            $iDisplayAddress = 1;
+            $bShowCmpny = false;
 			$arrObjC = $objCompanyModel->getCompanies('COMPANY', $this->getLoggedInUserCompanyID());
-			$arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
+			$arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(),
+                $this->loggedInUserId(), $arrOptions);
 			//$arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(), $_SESSION['HAS_SCS'], 0 , $this->getLoggedUserRoleID());
 			$arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
                 $_SESSION['HAS_SCS'], $this->loggedInUserId(), $this->getLoggedUserRoleID() );
 
 			$bSubCShow = false;
-			if( $_SESSION['HAS_SCS'] ){
-                if( $this->getLoggedUserRole() == 'DIRECTOR' ){
-                    $bSubCShow = true;
+
+            if($this->getLoggedUserRoleID() == SUPERADMIN ){$bSubCShow = true;} else {
+                if( $_SESSION['HAS_SCS'] ){
+                    if( $this->getLoggedUserRole() == 'DIRECTOR' ){
+                        $bSubCShow = true;
+                    }
                 }
-			}
+            }
+
+
+            if( $this->isSuperAdmin() ){
+                $bShowCmpny = true;
+            }
 
 			switch( $this->getParameters() ){
 
@@ -324,6 +390,7 @@
 					$arrUser = $objCompanyModel->getCUserDetails( $this->getParameters(2) );
 					$arrL = $objCompanyModel->getManagerLocation( $this->getParameters(2) );
 					$arrUser->LOCNAME = $arrL->NAME;
+					$arrUser->DOB = $this->revDate( $arrUser->DOB );
 					$arrUser->LOCSUBCONTRACTOR = $arrL->SUBNAME;
 					$arrUser->LOCID = $arrL->ID;
 					require VIEW_PATH . 'users/view.php';
@@ -354,6 +421,7 @@
 					  $arrUser->LOCNAME = $arrL->NAME;
 					  $arrUser->LOCSUBCONTRACTOR = $arrL->SUBCONTRACTOR;
 					  $arrUser->LOCID = $arrL->ID;
+
 					require VIEW_PATH . 'users/index.php';
 					require VIEW_PATH . 'users/edit.php';
 					break;
@@ -378,7 +446,6 @@
                     } else {
                         $arrPost['subcontractor'] = $_POST['subc'];
                     }
-
 					$objCompanyModel->addCompanyUser($this->validateUserInput($arrPost));
 					header("Location:" . URL . "users/manager/");
 				}
@@ -412,12 +479,12 @@
 			$objUserModel = $this->loadModel('users');
 			$objCompanyModel = $this->loadModel('company');
 			$strType = "Director";
+            $iDisplayAddress = 1;
 			$arrObjC = $objCompanyModel->getCompanies('COMPANY', $this->getLoggedInUserCompanyID());
 			$bShowCmpny = false;
 			if( $this->isSuperAdmin() ){
 				$bShowCmpny = true;
 			}
-
 
 			switch( $this->getParameters() ){
 
@@ -429,6 +496,7 @@
 
 				case "view" : {
 					$arrUser = $objCompanyModel->getCUserDetails( $this->getParameters(2) );
+                    $arrUser->DOB = $this->revDate( $arrUser->DOB );
 					require VIEW_PATH . 'users/view.php';
 					break;
 				}
@@ -444,7 +512,6 @@
 						$objCompanyModel->addCompanyUser($this->validateUserInput($arrPost));
 						header("Location:" . URL . "users/director/");
 					}
-
 					require VIEW_PATH . 'users/index.php';
 					require VIEW_PATH . 'users/add.php';
 					break;
@@ -496,6 +563,7 @@
 		public function subcontractor(){
 			require VIEW_PATH . '_templates/header.php';
 			$strType = "Sub Contractor";
+			$iDisplayAddress = 0;
 			$objUserModel = $this->loadModel('users');
 			$objCompanyModel = $this->loadModel('company');
 			$arrObjC = $objCompanyModel->getCompanies('COMPANY', $this->getLoggedInUserCompanyID(), 1);
@@ -514,11 +582,13 @@
 
 				case "view" : {
 					$arrUser = $objCompanyModel->getCUserDetails( $this->getParameters(2) );
+                    $arrUser->DOB = $this->revDate( $arrUser->DOB );
 					require VIEW_PATH . 'users/view.php';
 					break;
 				}
 
 				case "add" : {
+
 					require VIEW_PATH . 'users/index.php';
 					require VIEW_PATH . 'users/add.php';
 					break;
@@ -583,6 +653,7 @@
 			require VIEW_PATH . '_templates/header.php';
 			$objAgentsModel = $this->loadModel('agents');
 			$objCompanyModel = $this->loadModel('company');
+            $objLocationModel = $this->loadModel('location');
 			$arrObjC = $objCompanyModel->getCompanies('COMPANY', $this->getLoggedInUserCompanyID());
 			switch(  $this->getParameters() ){
 
@@ -620,13 +691,28 @@
 							$arrPost['COMP_CERT_FILE'] = $this->uploadDocument( $_FILES['compcertfile'], AGENTFILES, $_POST['lastname'] . "_COMP" );
 						}
 
+                        $arrPost['subc'] = $arrPost['subc'];
+
+
 						$objAgentsModel->updateAgent( $arrPost );
 						header("Location: /users/agent");
 
 					}
 
+                    $iRole = $this->getLoggedUserRoleID();
+
 					$arrAgent = $objAgentsModel->getAgent($this->getParameters(2));
 					$arrAgent->BATCH_DATE  = $this->revDate( $arrAgent->BATCH_DATE  );
+                    $shwLocation = 0;
+
+					if( $this->getLoggedUserRoleID() == EMPLOYEE ){
+					    $shwLocation = 1;
+                        $iCompany = $this->getLoggedInUserCompanyID();
+                        $arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
+                        $arrLocations = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(),
+                            $_SESSION['HAS_SCS'], $this->loggedInUserId(), $this->getLoggedUserRoleID() );
+
+                    }
 					require VIEW_PATH . 'users/editagent.php';
 
 					break;
@@ -678,9 +764,8 @@
 				case "add" : {
 
 					$strRole = $this->getLoggedUserRole();
-
+					$iRole = $this->getLoggedUserRoleID();
                     $bSubC = $_SESSION['HAS_SCS'];
-
                     if( $bSubC ) {
                         if( $this->getLoggedUserRole() == 'DIRECTOR' ){
                             $bSubC = 1;
@@ -692,13 +777,13 @@
                     if( $bSubC ) { // only for directors and above
                         $arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
                     } else { // for below directors level.
-                        $objLocModel = $this->loadModel('location');
+                        //$objLocModel = $this->loadModel('location');
                         if( $this->getLoggedUserRoleID() == MANAGER ) {
                             $arrL = $objCompanyModel->getManagerLocation($this->loggedInUserId());
                             //print_r( $arrL );
                         } else {
                             $strSelTxt = "Select Location";
-                            $arrObj = $objLocModel->getLocationsList( $this->getLoggedInUserCompanyID(), $bSubC);
+                            $arrObj = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(), $bSubC);
                             //print_r( $arrObj );
                         }
 
@@ -728,6 +813,7 @@
 						$arrPost = $this->validateUserInput($_POST);
 						if( $this->isSuperAdmin() ) {
 							$arrPost['parent'] = $arrPost['company'];
+							$arrPost['subc'] = $arrPost['subc'];
 						} else {
 							$arrPost['parent'] = $this->getLoggedInUserCompanyID();
 						}
@@ -749,7 +835,8 @@
 					}
                     if($this->getLoggedUserRoleID() > SUPERADMIN  ){
                         $arrOptions['company'] = $this->getLoggedInUserCompanyID();
-                        $arrOptions['created'] =  $this->loggedInUserId();
+                        //$arrOptions['created'] =  $this->loggedInUserId();
+                        $arrOptions['location'] =  $_SESSION['L_ID'];
                     }
 
 					$arrAgents = $objAgentsModel->getAgents($arrOptions);
@@ -760,6 +847,5 @@
 			}
 			require VIEW_PATH . '_templates/footer.php';
 		}
-
 
 	}

@@ -136,6 +136,7 @@
 					break;
 				}
 			}
+
 			require VIEW_PATH . '_templates/footer.php';
 		}
 

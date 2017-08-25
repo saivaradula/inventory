@@ -162,4 +162,56 @@
 				}
 			}
 		}
+
+		function getSubContofCompy() {
+            $cid = $_POST['id'];
+            $objCompanyModel = $this->loadModel('company');
+            $arrR = $objCompanyModel->doesCompanyHasSCS($cid);
+            if( $arrR->SCS ){
+                $arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $cid,
+                    $this->loggedInUserId(), $arrOptions);
+                ?>
+                <select class="form-control required" id="subc" name="subc">
+                    <option value="">Select</option>
+                    <?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
+                        <option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->USER_LOGIN_ID?></option>
+                    <?php } ?>
+                </select>
+                <?php
+            } else {
+                echo 0;
+            }
+
+        }
+
+        function getLocOfCompy() {
+            $cid = $_POST['id'];
+            $sub = $_POST['sub'];
+            $objCompanyModel = $this->loadModel('company');
+            $arrL = $objCompanyModel->getCompanyLocations($cid, $sub);
+            ?>
+                <select class="form-control required" id="location" name="location">
+                    <option value="">Select</option>
+                    <?php foreach ( $arrL AS $arrObjCm ) { ?>
+                        <option value="<?php echo $arrObjCm->ID?>" class="<?php echo $arrObjCm->SUBCONTRACTOR?>">
+                            <?php echo $arrObjCm->NAME?></option>
+                    <?php } ?>
+                </select>
+            <?php
+        }
+
+        function getManagerOfCompany() {
+            $cid = $_POST['id'];
+            $objCompanyModel = $this->loadModel('company');
+            $arrL = $objCompanyModel->getCompanyManagers($cid);
+            ?>
+            <select class="form-control required" id="manager" name="manager">
+                <option value="">Select</option>
+                <?php foreach ( $arrL AS $arrObjCm ) { ?>
+                    <option value="<?php echo $arrObjCm->ID?>" class="<?php echo $arrObjCm->SUBCONTRACTOR?>">
+                        <?php echo $arrObjCm->NAME?></option>
+                <?php } ?>
+            </select>
+            <?php
+        }
 	}

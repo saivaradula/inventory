@@ -32,7 +32,7 @@
 		}
 
 		function getAgents( $arrOptions = array() ) {
-			$arrData[ 'FIELDS' ] = "A.FIRST_NAME, A.LAST_NAME, A.EMAILID, A.Q_STATUS, A.ID, A.USER_ID, A.PHONE, A.PROMOCODE";
+			$arrData[ 'FIELDS' ] = "A.FIRST_NAME, A.LAST_NAME, A.EMAILID, A.Q_STATUS, A.ID, A.USER_ID, A.PHONE, A.PROMOCODE, A.PARENT_CMPNY";
 			$arrData[ 'FIELDS' ] .= ", ( SELECT C.NAME  FROM " . COMPANY . " C   WHERE
 			                             A.PARENT_CMPNY = C.ID   ) AS COMPANY";
 			$arrData[ 'TABLE' ] = AGENTS . " A";
@@ -56,6 +56,7 @@
 			$arrData['ZIPCODE'] = $arrPost['zipcode'];
 			$arrData['USAC_FORM'] = $arrPost['usac'];
 			$arrData['BATCH_DATE'] = $arrPost['batchdate'];
+			$arrData['DOB'] = $arrPost['dob'];
 			$arrData['AG_GROUP'] = $arrPost['group'];
 			$arrData['DMA'] = $arrPost['dma'];
 			$arrData['BATCH_YEAR'] = $arrPost['batchyear'];
@@ -87,6 +88,8 @@
 			}
 
 			$arrData['PHONE'] = $arrPost['phone'];
+            $arrData['SUBCNT'] = $arrPost['subc'];
+            $arrData['LOCATION_ID'] = $arrPost['location'];
 			//$arrData['SELF_ACTION'] = $arrPost['saction'];
 			$this->updateData(AGENTS, $arrData, "USER_ID = '" . $arrPost['userid'] . "' ");
 		}
@@ -99,6 +102,7 @@
 			$arrData['ZIPCODE'] = $arrPost['zipcode'];
 			$arrData['USAC_FORM'] = $arrPost['usac'];
 			$arrData['BATCH_DATE'] = $arrPost['batchdate'];
+            $arrData['DOB'] = $arrPost['dob'];
 			$arrData['AG_GROUP'] = $arrPost['group'];
 			$arrData['DMA'] = $arrPost['dma'];
 			$arrData['BATCH_YEAR'] = $arrPost['batchyear'];
@@ -120,6 +124,7 @@
 			$arrData['USER_ID'] = $arrPost['userid'];
 			$arrData['PHONE'] = $arrPost['phone'];
 			$arrData['ACTION'] = $arrPost['action'];
+			$arrData['SUBCNT'] = $arrPost['subc'];
 
 			$this->addData(AGENTS, $arrData);
 		}

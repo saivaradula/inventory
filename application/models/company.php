@@ -1,5 +1,41 @@
 <?php
 	class companyModel extends Model {
+
+	    function getCompanyManagers( $iCompany ) {
+            $arrData[ 'FIELDS' ] = "U.USER_ID, U.NAME ";
+            $arrData[ 'TABLE' ] = COMPANY_USERS . " U";
+            $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            $arrData[ 'WHERE' ] .= " AND U.ROLE_NAME = 'MANAGER' " ;
+            $arrData[ 'WHERE' ] .= " AND U.COMPANY = '" . $iCompany . "'";
+            return $this->getData($arrData);
+        }
+
+        function getCompanyLocations( $iCompany, $iSubC ) {
+            $arrData[ 'FIELDS' ] = "U.ID, U.NAME, U.SUBCONTRACTOR ";
+            $arrData[ 'TABLE' ] = LOCATION . " U";
+            $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            $arrData[ 'WHERE' ] .= " AND U.COMPANY = '" . $iCompany . "'";
+            $arrData[ 'WHERE' ] .= ( $iSubC > 0 ) ? " AND U.SUBCONTRACTOR = '" . $iSubC . "'" : "";
+            return $this->getData($arrData, true);
+        }
+
+	    function getCompanyDirector( $iCompany ) {
+            $arrData[ 'FIELDS' ] = "U.USER_ID, U.NAME ";
+            $arrData[ 'TABLE' ] = COMPANY_USERS . " U";
+            $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            $arrData[ 'WHERE' ] .= " AND U.ROLE_NAME = 'DIRECTOR' " ;
+            $arrData[ 'WHERE' ] .= " AND U.COMPANY = '" . $iCompany . "'";
+            return $this->getData($arrData);
+        }
+
+	    function doesCompanyHasSCS( $iCompany ) {
+            $arrData[ 'FIELDS' ] = "NAME, SCS";
+            $arrData[ 'TABLE' ] = COMPANY;
+            $arrData[ 'WHERE' ] = "status = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= ( $iCompany > 0 ) ? " AND ID = " . $iCompany: "";
+            return $this->getData($arrData, false);
+        }
+
 		function addCompany($arrPost) {
 			$arrData['NAME'] = $arrPost['company_name'];
 			$arrData['EMAIL'] = $arrPost['email'];
@@ -126,7 +162,14 @@
 
 		function getCompanyUsers($strType, $iCompany = 0, $iLoggedInUser = 0, $arrOptions = array() ) {
 			$arrData[ 'FIELDS' ] = "U.NAME, U.EMAIL_ID, U.USER_ID, U.PHONE, C.NAME AS COMPANY";
-			$arrData[ 'FIELDS' ] .= ", (SELECT CR.USER_NAME FROM " . CREDS . " CR WHERE U.USER_ID = CR.USER_ID AND CR.STATUS = 1 ) AS USER_LOGIN_ID";
+			$arrData[ 'FIELDS' ] .= ", (SELECT CR.USER_NAME FROM " . CREDS . " CR WHERE U.USER_ID = CR.USER_ID AND CR.STATUS = 1 ) 
+			                    AS USER_LOGIN_ID";
+
+			//if( $iCompany == 0 ) {
+                $arrData[ 'FIELDS' ] .= ", (SELECT S.NAME FROM " . COMPANY_USERS . " S WHERE S.USER_ID = U.SUBCONTRACTOR AND S.STATUS = 1 ) 
+			                    AS SUBCONTRACTOR";
+            //}
+
 			$arrData[ 'TABLE' ] = COMPANY_USERS . " U, " . COMPANY . " C ";
 			$arrData[ 'WHERE' ] = "U.status = " . ACTIVE;
 			$arrData[ 'WHERE' ] .= " AND C.status = " . ACTIVE;
@@ -140,7 +183,7 @@
                 $arrData[ 'WHERE' ] .= ( $iCompany > 0 ) ? " AND C.ID = " . $iCompany : "";
            // }
             if( $iLoggedInUser ){
-                $arrData[ 'WHERE' ] .= ( $iLoggedInUser <= SUBCONTRACTOR ) ? " AND U.ADDED_BY = '" . $iLoggedInUser . "'": "";
+                $arrData[ 'WHERE' ] .= ( $iLoggedInUser == SUBCONTRACTOR ) ? " AND U.ADDED_BY = '" . $iLoggedInUser . "'": "";
             }
 
 			//$arrData[ 'WHERE' ] .= ( $iLoggedInUser <= SUBCONTRACTOR ) ? " AND U.PARENT = '" . $iLoggedInUser . "'": "";

@@ -47,7 +47,12 @@
 							<tr>
 								<th>Name</th>
 								<th>Email</th>
-								<?php if( $bShowCmpny ) {?><th>Company</th> <?php } ?>
+								<?php if( $bShowCmpny ) {?>
+                                    <th>Company</th>
+                                <?php } ?>
+                                <?php if( $strType == 'Manager' ) { ?>
+                                    <th>Sub Contractor</th>
+                                <?php } ?>
 								<th>Phone</th>
 								<th>Action</th>
 							</tr>
@@ -60,7 +65,13 @@
 										<tr>
 											<td><?php echo $arrObjCUser->NAME?></td>
 											<td><?php echo $arrObjCUser->EMAIL_ID?></td>
-											<?php if( $bShowCmpny ) {?><td><?php echo $arrObjCUser->COMPANY?></td><?php } ?>
+											<?php if( $bShowCmpny ) {?>
+                                                <td><?php echo $arrObjCUser->COMPANY?></td>
+                                            <?php } ?>
+                                            <?php if( $strType == 'Manager' ) { ?>
+                                                <td><?php echo $arrObjCUser->SUBCONTRACTOR?></td>
+                                            <?php } ?>
+
 											<td><?php echo $arrObjCUser->PHONE?></td>
 											<td align="center">
 												<div class="hidden-sm hidden-xs btn-group">

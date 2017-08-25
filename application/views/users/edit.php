@@ -27,7 +27,7 @@
 			$arrOptions['arrObjCUsers'] = $arrObjCUsers;
 
 			$arrOptions['arrLocations'] = $arrLocations;
-			//print_r( $arrLocations );
+            $arrOptions['ida'] = $iDisplayAddress;
 			addUserForm( $arrOptions );
 
 			//addUserForm( strtolower($strType), '/users/'. strtolower($strType) . '/edit', $arrObjC, $arrUser);
@@ -47,8 +47,11 @@
         });
 
         $('#state option[value="' + $('#selecState').val() +'"]').prop('selected', true);
+
 		$('#company').find("[value='<?php echo $arrUser->COMPANY?>']").prop("selected", true);
+        $('#company').change();
 		$('#subc').find("[value='<?php echo $arrUser->LOCSUBCONTRACTOR?>']").prop("selected", true);
+        $('#subc').change();
 		$('#location').find("[value='<?php echo $arrUser->LOCID?>']").prop("selected", true);
 
 		<?php if( $bSubCShow ){ ?>
@@ -59,12 +62,50 @@
 			<?php } ?>
 		<?php } ?>
 
-		$('#subc').change(function(){
+		/*$('#subc').change(function(){
 			$('#location option').hide();
 			$('#location').find("option").eq(0).show();
 			$('#location').find("option").eq(0).prop('selected', true);
 			$('#location').find("option." + $('#subc').val() ).show();
-		});
+		});*/
+
+        $('#subc').change(function(){
+            loadLocations( $('#company').val(), $('#subc').val() );
+        });
+
+        $('#company').change(function(){
+            $.ajax({
+                url: "/ajaxcall/getSubContofCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#subcholder').hide();
+                        $('#subcholderL').hide();
+                    } else {
+                        $('#subcholderL').show();
+                        $('#subcholder').show().html( response );
+                        $('#subc').change(function(){
+                            loadLocations( $('#company').val(), $('#subc').val() );
+                        });
+                    }
+
+                }
+            });
+
+            $.ajax({
+                url: "/ajaxcall/getLocOfCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#location').hide();
+                    } else {
+                        $('#location').show().html( response );
+                    }
+                }
+            });
+        });
 
 		$('#company_user_add_form').validate({
 			errorPlacement: function (error, element) {},
@@ -76,6 +117,7 @@
 				}
 			},
 			submitHandler: function (form, e) {
+                $('.subbtn').prop('disabled', true);
 				var orgName = $('#old_login_name').val();
 				var presentName = $('#username').val();
 				if (orgName != presentName) {
@@ -87,7 +129,6 @@
 						success: function (response) {
 							if (response == 0) {
 								//$('#company_user_add_form').unbind().submit();
-
 								<?php //if( $bSubCShow ) { ?>
 									if( $('#presentLocId').val() != $('#location').val() ) {
 										$.ajax({
@@ -100,7 +141,8 @@
 													if( confirm("This Location has been assigned to " + response + ". Do you want to replace ? !!!") ) {
 														$('#company_user_add_form').unbind().submit();
 													} else {
-														return false;
+                                                        $('.subbtn').prop('disabled', false);
+                                                        return false;
 													}
 												}
 												else {
@@ -109,7 +151,7 @@
 											}
 										});
 									} else {
-										//$('#company_user_add_form').unbind().submit();
+                                        $('.subbtn').prop('disabled', false);
 									}
 								<?php  /* } else {
 									?>$('#company_user_add_form').unbind().submit();<?php
@@ -118,6 +160,7 @@
 							}
 							else {
 								alert("UserName " + $('#username').val() + " already exists. !!!");
+                                $('.subbtn').prop('disabled', false);
 								return false;
 							}
 						}
@@ -150,11 +193,23 @@
 						?>$('#company_user_add_form').unbind().submit();<?php
 					}*/ ?>
 				}
-
 			}
 		});
-
 	});
 
+    function loadLocations(id, sub) {
+        $.ajax({
+            url: "/ajaxcall/getLocOfCompy",
+            type: "POST",
+            data: "id=" + id + "&sub=" + sub,
+            success: function (response) {
+                if(response == 0) {
+                    $('#location').hide();
+                } else {
+                    $('#location').show().html( response );
+                }
+            }
+        });
+    }
 
 </script>

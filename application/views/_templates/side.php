@@ -41,6 +41,31 @@
 			</li>
 		<?php } ?>
 
+        <?php if ( $objC->isAllowedModule('AGAP') ) { ?>
+            <li class="agentapp_menu">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-users"></i>
+                    <span class="menu-text"> Manage Applications </span>
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li class="">
+                        <a href="/agentapp">
+                            <i class="menu-icon fa fa-caret-right"></i>Application
+                        </a>
+                        <b class="arrow"></b>
+                    </li>
+                    <li class="">
+                        <a href="/agentapp/sendapp">
+                            <i class="menu-icon fa fa-caret-right"></i>New Application
+                        </a>
+                        <b class="arrow"></b>
+                    </li>
+                </ul>
+            </li>
+        <?php } ?>
+
 		<?php if ( $objC->isAllowedModule('UL') ) { ?>
 			<li class="users_menu">
 				<a href="#" class="dropdown-toggle">
@@ -129,11 +154,13 @@
 					<b class="arrow"></b>
 				</li>
 				<?php if ( $objC->isAllowedModule('CINV') ) { ?>
-					<li class="">
-						<a href="/inventory/checkin">
-							<i class="menu-icon fa fa-caret-right"></i>Checkin</a>
-						<b class="arrow"></b>
-					</li>
+					<?php if( $_SESSION['IS_SELF'] == 0 ){ ?>
+                        <li class="">
+                            <a href="/inventory/checkin">
+                                <i class="menu-icon fa fa-caret-right"></i>Checkin</a>
+                            <b class="arrow"></b>
+                        </li>
+                    <?php } ?>
 				<?php } ?>
 				<?php if ( $objC->isAllowedModule('SINV') ) { ?>
 					<li class="">
@@ -144,15 +171,26 @@
 				<?php } ?>
 
                 <?php if ( $objC->isAllowedModule('AINV') ) { ?>
-                    <li class="">
-                        <a href="/inventory/assign">
-                            <i class="menu-icon fa fa-caret-right"></i>Assign</a>
-                        <b class="arrow"></b>
-                    </li>
+                    <?php if ( !$objC->isSuperAdmin() ) { ?>
+                        <li class="">
+                            <a href="/inventory/assign">
+                                <i class="menu-icon fa fa-caret-right"></i>Assign</a>
+                            <b class="arrow"></b>
+                        </li>
+                    <?php } ?>
+                <?php } ?>
+                <?php if ( $objC->isAllowedModule('INVD') ) { ?>
+                    <?php if ( !$objC->isSuperAdmin() ) { ?>
+                        <li class="">
+                            <a href="/inventory/receive">
+                                <i class="menu-icon fa fa-caret-right"></i>Re-Checkin</a>
+                            <b class="arrow"></b>
+                        </li>
+                    <?php } ?>
                 <?php } ?>
                 <?php if ( $objC->isAllowedModule('RINV') ) { ?>
                     <li class="">
-                        <a href="/inventory/return">
+                        <a href="/inventory/returnItem">
                             <i class="menu-icon fa fa-caret-right"></i>Return</a>
                         <b class="arrow"></b>
                     </li>
@@ -173,6 +211,24 @@
                 <?php } ?>
 			</ul>
 		<?php } ?>
+
+        <li class="reports_menu">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-user-plus"></i>
+                <span class="menu-text"> Reports </span>
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li class="">
+                    <a href="/reports/basic">
+                        <i class="menu-icon fa fa-caret-right"></i>Basic</a>
+                    <b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+
+
 
 		<li class=""> <a href="#" class="dropdown-toggle">
 				<i class="menu-icon fa fa-info-circle"></i>

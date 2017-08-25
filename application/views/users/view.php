@@ -1,3 +1,4 @@
+
 <div class="main-content">
 	<div class="main-content-inner">
 		<div class="breadcrumbs ace-save-state" id="breadcrumbs">
@@ -45,6 +46,31 @@
 									<div class="profile-info-value"><?php echo $arrUser->LOCNAME ?></div>
 								</div>
 								<?php } ?>
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> DOB </div>
+                                    <div class="profile-info-value"><?php echo $arrUser->DOB ?></div>
+                                    <div class="profile-info-name"> SOCIAL </div>
+                                    <div class="profile-info-value"><?php echo $arrUser->SOCIAL ?></div>
+                                </div>
+
+
+
+                                <div class="profile-info-row">
+
+                                    <?php if( $iDisplayAddress ) { ?>
+                                        <div class="profile-info-name">Address:</div>
+                                        <div class="profile-info-value">
+                                            <?php
+                                                echo $arrUser->ADDRESS_ONE . ", " . $arrUser->ADDRESS_TWO . "<br />" . $arrUser->STATE . ", " . $arrUser->ZIP_CODE;
+                                            ?>
+                                        </div>
+                                    <?php } ?>
+
+                                    <div class="profile-info-name"> DL </div>
+                                    <div class="profile-info-value"><?php echo $arrUser->DL ?></div>
+                                </div>
+
+
 							</div>
 						</div>
 						<div>&nbsp;</div>

@@ -36,7 +36,16 @@
 			<div class="form-group">
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Location Address</label>
 				<div class="col-sm-8">
-					<textarea class="required" name="address" cols="60" rows="5"><?php echo $arrLoc->ADDRESS?></textarea>
+					<!-- <textarea class="required" name="address" cols="60" rows="5"><?php echo $arrLoc->ADDRESS?></textarea> -->
+                    <input value="<?php echo $arrLoc->ADDRESS_1?>" type="text" id="address_1" id name="address_1" placeholder="Address Line 1"
+                           class="required col-xs-10 col-sm-7" /> <br /><br />
+                    <input value="<?php echo $arrLoc->ADDRESS_2?>" type="text" id="address_2" id name="address_2" placeholder="Address Line 2"
+                           class="col-xs-10 col-sm-7" /> <br /><br />
+                    <div class="col-sm-4" style="padding-left: 0px;">
+                        <?php include "states.php"; ?>
+                    </div>
+                    <input value="<?php echo $arrLoc->ZIPCODE?>" type="text" id="zipcode" id name="zipcode" placeholder="ZIP CODE"
+                           class="zipcodeUS required col-sm-2" />
 				</div>
 			</div>
             <div class="form-group">
@@ -60,8 +69,8 @@
                 <?php } ?>
 
 				<?php if( $bSubCShow ) { ?>
-					<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Sub Contractor</label>
-					<div class="col-sm-2">
+					<label class="col-sm-2 control-label no-padding-right" for="form-field-1" id="subcholderL">Sub Contractor</label>
+					<div class="col-sm-2" id="subcholder">
 						<select class="form-control required" id="subc" name="subc">
 							<option value="">Select</option>
 							<?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
@@ -92,6 +101,26 @@
 	$(function(){
 		$('#subc').find("[value='<?php echo $arrLoc->SUBCONTRACTOR?>']").prop("selected", true);
 	});
+
+	$('#company').change(function(){
+        //subcholder
+        $.ajax({
+            url: "/ajaxcall/getSubContofCompy",
+            type: "POST",
+            data: "id=" + $(this).val(),
+            success: function (response) {
+                if(response == 0) {
+                    $('#subcholder').hide();
+                    $('#subcholderL').hide();
+                } else {
+                    $('#subcholderL').show();
+                    $('#subcholder').show().html( response );
+                }
+
+            }
+        });
+    });
+
 	$('#location_add_form').validate({
 		errorPlacement: function (error, element) {},
 		submitHandler: function (form, e) {

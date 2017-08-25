@@ -19,7 +19,7 @@
 						<form name="inventory_checkin" id="inventory_checkin" class="form-horizontal"
 						            role="form" method="post" action="/inventory">
 							<input type="hidden" name="action" value="chekin" />
-                            <input type="hidden" name="prevcheckaction" value="SHIPPING" />
+                            <input type="hidden" name="prevcheckaction" value="'SHIPPING'" />
 							<div class="col-sm-7">
 								<div class="panel">
 									<div class="page-header">

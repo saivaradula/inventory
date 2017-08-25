@@ -56,20 +56,26 @@
             $iPC = 0;
             for( $i=0;$i <= count($arrIMEI); $i++){
                 if( $arrIMEI[$i] != '' ){
-
                     $iPC = $iPC + 1;
                     $strIMEI .= "'"  . $arrIMEI[$i] . "',";
                 }
             }
             $strIMEI = substr($strIMEI, 0, strlen($strIMEI)-1);
             $strIMEI = "(" . $strIMEI . ")";
-            $arrR = $objInvModel->checkInvBelongsTo($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole(), $_POST['prevcheckaction']);
 
-
-            if( count( $arrR ) != $iPC ) {
-                $objJSON = json_encode( array('proceed' => false ) );
-            } else {
+            if( $this->getLoggedUserRoleID() == SUPERADMIN ) {
                 $objJSON = json_encode( array('proceed' => true ) );
+            } else {
+                if( $this->getLoggedUserRoleID() == DIRECTOR ) {
+                    $arrR = $objInvModel->checkInvBelongsTo($strIMEI, $this->loggedInUserId(), 'STAFF_DIRECTOR', $_POST['prevcheckaction']);
+                } else {
+                    $arrR = $objInvModel->checkInvBelongsTo($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole(), $_POST['prevcheckaction']);
+                }
+                if( count( $arrR ) != $iPC ) {
+                    $objJSON = json_encode( array('proceed' => false ) );
+                } else {
+                    $objJSON = json_encode( array('proceed' => true ) );
+                }
             }
             echo $objJSON;
         }
@@ -90,8 +96,17 @@
             $arrR = $objInvModel->assignCheckInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
             //echo $arrR;
             if( count($arrR) ){
-                $arrR['proceed'] = false;
-                $objJSON = json_encode($arrR);
+                if( $_SESSION['IS_SELF'] ){
+                    if($arrR[0]->ASSIGNED_TO == $_SESSION['L_ID']){
+                        $objJSON = json_encode( array('proceed' => true ) );
+                    } else {
+                        $arrR['proceed'] = false;
+                        $objJSON = json_encode($arrR);
+                    }
+                } else{
+                    $arrR['proceed'] = false;
+                    $objJSON = json_encode($arrR);
+                }
             } else {
                 $objJSON = json_encode( array('proceed' => true ) );
             }
@@ -137,6 +152,7 @@
         }
 
 		public function shipIMEI() {
+
 			$objInvModel = $this->loadModel('inventory');
             $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
             $arrIMEI = array_map('trim',$arrIMEI);
@@ -150,14 +166,19 @@
 
 			$strIMEI = substr($strIMEI, 0, strlen($strIMEI)-1);
 			$strIMEI = "(" . $strIMEI . ")";
-			$arrR = $objInvModel->shipCheckInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
-			//echo $arrR;
-			if( count($arrR) ){
-				$arrR['proceed'] = false;
-				$objJSON = json_encode($arrR);
-			} else {
-				$objJSON = json_encode( array('proceed' => true ) );
-			}
+
+			if( $this->getLoggedUserRoleID() == SUPERADMIN ) {
+                $objJSON = json_encode( array('proceed' => true ) );
+            } else {
+                $arrR = $objInvModel->shipCheckInventory($strIMEI, $this->loggedInUserId(), $this->getLoggedUserRole());
+                //echo $arrR;
+                if( count($arrR) ){
+                    $arrR['proceed'] = false;
+                    $objJSON = json_encode($arrR);
+                } else {
+                    $objJSON = json_encode( array('proceed' => true ) );
+                }
+            }
 			echo $objJSON;
 		}
 
@@ -278,6 +299,7 @@
 			$strUserId = $this->validateUserInput($_POST[ 'userid' ]);
 			$objUserModel = $this->loadModel('users');
 
+
 			$arrLoggedUser = $objUserModel->validateUser($strUserId, $_POST[ 'lpassword' ]);
 
 			if ( $arrLoggedUser->USER_ID ) {
@@ -290,12 +312,23 @@
 					}
 					case "DIR" : // DIRECTORS
 					case "SBC" : // SUB CONTRACTORS
-					case "MGR" : // MANAGERS
+					case "EMP" : // SUB CONTRACTORS
 					case "STF" :{ // STAFF
 						$arrLoggedUser = $objUserModel->getCompanyUserDetails( $arrLoggedUser->USER_ID );
 						$this->setUser($arrLoggedUser);
 						break;
 					}
+
+                    case "MGR" : { // MANAGERS
+                        $objLocationModel = $this->loadModel('location');
+                        $arrLoggedUser = $objUserModel->getCompanyUserDetails( $arrLoggedUser->USER_ID );
+                        $this->setUser($arrLoggedUser);
+                        $arrGetLocation = $objLocationModel->getUserLocation(  $arrLoggedUser->USER_ID );
+                        $_SESSION[ 'L_NAME' ] = $arrGetLocation->NAME;
+                        $_SESSION[ 'IS_SELF' ] = $arrGetLocation->IS_SELF;
+                        $_SESSION[ 'L_ID' ] = $arrGetLocation->ID;
+                        break;
+                    }
 
 					case "AG" : { // AGENTS
 						$arrLoggedUser = $objUserModel->getAgentDetails( $arrLoggedUser->USER_ID );

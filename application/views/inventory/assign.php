@@ -18,7 +18,14 @@
                     <div class="row">
                         <form id="inventory_checkin" class="form-horizontal" role="form" method="post" action="/inventory">
                             <input type="hidden" name="action" value="assign" />
-                            <input type="hidden" name="prevcheckaction" value="'CHECKED_IN', 'RECEIVE', 'ASSIGNED'" />
+                            <input type="hidden" name="isM" value="1" />
+                            <?php if( $iIsSelf == 1 ) {?>
+                                <input type="hidden" name="prevcheckaction" value="'ASSIGNED'" />
+                            <?php } else { ?>
+                                <input type="hidden" name="prevcheckaction" value="'CHECKED_IN', 'RECEIVE', 'ASSIGNED'" />
+                            <?php }?>
+
+
                             <div class="col-sm-7">
                                 <div class="panel">
                                     <div class="page-header">
@@ -74,7 +81,8 @@
                                             <option value=""><?php echo $strSelTxt?></option>
                                             <?php foreach ( $arrObj AS $arrObjCMm ) { ?>
                                                 <option value="<?php echo $arrObjCMm->ID?>">
-                                                    <?php echo $arrObjCMm->NAME?>( <?php echo $arrObjCMm->PROMOCODE?> )
+                                                    <?php echo $arrObjCMm->NAME?>
+                                                    <?php echo ($arrObjCMm->PROMOCODE) ? "(". $arrObjCMm->PROMOCODE . ")" : "";?>
                                                 </option>
                                             <?php } ?>
                                         </select>

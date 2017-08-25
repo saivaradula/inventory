@@ -33,6 +33,13 @@
 		<input type="text" id="lastname" name="lastname" placeholder="Last Name" class="required col-xs-10 col-sm-5"/>
 	</div>
 </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> DOB </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="dob" name="dob" placeholder="Date of Birth" class="required col-xs-10 col-sm-5"/>
+        </div>
+    </div>
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Enrollment Number </label>
 
@@ -174,10 +181,9 @@
 
 -->
 
-<?php if( $strRole == 'SUPERADMIN') { ?>
+<?php if( $iRole == SUPERADMIN ) { ?>
 	<div class="form-group">
 		<label class="required col-sm-3 control-label no-padding-right" for="form-field-1"> Company </label>
-
 		<div class="col-sm-4">
 			<select class="form-control required" id="company" name="company">
 				<option value="">Select</option>
@@ -187,6 +193,33 @@
 			</select>
 		</div>
 	</div>
+    <div class="form-group">
+
+        <label class="required col-sm-3 control-label no-padding-right" for="form-field-1"  id="subcholderL">Sub Contractor</label>
+        <div class="col-sm-4" id="subcholder">
+            <select class="form-control" id="subc" name="subc">
+                <option value="">Select</option>
+                <?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
+                    <option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->NAME?></option>
+                <?php } ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Location</label>
+        <div class="col-sm-4" id="locationholder">
+            <select class="form-control" id="location" name="location">
+                <option value="">Select</option>
+                <?php foreach ( $arrLocations AS $arrLocation ) {  ?>
+                    <option value="<?php echo $arrLocation->ID?>"
+                            class="<?php echo $arrLocation->SUBCONTRACTOR?>">
+                        <?php echo $arrLocation->NAME?></option>
+                <?php } ?>
+            </select>
+        </div>
+    </div>
+
 <?php } ?>
 
 
@@ -207,6 +240,7 @@
 	<div class="col-sm-9"> <span class="input-icon">
                      <input type="text" class="required phoneUS col-xs-10 col-sm-12" id="phone" name="phone">
                      <i class="ace-icon fa fa-envelope-o blue"></i> </span>
+
 	</div>
 </div>
 <div class="form-group">
@@ -258,11 +292,13 @@
 </div>
 <div class="clearfix form-actions">
 	<div class="col-md-offset-3 col-md-9">
-		<button class="btn btn-success" type="submit"><i class="ace-icon fa fa-fw fa-check"></i> Submit</button>
+		<button class="subbtn btn btn-success" type="submit"><i class="ace-icon fa fa-fw fa-check"></i> Submit</button>
 		&nbsp; &nbsp; &nbsp;
-		<button class="btn btn-danger" type="reset" onclick="javascript:location.href='/users/agent'">
-			<i class="ace-icon fa fa-fw fa-times"></i>Cancel<span></span>
-		</button>
+        <a href="javascript:location.href='/users/agent'">
+            <button class="btn btn-danger" type="button" onclick="javascript:location.href=/users/agent">
+                <i class="ace-icon fa fa-fw fa-times"></i>Cancel<span></span>
+            </button>
+        </a>
 	</div>
 </div>
 <div class="hr hr-24"></div>
@@ -284,6 +320,47 @@
 				selectOtherMonths: false
 			});
 
+        $( "#dob" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "dd/mm/yy",
+            maxDate: '0',
+            yearRange: "-60:+0"
+        });
+
+        $('#company').change(function(){
+            $.ajax({
+                url: "/ajaxcall/getSubContofCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#subcholder').hide();
+                        $('#subcholderL').hide();
+                    } else {
+                        $('#subcholderL').show();
+                        $('#subcholder').show().html( response );
+                    }
+
+                }
+            });
+
+            $.ajax({
+                url: "/ajaxcall/getLocOfCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#location').hide();
+                    } else {
+                        $('#location').show().html( response );
+                    }
+
+                }
+            });
+
+        });
+
 
 		$('#agent_add_form').validate({
 			errorPlacement: function (error, element) {
@@ -295,6 +372,7 @@
 				}
 			},
 			submitHandler: function (form, e) {
+                $('.subbtn').prop('disabled', true);
 				e.preventDefault();
 				$.ajax({
 					url: "/validate/checkUserEmail",
@@ -302,7 +380,6 @@
 					data: "t=a&em=" + $('#email').val(),
 					success: function (response) {
 						if (response == 0) {
-
                             $.ajax({
                                 url: "/validate/checkPromocode",
                                 type: "POST",
@@ -313,7 +390,8 @@
                                     }
                                     else {
                                         alert(" Promocode " + $('#promocode').val() + " already taken. !!!");
-                                        $('#promocode').focus()
+                                        $('#promocode').focus();
+                                        $('.subbtn').prop('disabled', false);
                                         return false;
                                     }
                                 }
@@ -321,6 +399,7 @@
 						}
 						else {
 							alert("User with EmailID " + $('#email').val() + " already exists. !!!");
+                            $('.subbtn').prop('disabled', false);
 							return false;
 						}
 					}

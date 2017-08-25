@@ -20,6 +20,7 @@
 				<form class="form-horizontal" role="form" ENCTYPE="multipart/form-data"
 				      id="agent_add_form" name="agent_add_form" method="post" action="/users/agent/edit/<?php echo $arrAgent->USER_ID ?>">
 				<input type="hidden" value="<?php echo $arrAgent->USER_ID ?>" name="userid" id="userid" />
+				<input type="hidden" value="<?php echo $arrAgent->PROMOCODE ?>" id="original_promocode" />
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> First Name </label>
@@ -167,6 +168,77 @@
 					</div>
 				</div> -->
 
+                    <?php if( $iRole == SUPERADMIN ) { ?>
+                        <div class="form-group">
+                            <label class="required col-sm-3 control-label no-padding-right" for="form-field-1"> Company </label>
+                            <div class="col-sm-4">
+                                <select class="form-control required" id="company" name="company">
+                                    <option value="">Select</option>
+                                    <?php foreach ( $arrObjC AS $arrObjCm ) { ?>
+                                        <option value="<?php echo $arrObjCm->ID?>"><?php echo $arrObjCm->NAME?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="required col-sm-3 control-label no-padding-right" for="form-field-1"  id="subcholderL">Sub Contractor</label>
+                            <div class="col-sm-4" id="subcholder">
+                                <select class="form-control" id="subc" name="subc">
+                                    <option value="">Select</option>
+                                    <?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
+                                        <option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->NAME?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Location</label>
+                            <div class="col-sm-4" id="locationholder">
+                                <select class="form-control" id="location" name="location">
+                                    <option value="">Select</option>
+                                    <?php foreach ( $arrLocations AS $arrLocation ) {  ?>
+                                        <option value="<?php echo $arrLocation->ID?>"
+                                                class="<?php echo $arrLocation->SUBCONTRACTOR?>">
+                                            <?php echo $arrLocation->NAME?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                    <?php } ?>
+
+                    <?php if( $shwLocation ) { ?>
+                        <input type="hidden" value="<?php echo $iCompany?>" id="company" name="company"/>
+                        <div class="form-group">
+
+                            <label class="required col-sm-3 control-label no-padding-right" for="form-field-1"  id="subcholderL">Sub Contractor</label>
+                            <div class="col-sm-4" id="subcholder">
+                                <select class="form-control" id="subc" name="subc">
+                                    <option value="">Select</option>
+                                    <?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
+                                        <option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->NAME?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Location</label>
+                            <div class="col-sm-4" id="locationholder">
+                                <select class="form-control" id="location" name="location">
+                                    <option value="">Select</option>
+                                    <?php foreach ( $arrLocations AS $arrLocation ) {  ?>
+                                        <option value="<?php echo $arrLocation->ID?>"
+                                                class="<?php echo $arrLocation->SUBCONTRACTOR?>">
+                                            <?php echo $arrLocation->NAME?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                    <?php } ?>
+
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right">eMail</label>
@@ -184,7 +256,11 @@
 					<div class="col-sm-9"> <span class="input-icon">
                      <input value="<?php echo $arrAgent->PHONE ?>"  type="text" class="required phoneUS col-xs-10 col-sm-12" id="phone" name="phone">
                      <i class="ace-icon fa fa-envelope-o blue"></i> </span>
+                        <br />
+                        <span style="font-size: 11px; font-style: normal">
+                        Example:<strong>541-754-3010</strong> / <strong>(541)754-3010</strong> / <strong>5417543010</strong></span>
 					</div>
+
 				</div>
 
                     <div class="form-group">
@@ -198,7 +274,6 @@
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right">Status</label>
-
 					<div class="col-sm-2">
 						<select class="form-control" id="qstatus" name="qstatus">
 							<option value="">Select</option>
@@ -208,6 +283,10 @@
 						</select>
 					</div>
 				</div>
+
+
+
+
 				<h3 class="header smaller lighter blue">
 					Upload Documents
 					<small>Upload all your documents properly</small>
@@ -253,9 +332,11 @@
 
 						<button class="btn btn-success" type="submit"><i class="ace-icon fa fa-fw fa-check"></i> Update</button>
 						&nbsp; &nbsp; &nbsp;
-						<button class="btn btn-danger" type="reset" onclick="javascript:location.href='/users/agent'">
-							<i class="ace-icon fa fa-fw fa-times"></i>Cancel<span></span>
-						</button>
+                        <a href="javascript:location.href='/users/agent'">
+                            <button class="btn btn-danger" type="button" onclick="javascript:location.href='/users/agent'">
+                                <i class="ace-icon fa fa-fw fa-times"></i>Cancel<span></span>
+                            </button>
+                        </a>
 					</div>
 				</div>
 				<div class="hr hr-24"></div>
@@ -283,6 +364,53 @@
 		$('#qstatus').find("[value='<?php echo $arrAgent->Q_STATUS?>']").prop("selected", true);
 
 
+        $('#company').find("[value='<?php echo $arrAgent->PARENT_CMPNY?>']").prop("selected", true);
+        changeCompany( $('#company').val() ); changeSubC( $('#company').val(), $('#subc').val() );
+        $('#company').change(function(){
+            $.ajax({
+                url: "/ajaxcall/getSubContofCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#subcholder').hide();
+                        $('#subcholderL').hide();
+                    } else {
+                        $('#subcholderL').show();
+                        $('#subcholder').show().html( response );
+                        $('#subc').find("[value='<?php echo $arrAgent->SUBCNT?>']").prop("selected", true);
+                        setTimeout(function () {
+                            changeSubC( $('#company').val(), $('#subc').val() );
+                        }, 2000);
+
+                        $('#subc').change(function(){
+                            changeSubC( $('#company').val(), $('#subc').val() );
+                        });
+                    }
+
+                }
+            });
+
+            /*$.ajax({
+                url: "/ajaxcall/getLocOfCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#location').hide();
+                    } else {
+                        $('#location').show().html( response );
+                    }
+
+                }
+            });*/
+
+        });
+
+        $('#subc').change(function(){
+            changeSubC( $('#company').val(), $('#subc').val() );
+        });
+
 
 		$('#agent_add_form').validate({
 			errorPlacement: function (error, element) {
@@ -295,7 +423,28 @@
 			},
 			submitHandler: function (form, e) {
                 e.preventDefault();
-                $.ajax({
+                if( $('#original_promocode').val() != $('#promocode').val() ){
+                    $.ajax({
+                        url: "/validate/checkPromocode",
+                        type: "POST",
+                        data: "t=a&em=" + $('#promocode').val(),
+                        success: function (response) {
+                            if (response == 0) {
+                                $('#agent_add_form').unbind().submit()
+                            }
+                            else {
+                                alert(" Promocode " + $('#promocode').val() + " already taken. !!!");
+                                $('#promocode').focus()
+                                return false;
+                            }
+                        }
+                    });
+                } else {
+                    //alert( 'submitting form '); return false;
+                    $('#agent_add_form').unbind().submit()
+                }
+
+                /*$.ajax({
                     url: "/validate/checkPromocode",
                     type: "POST",
                     data: "t=a&em=" + $('#promocode').val(),
@@ -309,22 +458,48 @@
                             return false;
                         }
                     }
-                });
-
-
+                });*/
 			}
 		});
 	});
-</script>
 
-<script language="javascript">
+	function changeCompany(id) {
+        $.ajax({
+            url: "/ajaxcall/getSubContofCompy",
+            type: "POST",
+            data: "id=" + id,
+            success: function (response) {
+                if(response == 0) {
+                    $('#subcholder').hide();
+                    $('#subcholderL').hide();
+                } else {
+                    $('#subcholderL').show();
+                    $('#subcholder').show().html( response );
+                    $('#subc').find("[value='<?php echo $arrAgent->SUBCNT?>']").prop("selected", true);
 
-	/*$( "#batchdate" ).datepicker( {
-	 dateFormat:  "dd/mm/yy",
-	 changeYear:  true,
-	 changeMonth: true,
-	 maxDate:     0
-	 } );*/
+                    $('#subc').change(function(){
+                        changeSubC( $('#company').val(), $('#subc').val() );
+                    });
+                }
+            }
+        });
+    }
 
+    function changeSubC(id, sub) {
+        $.ajax({
+            url: "/ajaxcall/getLocOfCompy",
+            type: "POST",
+            data: "id=" + id + "&sub=" + sub,
+            success: function (response) {
+                if(response == 0) {
+                    $('#location').hide();
+                } else {
+                    $('#location').show().html( response );
+                    $('#location').find("[value='<?php echo $arrAgent->LOCATION_ID?>']").prop("selected", true);
+                }
+
+            }
+        });
+    }
 
 </script>

@@ -23,6 +23,7 @@
 			$arrOptions['bSubCShow'] = $bSubCShow;
 			$arrOptions['arrObjCUsers'] = $arrObjCUsers;
 			$arrOptions['arrLocations'] = $arrLocations;
+			$arrOptions['ida'] = $iDisplayAddress;
 			addUserForm( $arrOptions );
 		?>
 	</div>
@@ -35,9 +36,43 @@
             changeMonth: true,
             changeYear: true,
             dateFormat: "dd/mm/yy",
-            maxDate: '0'
+            maxDate: '0',
+            yearRange: "-60:+0"
         });
 
+        $('#company').change(function(){
+            $.ajax({
+                url: "/ajaxcall/getSubContofCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#subcholder').hide();
+                        $('#subcholderL').hide();
+                    } else {
+                        $('#subcholderL').show();
+                        $('#subcholder').show().html( response );
+                        $('#subc').change(function(){
+                            loadLocations( $('#company').val(), $('#subc').val() );
+                        });
+                    }
+
+                }
+            });
+
+            $.ajax({
+                url: "/ajaxcall/getLocOfCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#location').hide();
+                    } else {
+                        $('#location').show().html( response );
+                    }
+                }
+            });
+        });
 
         <?php if( $bSubCShow ) { ?>
             $('#location option').hide();
@@ -62,6 +97,8 @@
 			}
 		},
 		submitHandler: function (form, e) {
+            $('.subbtn').prop('disabled', true);
+
 			var orgName = $('#old_login_name').val();
 			var presentName = $('#username').val();
 			if (orgName != presentName) {
@@ -87,8 +124,10 @@
 
 													if (response != '' ) {
 														if( confirm("This Location has been assigned to " + response + ". Do you want to replace ? !!!") ) {
-															$('#company_user_add_form').unbind().submit();
+
+														    $('#company_user_add_form').unbind().submit();
 														} else {
+                                                            $('.subbtn').prop('disabled', false);
 															return false;
 														}
 													}
@@ -104,6 +143,7 @@
 									}
 									else {
 										alert("User with EmailID " + $('#email').val() + " already exists. !!!");
+                                        $('.subbtn').prop('disabled', false);
 										return false;
 									}
 
@@ -113,12 +153,27 @@
 						}
 						else {
 							alert("UserName " + $('#username').val() + " already exists. !!!");
+                            $('.subbtn').prop('disabled', false);
 							return false;
 						}
 					}
 				});
 			}
-
 		}
 	});
+
+	function loadLocations(id, sub) {
+        $.ajax({
+            url: "/ajaxcall/getLocOfCompy",
+            type: "POST",
+            data: "id=" + id + "&sub=" + sub,
+            success: function (response) {
+                if(response == 0) {
+                    $('#location').hide();
+                } else {
+                    $('#location').show().html( response );
+                }
+            }
+        });
+    }
 </script>

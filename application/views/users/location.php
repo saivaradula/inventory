@@ -18,26 +18,7 @@
 					<h4><?php echo $strType?> List</h4>
 				</div>
 				<div class="panel-body">
-					<?php if( $_SESSION['ROLE_ID'] == SUPERADMIN ) { ?>
-						<form id="filter_form" method="post" action="/users/<?php echo $strType?>">
-							<div class="row">
 
-								<div class="col-xs-12 col-sm-2 p-t-sm">
-									<select  name="q_company" class="form-control" id="q_company">
-										<option value="">By Company</option>
-										<?php foreach ( $arrObjC AS $arrObjCm ) { ?>
-											<option value="<?php echo $arrObjCm->ID?>"><?php echo $arrObjCm->NAME?></option>
-										<?php } ?>
-									</select>
-								</div>
-
-								<div class="col-xs-12 col-sm-6 p-t-sm" style="height:30px;">
-									<button id="submit" class="btn btn-warning f-left m-r"> <i class="fa fa-filter"></i> </button>
-									<a href="/users/<?php echo $strType?>"><button type="button" id="resetbtn" class="btn btn-warning f-left m-r"> Clear </button></a>
-								</div>
-							</div>
-						</form>
-					<?php } ?>
 
 					<div class="">
 						<div class="clearfix hr-8"></div>
@@ -47,7 +28,11 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Address</th>
+                                    <th>State/Zipcode</th>
                                     <th>Company</th>
+                                    <th>SC</th>
+                                    <th>Manager</th>
+                                    <th>Is Self</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -58,8 +43,15 @@
                                         ?>
                                         <tr>
                                             <td><?php echo $arrLocation->NAME?></td>
-                                            <td title="<?php echo $arrLocation->ADDRESS?>"><?php echo substr( $arrLocation->ADDRESS, 0, 40 )?> ...</td>
+                                            <td title="<?php echo $arrLocation->ADDRESS_1 . " " . $arrLocation->ADDRESS_2 . " " .$arrLocation->ZIPCODE?>">
+                                                <?php echo substr(  $arrLocation->ADDRESS_1 . " " . $arrLocation->ADDRESS_2, 0, 40 )
+
+                                                ?> ...</td>
+                                            <td><?php echo $arrLocation->STATE . ", " . $arrLocation->ZIPCODE?></td>
                                             <td><?php echo $arrLocation->COMPANY?></td>
+                                            <td><?php echo $arrLocation->SUBCONTRACTOR?></td>
+                                            <td><?php echo $arrLocation->MANAGER_NAME?></td>
+                                            <td><?php echo ($arrLocation->IS_SELF) ? "Yes": "No"?></td>
                                             <td align="center">
                                                 <div class="hidden-sm hidden-xs btn-group">
                                                     <a href="/users/location/edit/<?php echo $arrLocation->ID?>" title="Edit Details" class="text-success"><i class="ace-icon fa fa-edit bigger-120"></i></a> &nbsp;&nbsp;
@@ -86,7 +78,9 @@
 							<tr>
 								<th>Name</th>
 								<th>Address</th>
+								<th>State/Zipcode</th>
 								<th>Manager</th>
+								<th>Is Self</th>
 								<?php if( $bSubCShow ) {?><th>Sub Contractor</th> <?php } ?>
 
                         <th>Action</th>
@@ -99,8 +93,13 @@
                                 ?>
                                 <tr>
                                     <td><?php echo $arrLocation->NAME?></td>
-                                    <td title="<?php echo $arrLocation->ADDRESS?>"><?php echo substr( $arrLocation->ADDRESS, 0, 40 )?> ...</td>
+                                    <td title="<?php echo $arrLocation->ADDRESS_1 . " " . $arrLocation->ADDRESS_2 . " " .$arrLocation->ZIPCODE?>">
+                                        <?php echo substr(  $arrLocation->ADDRESS_1 . " " . $arrLocation->ADDRESS_2, 0, 40 )
+
+                                        ?> ...</td>
+                                    <td><?php echo $arrLocation->STATE . ", " . $arrLocation->ZIPCODE?></td>
                                     <td><?php echo $arrLocation->MANAGER_NAME?></td>
+                                    <td><?php echo ($arrLocation->IS_SELF) ? "Yes": "No"?></td>
                                     <?php if( $bSubCShow ) {?><td><?php echo $arrLocation->SCNAME?></td><?php } ?>
 
                                     <td align="center">

@@ -39,36 +39,40 @@
                     <input value="<?php echo $arrUser->DOB?>" type="text" id="dob"
                            name="dob" placeholder="Date of Birth" class="required col-xs-10 col-sm-9" />
                 </div>
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Social</label>
+                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">SSN</label>
                 <div class="col-sm-4">
                     <input value="<?php echo $arrUser->SOCIAL?>" type="text"
                            id="social" name="social" placeholder="Social Security Number"
                            class="required col-xs-10 col-sm-9" />
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 1</label>
-                <div class="col-sm-4">
-                    <input value="<?php echo $arrUser->ADDRESS_ONE?>" type="text"
-                           id="address_one" name="address_one" placeholder="Address Line One" class="required col-xs-10 col-sm-9" />
+
+            <?php if( $arrOptions['ida'] ) { ?>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 1</label>
+                    <div class="col-sm-4">
+                        <input value="<?php echo $arrUser->ADDRESS_ONE?>" type="text"
+                               id="address_one" name="address_one" placeholder="Address Line One" class="required col-xs-10 col-sm-9" />
+                    </div>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 2</label>
+                    <div class="col-sm-4">
+                        <input value="<?php echo $arrUser->ADDRESS_TWO?>" type="text"
+                               id="address_two" name="address_two" placeholder="Address Line Two" class="col-xs-10 col-sm-9" />
+                    </div>
                 </div>
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 2</label>
-                <div class="col-sm-4">
-                    <input value="<?php echo $arrUser->ADDRESS_TWO?>" type="text"
-                           id="address_two" name="address_two" placeholder="Address Line Two" class="col-xs-10 col-sm-9" />
+                <div class="form-group">
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">State</label>
+                    <div class="col-sm-4">
+                        <?php include "states.php"; ?>
+                    </div>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Zip Code</label>
+                    <div class="col-sm-4">
+                        <input value="<?php echo $arrUser->ZIP_CODE?>" type="text"
+                               id="zipcode" id name="zipcode" placeholder="Zip Code" class="required zipcodeUS col-xs-10 col-sm-9" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">State</label>
-                <div class="col-sm-4">
-                    <?php include "states.php"; ?>
-                </div>
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Zip Code</label>
-                <div class="col-sm-4">
-                    <input value="<?php echo $arrUser->ZIP_CODE?>" type="text"
-                           id="zipcode" id name="zipcode" placeholder="Zip Code" class="required zipcodeUS col-xs-10 col-sm-9" />
-                </div>
-            </div>
+            <?php } ?>
+
             <div class="form-group">
                 <label class="col-sm-2 control-label no-padding-right" for="form-field-1">DL</label>
                 <div class="col-sm-4">
@@ -80,8 +84,12 @@
 			<div class="form-group">
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Phone</label>
 				<div class="col-sm-4">
-					<input value="<?php echo $arrUser->PHONE?>" type="text" id="phone" id name="phone" placeholder="Phone Number" class="phoneUS col-xs-10 col-sm-9" />
-				</div>
+					<input value="<?php echo $arrUser->PHONE?>"
+                           type="text" id="phone" id name="phone" placeholder="Phone Number ( Example (541)754-3010 )" class="phoneUS col-xs-10 col-sm-9" />
+                    <br /><br />
+                    <span style="font-size: 11px; font-style: normal">
+                        Example:<strong>541-754-3010</strong> / <strong>(541)754-3010</strong> / <strong>5417543010</strong></span>
+                </div>
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Login Name/Username</label>
 				<div class="col-sm-4">
 					<?php
@@ -128,12 +136,13 @@
 			<?php if( $strType == 'manager' ) { ?>
                 <div class="form-group">
                     <?php if( $bSubCShow ) { ?>
-                        <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Sub Contractor</label>
-                        <div class="col-sm-2">
+                        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"  id="subcholderL">Sub Contractor</label>
+                        <div class="col-sm-2" id="subcholder">
                             <select class="form-control" id="subc" name="subc">
                                 <option value="">Select</option>
                                 <?php foreach ( $arrObjCUsers AS $arrObjCm ) { ?>
-                                    <option value="<?php echo $arrObjCm->USER_ID?>"><?php echo $arrObjCm->NAME?></option>
+                                    <option value="<?php echo $arrObjCm->USER_ID?>">
+                                        <?php echo $arrObjCm->NAME?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -144,8 +153,8 @@
                         <?php
                     }?>
 
-                    <label class="col-sm-4 control-label no-padding-right" for="form-field-1">Location</label>
-                    <div class="col-sm-2">
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Location</label>
+                    <div class="col-sm-2" id="locationholder">
                         <select class="form-control" id="location" name="location">
                             <option value="">Select</option>
                             <?php foreach ( $arrLocations AS $arrLocation ) {  ?>
@@ -161,9 +170,9 @@
 			<div class="clearfix form-actions">
 				<div class="text-right">
 					<?php if( $arrUser->USER_NAME != '' ){ ?>
-						<button class="btn btn-success" type="submit"> <i class="ace-icon fa fa-fw fa-check"></i> Update <?php echo ucfirst($strType)?><span></span> </button>
+						<button class="subbtn btn btn-success" type="submit"> <i class="ace-icon fa fa-fw fa-check"></i> Update <?php echo ucfirst($strType)?><span></span> </button>
 					<?php } else  { ?>
-						<button class="btn btn-success" type="submit"> <i class="ace-icon fa fa-fw fa-check"></i> Add <?php echo ucfirst($strType)?><span></span> </button>
+						<button class="subbtn btn btn-success" type="submit"> <i class="ace-icon fa fa-fw fa-check"></i> Add <?php echo ucfirst($strType)?><span></span> </button>
 					<?php } ?>
 						&nbsp;
 					<a href="javascript:location.href='/users/<?php echo $strType?>'">

@@ -272,6 +272,113 @@ ob_start();
 
         }
 
+        function getInvList() {
+
+            $objInvModel = $this->loadModel('inventory');
+            $objLogModel = $this->loadModel('log');
+            $objCompModel = $this->loadModel('company');
+            $objUserModel = $this->loadModel('users');
+
+            $strPO = $this->getParameters(0);
+            $bSearch = 0;
+            if( $_POST['ponumber'] != '' ){
+                //  $bSearch = 1;
+            }
+
+            if( $_POST['q_status'] != '' ){
+                //$bSearch = 1;
+            }
+
+            if( $_SESSION['IS_SELF'] == 1 ){
+                $arrOptions['l_id'] = $_SESSION['L_ID'];
+            }
+            if( $bSearch ) {
+                $arrOptions['ponumber'] = $_POST['ponumber'];
+                $arrOptions['q_status'] = $_POST['q_status'];
+                $arrInventory = $objInvModel->getInventoryBySearch($arrOptions);
+
+                foreach ( $arrInventory AS $arrInv ) {
+                    $arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
+                    $arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
+                    switch ($arrInv->IMEI_STATUS) {
+                        case "CHECKED_IN" :
+                            $arrInv->IMEI_STATUS = "Checked In";
+                            break;
+                        case "SHIPPED_IN" :
+                            $arrInv->IMEI_STATUS = "Shipped";
+                            break;
+                        case "RECEIVE" :
+                            $arrInv->IMEI_STATUS = "Checked In";
+                            break;
+                    }
+                    $arrInv->PO_NUMBER = $_POST['ponumber'];
+                }
+
+            } else {
+                $arrOptions['ponumber'] = $_POST['ponumber'];
+                $arrOptions['q_status'] = $_POST['q_status'];
+                $arrOptions['user_id'] = $this->loggedInUserId();
+                $arrOptions['user_type'] = $this->getLoggedUserRole();
+                //$arrInventory = $objInvModel->getPO($arrOptions);
+                $arrInventory = $objInvModel->getInventory($arrOptions);
+
+                $arrOptions['limit_per_page'] = 10;
+                $iTotalRecords = count( $arrInventory ) ;
+                $iTotalPages = ceil( $iTotalRecords / $arrOptions['limit_per_page'] );
+
+                if(!isset($_POST['page'])) {
+                    $_POST['page'] = 1;
+                }
+
+                if( strlen($_POST['page'] ) == 0 ){
+                    $_POST['page'] = 1;
+                }
+
+                if( $_POST['page'] <= 1 ){
+                    $_POST['page'] = 1;
+                    $arrOptions['low_limit'] =  ( $_POST['page'] - 1 ) * $arrOptions['limit_per_page'] ;
+                } else {
+                    $arrOptions['low_limit'] =  ( ( $_POST['page'] - 1 ) * $arrOptions['limit_per_page'] ) + 1;
+                }
+
+                if( $_POST['page'] > $iTotalPages ){
+                    $_POST['page'] = $iTotalPages;
+                }
+
+                $arrOptions['low_limit'] =  ( $_POST['page'] - 1 ) * $arrOptions['limit_per_page'];
+                $arrInventory = $objInvModel->getInventory($arrOptions);
+
+                foreach ( $arrInventory AS $arrInv ) {
+                    $arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
+                    $arrInv->MODIFIED_ON = $this->revDateTime($arrInv->MODIFIED_ON);
+
+                    switch( $arrInv->IMEI_STATUS ) {
+                        case "CHECKED_IN" : $arrInv->IMEI_STATUS = "Checked In"; break;
+                        case "SHIPPED_IN" : $arrInv->IMEI_STATUS = "Shipped"; break;
+                        case "RECEIVE" : $arrInv->IMEI_STATUS = "Re Checked In"; break;
+                    }
+
+                    if( $arrInv->PO_NUMBER == '' ) {
+                        $arrLPO = $objInvModel->getPONumber($arrInv->IMEI);
+                        $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
+                    }
+                    $arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
+                }
+            }
+
+            $bShowShippin = true;
+            if( $this->getLoggedUserRoleID() == MANAGER ){
+                $bShowShippin = false;
+            }
+
+            $bShowAssign = false;
+            if( $this->getLoggedUserRoleID() >= SUBCONTRACTOR ){
+                $bShowAssign = true;
+            }
+
+            require VIEW_PATH . 'inventory/inv.php';
+        }
+
 		public function index() {
 			require VIEW_PATH . '_templates/header.php';
 			$objInvModel = $this->loadModel('inventory');
@@ -280,7 +387,6 @@ ob_start();
 			$objUserModel = $this->loadModel('users');
 
 			if( $_POST['action'] ){
-
 				switch( $_POST['action'] ) {
 
                     case "receive": {
@@ -386,18 +492,18 @@ ob_start();
 
 					case "chekin" : {
 
-                        /*print_r( $_POST );
-                        echo "<br /><br />";
-                        $skuList = explode(PHP_EOL, $_POST['imei']);
-                        $skuList2 = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
-                        print_r( $skuList );
-                        print_r( $skuList2 );*/
+
+					    $strAdditionalAcceess = '';
+					    if( $this->getLoggedUserRoleID() == STAFF ){
+					        // get logged in user director's id.
+                            $arrR = $objCompModel->getCompanyDirector( $this->getLoggedInUserCompanyID() );
+                            $strAdditionalAcceess = $arrR->USER_ID;
+                        }
 
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
-
 
 						$iUnique = $this->randomNumber();
 						$arrPost['status'] = "CHECKED_IN";
@@ -423,7 +529,12 @@ ob_start();
 								if( $arrC->IMEI == $_POST['imei'][$i] ){
                                     $arrPost['unique'] = $arrC->UNIQUE_ID;
                                     //$arrPost['have_access'] = $arrC->HAVE_ACCESS . " " . $this->loggedInUserId();
-                                    $arrPost['have_access'] = $this->loggedInUserId();
+                                    if( $strAdditionalAcceess != '' ){
+                                        $arrPost['have_access'] = $this->loggedInUserId() . ", " . $strAdditionalAcceess;
+                                    } else {
+                                        $arrPost['have_access'] = $this->loggedInUserId();
+                                    }
+
                                     $arrPost['modified_by'] = $this->loggedInUserId();
 									$objInvModel->updateInventory( $arrPost );
 								} else {
@@ -431,7 +542,11 @@ ob_start();
                                     $arrPost['added_by'] = $this->loggedInUserId();
                                     $arrPost['modified_by'] = $this->loggedInUserId();
                                     $arrPost['unique'] = $iUnique;
-                                    $arrPost['have_access'] = $this->loggedInUserId();
+                                    if( $strAdditionalAcceess != '' ){
+                                        $arrPost['have_access'] = $this->loggedInUserId() . ", " . $strAdditionalAcceess;
+                                    } else {
+                                        $arrPost['have_access'] = $this->loggedInUserId();
+                                    }
 									$objInvModel->addInventory($arrPost);
 								}
 								$objLogModel->logInventory($arrPost);
@@ -449,7 +564,7 @@ ob_start();
 					}
 
 					case "shipin" : {
-
+                        //ini_set('display_errors', 1 );
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
@@ -496,14 +611,20 @@ ob_start();
 					}
 
                     case "assign" : {
-
+                        //ini_set('display_errors', 1 );
+                        $strAddAccess = '';
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
 
                         $arrPost['status'] = "ASSIGNED";
-                        $arrPost['ponumber'] = date('YmdHims');
+
+                        if( $_POST['isM'] == 1 ){
+                            //$arrPost['ponumber'] = $_POST['ponumber'];
+                        } else {
+                            //$arrPost['ponumber'] = date('YmdHims');
+                        }
                         $arrPost['user_type'] = $this->getLoggedUserRole();
                         $arrPost['added_by'] = $this->loggedInUserId();
                         $arrPost['modified_on'] = $this->now();
@@ -519,17 +640,28 @@ ob_start();
                             $arrU = $objAgentModel->getAgents( $arrO );
                             $arrPost['desc'] = "Assigned to Agent "  . $arrU[0]->FIRST_NAME . " " . $arrU[0]->LAST_NAME . " ( AGENT ) ";
                             $arrPost['user_id'] =  $arrPost['assigned_to'];
+                            $arrPost['modified_by'] = $this->loggedInUserId();
                         } else {
-                            $arrU = $objUserModel->getUserDetailsByUserId(  $arrPost['assigned_to'] );
-                            $arrPost['desc'] = "Assigned to Manager "  . $arrU->NAME . " ( " . $arrU->ROLE_NAME . ") ";
+                            //$arrU = $objUserModel->getUserDetailsByUserId(  $arrPost['assigned_to'] );
+                            $objLocationModel = $this->loadModel('location');
+                            $arrU = $objLocationModel->getLocationManager( $arrPost['assigned_to'] );
+                            $strAddAccess = $arrU->MANAGER;
+                            $arrPost['user_type'] = 'MANAGER';
+                            $arrPost[ 'modified_on' ] = $this->now();
+                            $arrPost[ 'modified_by' ] = $arrU->MANAGER;
+                            $arrPost['desc'] = "Assigned to Manager - "  . $arrU->MANAGER_NAME . " ( ". $arrU->LOCATION_NAME . " ) " ;
                         }
 
 
-                        $objInvModel->addPO($arrPost);
-                        $arrPost['modified_by'] = $this->loggedInUserId();
+                        //$objInvModel->addPO($arrPost);
+
                         for($i=0; $i < count($_POST['imei']); $i++){
                             if( $_POST['imei'][$i] != '' ) {
                                 $arrPost['imei'] = $_POST['imei'][$i];
+                                if( $strAddAccess != '' ) {
+                                    $arr = $objInvModel->getInventoryAccess( $arrPost['imei'] );
+                                    $arrPost['have_access'] = $arr->HAVE_ACCESS . ", " . $strAddAccess;
+                                }
                                 $objInvModel->shipInventory($arrPost);
                                 $objLogModel->logInventory($arrPost);
                             }
@@ -537,116 +669,11 @@ ob_start();
                         break;
                     }
 				}
-
 				header("Location: /inventory");
 			}
-			 $strPO = $this->getParameters(0);
-            $bSearch = 0;
-            if( $_POST['ponumber'] != '' ){
-              //  $bSearch = 1;
-            }
-
-            if( $_POST['q_status'] != '' ){
-                //$bSearch = 1;
-            }
 
 
-
-			if( $strPO != '' ) {
-				$arrOptions['ponumber'] = $strPO;
-				$arrOptions['added_by'] = $this->loggedInUserId();
-				$arrInventory = $objInvModel->getInventoryBySearch($arrOptions);
-
-				foreach ( $arrInventory AS $arrInv ) {
-					$arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
-					switch( $arrInv->IMEI_STATUS ) {
-						case "CHECKED_IN" : $arrInv->IMEI_STATUS = "Checked In"; break;
-						case "SHIPPED_IN" : $arrInv->IMEI_STATUS = "Shipped"; break;
-                        case "RECEIVE" : $arrInv->IMEI_STATUS = "Checked In"; break;
-					}
-
-					if( $arrInv->IMEI_STATUS == 'SHIPPED [R]'){
-                        $arrLPO = $objInvModel->getPOPONUM( $this->loggedInUserId() );
-                        $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
-                    }
-
-					if( $arrInv->PO_NUMBER == '' ) {
-					    // GET the latest pO number from inventory instead inv_po
-                        $arrLPO = $objInvModel->getPONumber($arrInv->IMEI);
-                        $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
-                    }
-				}
-				require VIEW_PATH . 'inventory/poinv.php';
-			} else {
-                if( $bSearch ) {
-                    $arrOptions['ponumber'] = $_POST['ponumber'];
-                    $arrOptions['q_status'] = $_POST['q_status'];
-                    $arrInventory = $objInvModel->getInventoryBySearch($arrOptions);
-
-                    foreach ( $arrInventory AS $arrInv ) {
-                        $arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
-                        $arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
-                        switch ($arrInv->IMEI_STATUS) {
-                            case "CHECKED_IN" :
-                                $arrInv->IMEI_STATUS = "Checked In";
-                                break;
-                            case "SHIPPED_IN" :
-                                $arrInv->IMEI_STATUS = "Shipped";
-                                break;
-                            case "RECEIVE" :
-                                $arrInv->IMEI_STATUS = "Checked In";
-                                break;
-                        }
-                        $arrInv->PO_NUMBER = $_POST['ponumber'];
-                    }
-
-                } else {
-                    $arrOptions['ponumber'] = $_POST['ponumber'];
-                    $arrOptions['q_status'] = $_POST['q_status'];
-                    $arrOptions['user_id'] = $this->loggedInUserId();
-                    $arrOptions['user_type'] = $this->getLoggedUserRole();
-                    //$arrInventory = $objInvModel->getPO($arrOptions);
-                    $arrInventory = $objInvModel->getInventory($arrOptions);
-                    //print_r( $arrInventory );
-
-                    foreach ( $arrInventory AS $arrInv ) {
-                        $arrInv->ADDED_ON = $this->revDateTime($arrInv->ADDED_ON);
-                        $arrInv->MODIFIED_ON = $this->revDateTime($arrInv->MODIFIED_ON);
-                        $arrInv->LOG = $this->getIMEILog( $objLogModel, $arrInv->IMEI );
-                        switch( $arrInv->IMEI_STATUS ) {
-                            case "CHECKED_IN" : $arrInv->IMEI_STATUS = "Checked In"; break;
-                            case "SHIPPED_IN" : $arrInv->IMEI_STATUS = "Shipped"; break;
-                            case "RECEIVE" : $arrInv->IMEI_STATUS = "Re Checked In"; break;
-                        }
-
-                        /*if( $arrInv->IMEI_STATUS == 'SHIPPED [R]'){
-                            $arrLPO = $objInvModel->getPOPONUM( $this->loggedInUserId() );
-                            $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
-                        }*/
-
-                        if( $arrInv->PO_NUMBER == '' ) {
-                            //GET the latest pO number from inventory instead inv_po
-                            $arrLPO = $objInvModel->getPONumber($arrInv->IMEI);
-                            $arrInv->PO_NUMBER = $arrLPO->PO_NUMBER;
-                        }
-                    }
-                }
-
-
-
-                $bShowShippin = true;
-                if( $this->getLoggedUserRoleID() == MANAGER ){
-                    $bShowShippin = false;
-                }
-
-                $bShowAssign = false;
-                if( $this->getLoggedUserRoleID() >= SUBCONTRACTOR ){
-                    $bShowAssign = true;
-                }
-
-                require VIEW_PATH . 'inventory/index.php';
-            }
-
+            require VIEW_PATH . 'inventory/index.php';
 			require VIEW_PATH . '_templates/footer.php';
 		}
 
@@ -656,7 +683,12 @@ ob_start();
             /*for( $i=0; $i< count( $arrLog ); $i++ ){
                 $strLog .= "<li>" . $arrLog[$i]->DESCRIPTION . " </li>";
             }*/
-            $strLog .= "<li>" . $arrLog->DESCRIPTION . " with PO Number - <span style='font-size:10px'> " . $arrLog->PO_NUMBER . " </span> </li>";
+            if( $arrLog->IMEI_STATUS == 'ASSIGNED'){
+                $strLog .= "<li>" . $arrLog->DESCRIPTION . "</li>";
+            } else {
+                $strLog .= "<li>" . $arrLog->DESCRIPTION . " with PO Number - <span style='font-size:10px'> " . $arrLog->PO_NUMBER . " </span> </li>";
+            }
+
             $strLog .= '</ul>';
             return $strLog;
         }
@@ -692,19 +724,29 @@ ob_start();
 
 		public function shipping(){
 			require VIEW_PATH . '_templates/header.php';
-			$objCompanyModel = $this->loadModel('company');
-			$bSubC = $_SESSION['HAS_SCS'];
+            $objCompanyModel = $this->loadModel('company');
+            $iAdmin = 0;
+            $bSubC = $_SESSION['HAS_SCS'];
 
             if( $bSubC ) {
-			    if( $this->getLoggedUserRole() == 'DIRECTOR' ){
-			        $bSubC = 1;
+                if( $this->getLoggedUserRole() == 'DIRECTOR' ){
+                    $bSubC = 1;
                 } else {
                     $bSubC = 0;
                 }
             }
 
+            if ( $this->isSuperAdmin() ) {
+                $iAdmin = 1;
+                $bSubC = 1;
+                $arrObjC = $objCompanyModel->getCompanies('COMPANY');
+            }
+
+
 			if( $bSubC ) { // only for directors and above
-				$arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
+                if( $iAdmin == 0 ){
+                    $arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
+                }
 			} else { // for below directors level.
 				$objLocModel = $this->loadModel('location');
 				//$arrObjCMUsers = $objCompanyModel->getCompanyUsers('MANAGER', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
@@ -753,9 +795,10 @@ ob_start();
 
             }
 
+            $iIsSelf = $_SESSION['IS_SELF'];
+
             require VIEW_PATH . 'inventory/assign.php';
             require VIEW_PATH . '_templates/footer.php';
         }
-
 
 	}

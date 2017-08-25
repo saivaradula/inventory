@@ -18,7 +18,7 @@
 					<div class="row">
 						<form id="inventory_checkin" class="form-horizontal" role="form" method="post" action="/inventory">
 							<input type="hidden" name="action" value="shipin" />
-							<input type="hidden" name="prevcheckaction" value="CHECKED_IN" />
+							<input type="hidden" name="prevcheckaction" value="'CHECKED_IN'" />
 							<div class="col-sm-7">
 								<div class="panel">
 									<div class="page-header">
@@ -48,6 +48,18 @@
 										<h4>Shipping Details</h4>
 									</div>
 									<div class="panel-body">
+
+                                        <?php if( $iAdmin ) {?>
+
+                                                <select class="required col-sm-8" id="company" name="company">
+                                                    <option value="">Select</option>
+                                                    <?php foreach ( $arrObjC AS $arrObjCm ) { ?>
+                                                        <option value="<?php echo $arrObjCm->ID?>"><?php echo $arrObjCm->NAME?></option>
+                                                    <?php } ?>
+                                                </select>
+                                                <br /><br />
+
+                                        <?php } ?>
 
 										<?php
 											$strMgrR = 'required';
@@ -125,6 +137,38 @@
             var arrIM  = strIM.split(/\s+/);
             $('.imei_scanned').html( arrIM.length - 1 );
 
+        });
+
+        $('#company').change(function(){
+            //subcholder
+            $.ajax({
+                url: "/ajaxcall/getSubContofCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        //$('#subcholder').hide();
+                        $('#shpto_subc').hide();
+                    } else {
+                        //$('#subcholderL').show();
+                        $('#shpto_subc').show().html( response );
+                    }
+
+                }
+            });
+
+            $.ajax({
+                url: "/ajaxcall/getLocOfCompy",
+                type: "POST",
+                data: "id=" + $(this).val(),
+                success: function (response) {
+                    if(response == 0) {
+                        $('#shpto_manager').hide();
+                    } else {
+                        $('#shpto_manager').show().html( response );
+                    }
+                }
+            });
         });
 
 

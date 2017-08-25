@@ -1,6 +1,13 @@
 <?php
 	class inventoryModel extends Model {
 
+	    function getInventoryAccess( $strIMEI ) {
+            $arrData[ 'FIELDS' ] = "I.HAVE_ACCESS";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] .= " I.IMEI = '" . $strIMEI . "'";
+            return $this->getData($arrData, false);
+        }
+
 	    function checkInventoryBelongToMe( $strIMEI, $iUserId ) {
 
         }
@@ -27,7 +34,7 @@
             $arrUData[ 'STATUS' ] = INACTIVE;
             $arrUData[ 'MODIFIED_ON' ] = $arrPost[ 'modified_on' ];
             $arrUData[ 'MODIFIED_BY' ] = $arrPost[ 'modified_by' ];
-            $arrUData['HAVE_ACCESS'] = '';
+            //$arrUData['HAVE_ACCESS'] = '';
             $this->updateData(INV, $arrUData, $strWhere);
 
             $strWhere = 'imei IN (' . $id . ')';
@@ -118,14 +125,27 @@
         }
 
 	    function checkInvBelongsTo( $strIMEI, $iUserId, $strUserType, $strType ) {
-            $arrData[ 'FIELDS' ] = "I.IMEI";
-            $arrData[ 'TABLE' ] = INV . " I";
-            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
-            $arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
-            $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
-            $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
-            $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS IN ("  . $strType . ")";
-            return $this->getData($arrData, true);
+
+	        if( $strUserType == 'STAFF_DIRECTOR' ){
+                $arrData[ 'FIELDS' ] = "I.IMEI";
+                $arrData[ 'TABLE' ] = INV . " I";
+                $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+                $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
+                $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS IN ("  . $strType . ")";
+                $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCESS LIKE '%" . $iUserId . "%'";
+                return $this->getData($arrData, true);
+            } else {
+                $arrData[ 'FIELDS' ] = "I.IMEI";
+                $arrData[ 'TABLE' ] = INV . " I";
+                $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+                $arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
+                $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
+                $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
+                $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS IN ("  . $strType . ")";
+                return $this->getData($arrData, true);
+            }
+
+
         }
 
 		function shipCheckInventory( $strIMEI, $iUserId, $strUserType ) {
@@ -190,7 +210,7 @@
         }
 
         function assignCheckInventory( $strIMEI, $iUserId, $strUserType ) {
-            $arrData[ 'FIELDS' ] = "I.IMEI";
+            $arrData[ 'FIELDS' ] = "I.IMEI, I.ASSIGNED_TO";
             $arrData[ 'TABLE' ] = INV . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
             $arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
@@ -242,8 +262,12 @@
             if( $arrPost['user_id'] != '' ) {
                 $arrUData['USER_ID'] = $arrPost['user_id'];
             }
-
-            $arrUData['PO_NUMBER'] = $arrPost['ponumber'];
+            if( $arrPost['user_type'] != '' ) {
+                $arrUData['USER_TYPE'] = $arrPost['user_type'];
+            }
+            if( $arrPost['ponumber'] != '' ){
+                $arrUData['PO_NUMBER'] = $arrPost['ponumber'];
+            }
             //$arrUData['TRACKING'] = $arrPost['tracking'];
 			$this->updateData(INV, $arrUData, $strWhere);
 		}
@@ -362,11 +386,19 @@
             }
 
 
+            //$arrData[ 'WHERE' ] .= ( $arrOptions['l_id'] != '' ) ? " AND I.ASSIGNED_TO = '" . $arrOptions['l_id'] . "'" : "";
             $arrData[ 'WHERE' ] .= ( $arrOptions['per_ponumber'] != '' ) ? " AND I.PER_PO_NUMBER = '" . $arrOptions['per_ponumber'] . "'" : "";
 
 			$arrData[ 'WHERE' ] .= ( $arrOptions['imei'] != '' ) ? " AND I.IMEI = '" . $arrOptions['imei'] . "'" : "";
 
 			$arrData[ 'WHERE' ] .= ( $arrOptions['q_status'] != '' ) ? " AND I.IMEI_STATUS = '" . $arrOptions['q_status'] . "'" : "";
+
+            if( isset( $arrOptions['low_limit'] ) ){
+                $arrData['LIMIT_PER_PAGE'] = $arrOptions['limit_per_page'];
+                $arrData [ 'LIMIT' ] = $arrOptions['low_limit'];
+            }
+
+            $arrData['ORDER'] = "I.MODIFIED_ON DESC";
 
 			return $this->getData($arrData, true);
 		}
