@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="<?php echo PUBLIC_URL ?>js/fancyBox/jquery.fancybox.min.css" />
 <table id="simple-table" class="table  table-bordered table-hover">
     <thead>
     <tr>
@@ -48,8 +49,15 @@
 
                 <td align="center">
                     <div class="hidden-sm hidden-xs btn-group">
-                        <!-- <a href="javascript:deleteCUser(<?php echo $arrObjCUser->USER_ID?>)" title="Delete Agent" class="text-danger"><i class="ace-icon fa fa-times bigger-120"></i></a> -->
-                        -
+                        <?php if ( $objC->isAllowedModule('INVDEL') ) { ?>
+                            <a href="/inventory/edit/<?php echo $arrInv->ID?>" title="Edit Inventory" class="text-danger">
+                                <i class="fa-edit fa fa-times bigger-120"></i>
+                            </a>
+                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                            <a href="javascript:deleteInv(<?php echo $arrInv->ID?>)" title="Delete Inventory" class="text-danger">
+                                <i class="ace-icon fa fa-times bigger-120"></i>
+                            </a>
+                        <?php } ?>
                 </td>
             </tr>
             <?php

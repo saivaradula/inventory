@@ -40,7 +40,7 @@
             <input type="text" id="dob" name="dob" placeholder="Date of Birth" class="required col-xs-10 col-sm-5"/>
         </div>
     </div>
-<div class="form-group">
+<!-- <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Enrollment Number </label>
 
 	<div class="col-sm-9">
@@ -53,7 +53,7 @@
 	<div class="col-sm-9">
 		<input type="text" id="enrollchannel" name="enrollchannel" placeholder="Enrollment Channel" class="required col-xs-10 col-sm-5"/>
 	</div>
-</div>
+</div> -->
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> State </label>
 
@@ -120,8 +120,9 @@
 		<input class="required zipcodeUS input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
 	</div>
 </div>
+    <!--
 <div class="form-group">
-	<label class="required col-sm-3 control-label no-padding-right" for="form-field-1">USAC Form </label>
+	<label class="col-sm-3 control-label no-padding-right" for="form-field-1">USAC Form </label>
 
 	<div class="col-sm-4">
 		<select class="form-control" id="usac" name="usac">
@@ -132,7 +133,7 @@
 		</select>
 	</div>
 </div>
-<!-- <div class="form-group">
+<div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Date </label>
 
 	<div class="col-sm-4">
@@ -146,22 +147,22 @@
 	</div>
 </div>
 
--->
+
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1">Group</label>
 
 	<div class="col-sm-9">
-		<input type="text" id="group" name="group" placeholder="Group" class="required col-xs-10 col-sm-5"/>
+		<input type="text" id="group" name="group" placeholder="Group" class="col-xs-10 col-sm-5"/>
 	</div>
 </div>
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> DMA </label>
 
 	<div class="col-sm-9">
-		<input type="text" id="dma" name="dma"  placeholder="DMA" class="required col-xs-10 col-sm-5"/>
+		<input type="text" id="dma" name="dma"  placeholder="DMA" class="col-xs-10 col-sm-5"/>
 	</div>
 </div>
-    <!--
+
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Year </label>
 
@@ -178,7 +179,6 @@
 		</div>
 	</div>
 </div>
-
 -->
 
 <?php if( $iRole == SUPERADMIN ) { ?>
@@ -222,8 +222,21 @@
 
 <?php } ?>
 
-
-
+<?php if( $iRole == SUBCONTRACTOR ) { ?>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Location</label>
+        <div class="col-sm-4" id="locationholder">
+            <select class="form-control" id="location" name="location">
+                <option value="">Select</option>
+                <?php foreach ( $arrLocations AS $arrLocation ) {  ?>
+                    <option value="<?php echo $arrLocation->ID?>"
+                            class="<?php echo $arrLocation->SUBCONTRACTOR?>">
+                        <?php echo $arrLocation->NAME?></option>
+                <?php } ?>
+            </select>
+        </div>
+    </div>
+<?php } ?>
 
 
 <div class="form-group">
@@ -250,6 +263,17 @@
         <input type="text" class="required col-sm-3" id="promocode" name="promocode">
     </div>
 </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right">Status</label>
+        <div class="col-sm-2">
+            <select class="form-control" id="qstatus" name="qstatus">
+                <option value="">Select</option>
+                <option value="PENDING">PENDING</option>
+                <option value="QUALIFIED">QUALIFIED</option>
+                <option value="NOT_QUALIFIED">NOT QUALIFIED</option>
+            </select>
+        </div>
+    </div>
 <h3 class="header smaller lighter blue">
 	Upload Documents
 	<small>Upload all your documents properly</small>
@@ -323,7 +347,7 @@
         $( "#dob" ).datepicker({
             changeMonth: true,
             changeYear: true,
-            dateFormat: "dd/mm/yy",
+            dateFormat: "mm/dd/yy",
             maxDate: '0',
             yearRange: "-60:+0"
         });
@@ -340,6 +364,9 @@
                     } else {
                         $('#subcholderL').show();
                         $('#subcholder').show().html( response );
+                        $('#subc').change(function(){
+                            loadLocations( $('#company').val(), $('#subc').val() );
+                        });
                     }
 
                 }
@@ -355,7 +382,6 @@
                     } else {
                         $('#location').show().html( response );
                     }
-
                 }
             });
 
@@ -386,7 +412,34 @@
                                 data: "t=a&em=" + $('#promocode').val(),
                                 success: function (response) {
                                     if (response == 0) {
-                                        $('#agent_add_form').unbind().submit()
+
+                                        var strPC = $('#promocode').val();
+                                        var strAS = $('#qstatus').val();
+
+                                        // have promocode but agent is not qualified. Take confirmation.
+                                        if( strPC != '' ){
+                                            if( strAS != 'QUALIFIED' ){
+                                                if( confirm('Agent has PROMOCODE, however is not QUALIFIED. Should we continue ??') ) {
+                                                    $('#agent_add_form').unbind().submit();
+                                                } else {
+                                                    $('.subbtn').prop('disabled', false);
+                                                    return false;
+                                                }
+                                            } else {
+                                                $('#agent_add_form').unbind().submit();
+                                            }
+                                        } else {
+                                            if( strAS == 'QUALIFIED' ){
+                                                alert('Agent cannot be QUALIFIED without PROMOCODE');
+                                                $('.subbtn').prop('disabled', false);
+                                                return false;
+                                            } else {
+                                                $('#agent_add_form').unbind().submit();
+                                            }
+                                        }
+
+
+
                                     }
                                     else {
                                         alert(" Promocode " + $('#promocode').val() + " already taken. !!!");
@@ -407,6 +460,21 @@
 			}
 		});
 	});
+
+    function loadLocations(id, sub) {
+        $.ajax({
+            url: "/ajaxcall/getLocOfCompy",
+            type: "POST",
+            data: "id=" + id + "&sub=" + sub,
+            success: function (response) {
+                if(response == 0) {
+                    $('#location').hide();
+                } else {
+                    $('#location').show().html( response );
+                }
+            }
+        });
+    }
 
 
 </script>

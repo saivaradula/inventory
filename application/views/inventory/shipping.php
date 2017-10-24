@@ -27,7 +27,7 @@
 									<div class="panel-body">
 										<div class="row m-b">
 											<table width="100%">
-                                                <textarea id="imei" name="imei" class="col-sm-12" cols="55" rows="10"></textarea>
+                                                <textarea id="imei" name="imei" class="required col-sm-12" cols="55" rows="10"></textarea>
                                                 <span class="imei_error">Error Message</span>
 											</table>
 										</div>
@@ -76,7 +76,7 @@
 										<?php } ?>
 
 
-										<select id="shpto_manager" name="shpto_manager" class="<?php echo $strMgrR?> col-sm-8">
+										<select id="shpto_manager" name="shpto_manager" class="<?php echo $strMgrR?> col-sm-8 required">
 											<option value="">Select Location</option>
 											<?php foreach ( $arrObjLocation AS $arrObjCMm ) { ?>
 												<option value="<?php echo $arrObjCMm->ID?>">
@@ -220,15 +220,11 @@
                                     if( objRes.proceed == true ) {
                                         $('#inventory_checkin').unbind().submit();
                                     } else {
-
                                         var strExis = '';
                                         for( var i=0; i < Object.keys(objRes).length - 1; i++ ){
                                             strExis +=  objRes[i].IMEI + " <br />";
                                         }
-
                                         $('.imei_error').html('Below IMEI already Shipped. <br >' + strExis).show();
-
-
                                     }
                                 }
                             });

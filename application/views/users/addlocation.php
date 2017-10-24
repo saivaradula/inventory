@@ -1,4 +1,3 @@
-
 <div class="main-content">
 	<div class="main-content-inner">
 		<div class="breadcrumbs ace-save-state" id="breadcrumbs">
@@ -22,9 +21,13 @@
                 <?php } ?>
                 Location</h4>
 		</div>
-		<form id="location_add_form" class="form-horizontal" role="form" method="post" action="/users/location">
+        <span class="col-lg-12" style="text-align: center;padding-bottom: 20px;"><strong><?php echo $strMsg?></strong></span>
+        <br /><br />
+		<form id="location_add_form" class="form-horizontal" role="form" method="post" action="/users/location/add">
 			<?php if( $arrLoc->ID != '' ){ ?>
-				<input type="hidden" name="location_id" value="<?php echo $arrLoc->ID?>" />
+                <input type="hidden" id="is_already_self" value="<?php echo $arrLoc->IS_SELF?>" />
+                <input type="hidden" id="cmpny_name" value="<?php echo $arrLoc->COMPANY?>" />
+				<input type="hidden" id="location_id" name="location_id" value="<?php echo $arrLoc->ID?>" />
 			<?php } ?>
 			<div class="form-group">
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Location Name</label>
@@ -37,9 +40,9 @@
 				<label class="col-sm-2 control-label no-padding-right" for="form-field-1">Location Address</label>
 				<div class="col-sm-8">
 					<!-- <textarea class="required" name="address" cols="60" rows="5"><?php echo $arrLoc->ADDRESS?></textarea> -->
-                    <input value="<?php echo $arrLoc->ADDRESS_1?>" type="text" id="address_1" id name="address_1" placeholder="Address Line 1"
+                    <input value="<?php echo $arrLoc->ADDRESS_1?>" type="text" id="address_1" id name="address_1" placeholder="Address 1"
                            class="required col-xs-10 col-sm-7" /> <br /><br />
-                    <input value="<?php echo $arrLoc->ADDRESS_2?>" type="text" id="address_2" id name="address_2" placeholder="Address Line 2"
+                    <input value="<?php echo $arrLoc->ADDRESS_2?>" type="text" id="address_2" id name="address_2" placeholder="Address 2"
                            class="col-xs-10 col-sm-7" /> <br /><br />
                     <div class="col-sm-4" style="padding-left: 0px;">
                         <?php include "states.php"; ?>
@@ -49,9 +52,13 @@
 				</div>
 			</div>
             <div class="form-group">
-                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Is Self Location</label>
+                <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Primary Location</label>
                 <div class="col-sm-8">
-                    <input type="checkbox" name="is_self" />
+                    <?php
+                        $check = "";
+                        if( $arrLoc->IS_SELF == 1 ){ $check = "checked='checked'"; }
+                    ?>
+                    <input type="checkbox" id="is_self" name="is_self" <?php echo $check?> />
                 </div>
             </div>
 			<div class="form-group">
@@ -99,7 +106,13 @@
 </div>
 <script language="javascript">
 	$(function(){
-		$('#subc').find("[value='<?php echo $arrLoc->SUBCONTRACTOR?>']").prop("selected", true);
+
+		$('#state').find("[value='<?php echo $arrLoc->STATE?>']").prop("selected", true);
+		$('#company').find("[value='<?php echo $arrLoc->COMPANY?>']").prop("selected", true);
+
+            $('#company').change();
+
+
 	});
 
 	$('#company').change(function(){
@@ -115,6 +128,7 @@
                 } else {
                     $('#subcholderL').show();
                     $('#subcholder').show().html( response );
+                    $('#subc').find("[value='<?php echo $arrLoc->SUBCONTRACTOR?>']").prop("selected", true);
                 }
 
             }
@@ -124,8 +138,20 @@
 	$('#location_add_form').validate({
 		errorPlacement: function (error, element) {},
 		submitHandler: function (form, e) {
-			$('#location_add_form').unbind().submit();
 
+		    if( $('#is_already_self').val() == 1 ) {
+                $('#location_add_form').unbind().submit();
+            } else {
+                if( $('#is_self').is(':checked') ){
+                    if(confirm('This replaces other Primary Location ( if any ). Do you want to continue ?')) {
+                        $('#location_add_form').unbind().submit();
+                    } else {
+                        return false;
+                    }
+                } else {
+                    $('#location_add_form').unbind().submit();
+                }
+            }
 		}
 	});
 </script>

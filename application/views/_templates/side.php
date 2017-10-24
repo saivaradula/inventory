@@ -154,13 +154,13 @@
 					<b class="arrow"></b>
 				</li>
 				<?php if ( $objC->isAllowedModule('CINV') ) { ?>
-					<?php if( $_SESSION['IS_SELF'] == 0 ){ ?>
+					<?php //if( $_SESSION['IS_SELF'] == 0 ){ ?>
                         <li class="">
                             <a href="/inventory/checkin">
                                 <i class="menu-icon fa fa-caret-right"></i>Checkin</a>
                             <b class="arrow"></b>
                         </li>
-                    <?php } ?>
+                    <?php //} ?>
 				<?php } ?>
 				<?php if ( $objC->isAllowedModule('SINV') ) { ?>
 					<li class="">
@@ -198,14 +198,14 @@
                 <?php if ( $objC->isAllowedModule('IMV') ) { ?>
                     <li class="">
                         <a href="/inventory/import">
-                            <i class="menu-icon fa fa-caret-right"></i>Import & Verify</a>
+                            <i class="menu-icon fa fa-caret-right"></i>Verify Import</a>
                         <b class="arrow"></b>
                     </li>
                 <?php } ?>
                 <?php if ( $objC->isAllowedModule('ACT') ) { ?>
                     <li class="">
                         <a href="/inventory/activation">
-                            <i class="menu-icon fa fa-caret-right"></i>Activation</a>
+                            <i class="menu-icon fa fa-caret-right"></i>Verify Activation</a>
                         <b class="arrow"></b>
                     </li>
                 <?php } ?>

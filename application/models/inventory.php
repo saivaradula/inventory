@@ -1,6 +1,62 @@
 <?php
 	class inventoryModel extends Model {
 
+	    function deleteInvById($id) {
+            $strWhere = "ID = '" . $id . "'";
+            $arrUData['STATUS'] = INACTIVE;
+            $this->updateData(INV, $arrUData, $strWhere);
+        }
+
+	    function updatePOByID( $arrPost ) {
+            $strWhere = "PO_NUMBER = '" . $arrPost[ 'pre_po' ] . "'";
+            $arrUData[ 'PO_NUMBER' ] = $arrPost[ 'ponumber' ];
+
+            $this->updateData(INV, $arrUData, $strWhere);
+            $this->updateData(INV_PO, $arrUData, $strWhere);
+            $this->updateData(LOG, $arrUData, $strWhere);
+
+        }
+
+        function updateInventoryByID( $arrPost ) {
+
+            $strWhere = "ID = '" . $arrPost[ 'id' ] . "'";
+            $arrUData[ 'PO_NUMBER' ] = $arrPost[ 'ponumber' ];
+            $arrUData['IMEI'] = $arrPost['IMEI'];
+
+            $this->updateData(INV, $arrUData, $strWhere);
+
+            $strWhere = "IMEI = '" . $arrPost[ 'pre_imei' ] . "'";
+            $arrULData['IMEI'] = $arrPost['IMEI'];
+            $this->updateData(LOG, $arrULData, $strWhere);
+
+            $strWhere = "PO_NUMBER = '" . $arrPost[ 'pre_po' ] . "'";
+            $arrULData['PO_NUMBER'] = $arrPost['ponumber'];
+            $this->updateData(LOG, $arrULData, $strWhere);
+
+        }
+
+	    function getInvById( $id ) {
+            $arrData[ 'FIELDS' ] = "*";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] .= " I.ID = " . $id;
+            return $this->getData($arrData);
+        }
+
+	    function getInvWithLidNotUserId( $iUserId, $iLID ) {
+            $arrData[ 'FIELDS' ] = "I.ID, I.HAVE_ACCESS";
+            $arrData[ 'TABLE' ] = INV . " I";
+            $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = '" . $iLID . "'";
+            $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCESS NOT LIKE '%" . $iUserId . "%'";
+            return $this->getData($arrData, true);
+        }
+
+        function updateInvAccess($id, $strHA ){
+            $strWhere = 'ID IN (' . $id . ')';
+            $arrUData['HAVE_ACCESS'] = $strHA;
+            $this->updateData(INV, $arrUData, $strWhere);
+        }
+
 	    function getInventoryAccess( $strIMEI ) {
             $arrData[ 'FIELDS' ] = "I.HAVE_ACCESS";
             $arrData[ 'TABLE' ] = INV . " I";
@@ -138,9 +194,10 @@
                 $arrData[ 'FIELDS' ] = "I.IMEI";
                 $arrData[ 'TABLE' ] = INV . " I";
                 $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
-                $arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
+               // $arrData[ 'WHERE' ] .= " AND I.MODIFIED_BY = '" . $iUserId . "'";
+                $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCESS LIKE '%" . $iUserId . "%'";
                 $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
-                $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
+               // $arrData[ 'WHERE' ] .= " AND I.USER_TYPE = '" . $strUserType . "'";
                 $arrData[ 'WHERE' ] .= " AND I.IMEI_STATUS IN ("  . $strType . ")";
                 return $this->getData($arrData, true);
             }
@@ -192,7 +249,6 @@
             } else {
                 //$arrData[ 'WHERE' ] .= " AND ( I.IMEI_STATUS = 'CHECKED_IN' OR I.IMEI_STATUS = 'RECEIVE' ) ";
                 //$arrData[ 'WHERE' ] .= " AND I.ASSIGNED_TO = " . $iUserId;
-
             }
             $arrData[ 'WHERE' ] .= " AND I.IMEI IN " . $strIMEI;
             return $this->getData($arrData, true);
@@ -335,12 +391,14 @@
             ( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ADDED_BY  ) AS ADDEDBY, I.ADDED_ON, I.ADDED_ON AS MODIFIED_ON";
             $arrData[ 'TABLE' ] = LOG . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
-            $arrData[ 'WHERE' ] .= ( $arrOptions['ponumber'] != '' ) ? " AND I.PO_NUMBER = '" . $arrOptions['ponumber'] . "'" : "";
-
+            if( $arrOptions['ponumber'] != '' ){
+                $arrData[ 'WHERE' ] .= " AND ( AND I.PO_NUMBER = '" . $arrOptions['ponumber'] . "' OR I.IMEI = '" . $arrOptions['ponumber'] . "' ) ";
+            }
             return $this->getData($arrData, true);
         }
 
 		function getInventory( $arrOptions, $isCheck = false ){
+
 
 			$arrData[ 'FIELDS' ] = "DISTINCT ( I.ID ), I.IMEI, I.IMEI_STATUS, I.UNIQUE_ID, I.HAVE_ACCESS,
 					( SELECT U.NAME FROM " . LOCATION . " U WHERE U.ID = I.ASSIGNED_TO  ) AS ASSIGNEDTO,
@@ -350,6 +408,10 @@
 					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ADDED_BY  ) AS ADDEDBY, I.ADDED_ON, I.MODIFIED_ON";
 			$arrData[ 'TABLE' ] = INV . " I";
 			$arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
+
+			$arrData[ 'WHERE' ] .= ( $arrOptions['user_id_s'] != '' ) ? " AND I.HAVE_ACCESS LIKE '%" . $arrOptions['user_id_s'] . "%' " : "";
+
+
 
 			$arrData['FIELDS'] .= ( $arrOptions['user_id'] != '' ) ? ", 
 			    ( SELECT P.PO_NUMBER FROM inventory_po P WHERE P.ADDED_BY = " . $arrOptions['user_id'] . " 
@@ -380,9 +442,11 @@
 			if( $arrOptions['ponumber'] != '' ) {
                 $arrData[ 'TABLE' ] .= ", " . LOG . " L";
                 $arrData[ 'WHERE' ] .= " AND L.PO_NUMBER = '" . $arrOptions['ponumber'] . "'";
+
                 $arrData[ 'WHERE' ] .= " AND I.IMEI = L.IMEI ";
                 $arrData['ORDER'] = 'L.ID DESC';
                 ///$arrData[ 'WHERE' ] .= " AND L.USER_TYPE = '". $arrOptions['user_type'] ."'";
+                $arrData[ 'WHERE' ] .= " OR I.IMEI = '" . $arrOptions['ponumber'] . "'";
             }
 
 

@@ -32,7 +32,7 @@
                                     <th>Company</th>
                                     <th>SC</th>
                                     <th>Manager</th>
-                                    <th>Is Self</th>
+                                    <th>Primary</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>

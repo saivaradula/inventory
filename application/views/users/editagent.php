@@ -1,3 +1,4 @@
+<?php //print_r( $arrAgent ); ?>
 <div class="main-content">
 	<div class="main-content-inner">
 		<div class="breadcrumbs ace-save-state" id="breadcrumbs">
@@ -32,23 +33,36 @@
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Last Name </label>
 
 					<div class="col-sm-9">
-						<input  value="<?php echo $arrAgent->LAST_NAME ?>" type="text" id="lastname" name="lastname" placeholder="Last Name" class="required col-xs-10 col-sm-5"/>
+						<input  value="<?php echo $arrAgent->LAST_NAME ?>" type="text" id="lastname" name="lastname"
+                                placeholder="Last Name" class="required col-xs-10 col-sm-5"/>
 					</div>
 				</div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> DOB </label>
+
+                    <div class="col-sm-9">
+                        <input  value="<?php echo $arrAgent->DOB ?>" type="text" id="dob" name="dob" placeholder="Date of Birth" class="required col-xs-10 col-sm-5"/>
+                    </div>
+                </div>
+<!--
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Enrollment Number </label>
 
 					<div class="col-sm-9">
-						<input  value="<?php echo $arrAgent->ENROLLMENT_NUMBER ?>" type="text" id="enrollnumber" name="enrollnumber" placeholder="Enrollment Number" class="required col-xs-10 col-sm-5"/>
+						<input  value="<?php echo $arrAgent->ENROLLMENT_NUMBER ?>" type="text" id="enrollnumber"
+                                name="enrollnumber" placeholder="Enrollment Number" class="col-xs-10 col-sm-5"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Enrollment Channel </label>
 
 					<div class="col-sm-9">
-						<input value="<?php echo $arrAgent->ENROLLMENT_CHANNEL ?>" type="text" id="enrollchannel" name="enrollchannel" placeholder="Enrollment Channel" class="required col-xs-10 col-sm-5"/>
+						<input value="<?php echo $arrAgent->ENROLLMENT_CHANNEL ?>" type="text" id="enrollchannel"
+                               name="enrollchannel" placeholder="Enrollment Channel" class="col-xs-10 col-sm-5"/>
 					</div>
 				</div>
+				-->
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> State </label>
 
@@ -115,43 +129,44 @@
 						<input value="<?php echo $arrAgent->ZIPCODE ?>" class="required zipcodeUS input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
 					</div>
 				</div>
-				<div class="form-group">
-					<label class="required col-sm-3 control-label no-padding-right" for="form-field-1">USAC Form </label>
+                    <!--
+                        <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">USAC Form </label>
 
-					<div class="col-sm-4">
-						<select class="form-control" id="usac" name="usac">
-							<option value="">Select</option>
-							<option value="YES">Yes</option>
-							<option value="NO">No</option>
-							<option value="UNKNOWN">Unknown</option>
-						</select>
-					</div>
-				</div>
-				<!-- <div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Date </label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="usac" name="usac">
+                                <option value="">Select</option>
+                                <option value="YES">Yes</option>
+                                <option value="NO">No</option>
+                                <option value="UNKNOWN">Unknown</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Date </label>
 
-					<div class="col-sm-4">
-						<div class="input-group">
-							<input value="" class="required form-control input-mask-date" type="text" id="batchdate" name="batchdate">
-                    <span class="input-group-btn">
-                    <button class="btn btn-sm btn-default" type="button"><i
-		                    class="ace-icon fa fa-calendar bigger-110"></i></button>
-                    </span>
-						</div>
-					</div>
-				</div> -->
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <input value="" class="required form-control input-mask-date" type="text" id="batchdate" name="batchdate">
+                        <span class="input-group-btn">
+                        <button class="btn btn-sm btn-default" type="button"><i
+                                class="ace-icon fa fa-calendar bigger-110"></i></button>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1">Group</label>
 
 					<div class="col-sm-9">
-						<input value="<?php echo $arrAgent->AG_GROUP ?>" type="text" id="group" name="group" placeholder="Group" class="required col-xs-10 col-sm-5"/>
+						<input value="<?php echo $arrAgent->AG_GROUP ?>" type="text" id="group" name="group" placeholder="Group" class="col-xs-10 col-sm-5"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> DMA </label>
 
 					<div class="col-sm-9">
-						<input type="text" id="dma" value="<?php echo $arrAgent->DMA ?>"  name="dma" placeholder="DMA" class="required col-xs-10 col-sm-5"/>
+						<input type="text" id="dma" value="<?php echo $arrAgent->DMA ?>"  name="dma" placeholder="DMA" class="col-xs-10 col-sm-5"/>
 					</div>
 				</div>
 				<!-- <div class="form-group">
@@ -284,9 +299,6 @@
 					</div>
 				</div>
 
-
-
-
 				<h3 class="header smaller lighter blue">
 					Upload Documents
 					<small>Upload all your documents properly</small>
@@ -328,10 +340,16 @@
 					</div>
 				</div>
 				<div class="clearfix form-actions">
-					<div class="col-md-offset-3 col-md-9">
+					<div class="col-md-offset-1 col-md-9">
 
-						<button class="btn btn-success" type="submit"><i class="ace-icon fa fa-fw fa-check"></i> Update</button>
-						&nbsp; &nbsp; &nbsp;
+
+
+						<button class="btn btn-success" type="submit">
+                            <i class="ace-icon fa fa-fw fa-check"></i> Update
+                        </button>
+
+                        &nbsp;&nbsp; | &nbsp; &nbsp;
+
                         <a href="javascript:location.href='/users/agent'">
                             <button class="btn btn-danger" type="button" onclick="javascript:location.href='/users/agent'">
                                 <i class="ace-icon fa fa-fw fa-times"></i>Cancel<span></span>
@@ -358,10 +376,19 @@
 			selectOtherMonths: false
 		});
 
+        $( "#dob" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "mm/dd/yy",
+            maxDate: '0',
+            yearRange: "-60:+0"
+        });
+
 
 		$('#state').find("[value='<?php echo $arrAgent->STATE?>']").prop("selected", true);
 		$('#usac').find("[value='<?php echo $arrAgent->USAC_FORM?>']").prop("selected", true);
 		$('#qstatus').find("[value='<?php echo $arrAgent->Q_STATUS?>']").prop("selected", true);
+		$('#company').find("[value='<?php echo $arrAgent->COMPANY?>']").prop("selected", true);
 
 
         $('#company').find("[value='<?php echo $arrAgent->PARENT_CMPNY?>']").prop("selected", true);
@@ -430,7 +457,32 @@
                         data: "t=a&em=" + $('#promocode').val(),
                         success: function (response) {
                             if (response == 0) {
-                                $('#agent_add_form').unbind().submit()
+                                ///$('#agent_add_form').unbind().submit()
+
+                                var strPC = $('#promocode').val();
+                                var strAS = $('#qstatus').val();
+
+                                if( strPC != '' ){
+                                    if( strAS != 'QUALIFIED' ){
+                                        if( confirm('Agent has PROMOCODE, however is not QUALIFIED. Should we continue ??') ) {
+                                            $('#agent_add_form').unbind().submit();
+                                        } else {
+                                            $('.subbtn').prop('disabled', false);
+                                            return false;
+                                        }
+                                    } else {
+                                        $('#agent_add_form').unbind().submit();
+                                    }
+                                } else {
+                                    if( strAS == 'QUALIFIED' ){
+                                        alert('Agent cannot be QUALIFIED without PROMOCODE');
+                                        $('.subbtn').prop('disabled', false);
+                                        return false;
+                                    } else {
+                                        $('#agent_add_form').unbind().submit();
+                                    }
+                                }
+
                             }
                             else {
                                 alert(" Promocode " + $('#promocode').val() + " already taken. !!!");
@@ -440,8 +492,30 @@
                         }
                     });
                 } else {
-                    //alert( 'submitting form '); return false;
-                    $('#agent_add_form').unbind().submit()
+                    var strPC = $('#promocode').val();
+                    var strAS = $('#qstatus').val();
+
+                    if( strPC != '' ){
+                        if( strAS != 'QUALIFIED' ){
+                            if( confirm('Agent has PROMOCODE, however is not QUALIFIED. Should we continue ??') ) {
+                                $('#agent_add_form').unbind().submit();
+                            } else {
+                                $('.subbtn').prop('disabled', false);
+                                return false;
+                            }
+                        } else {
+                            $('#agent_add_form').unbind().submit();
+                        }
+                    } else {
+                        if( strAS == 'QUALIFIED' ){
+                            alert('Agent cannot be QUALIFIED without PROMOCODE');
+                            $('.subbtn').prop('disabled', false);
+                            return false;
+                        } else {
+                            $('#agent_add_form').unbind().submit();
+                        }
+                    }
+                    //$('#agent_add_form').unbind().submit()
                 }
 
                 /*$.ajax({

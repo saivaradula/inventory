@@ -18,25 +18,37 @@
 			return $arrAgents;
 		}
 
+		function sendoememail() {
+            $objAgentsModel = $this->loadModel('agents');
+            $iUserId = $_POST['id'];
+            $strOEMMail = $_POST['email'];
+            $arrAgent = $objAgentsModel->getAgent($iUserId);
+            $arrAgent->DOB = $this->USDateFormat( $arrAgent->DOB );
+            $arrOptions['emailid'] = $strOEMMail;
+            $arrOptions['subject'] = "Agent Details for Verification";
+            include EMAIL_TEMPLATES;
+            echo $this->sendEmail($arrOptions, AGENT_DETAIL_TEMP );
+        }
+
 
 		public function index() {
 			require VIEW_PATH . '_templates/header.php';
 			$objAgentsModel = $this->loadModel('agents');
 			if( $_POST['email'] ){
-
 				$arrPost = $this->validateUserInput($_POST);
 				$arrPost['parent'] = $this->getLoggedInUserCompanyID();
 				$arrPost['createdon'] = $this->now();
 				$arrPost['createdby'] = $this->loggedInUserId();
 				$arrPost['userid'] = date('Ymdhis') ;
 				$arrPost['action'] = "SELF" ;
+				$arrPost['q_status'] = "PENDING";
 				$arrPost['self_action'] = "New" ;
 				$objAgentsModel->addAgents($arrPost);
 				include EMAIL_TEMPLATES;
 				$arrOptions['emailid'] = $_POST['email'];
 				$arrOptions['subject'] = ADDAGENT_EMAIL_SUBJECT;
 
-				$bIsEmailSent = $this->sendEmail($arrOptions['emailid'], ADDAGENT_TEMPLATE );
+				$bIsEmailSent = $this->sendEmail($arrOptions, ADDAGENT_TEMPLATE );
 				if( $bIsEmailSent ){
 					$strMsg = "Email sent to " . $_POST['email'] . " Successfully";
 				} else {
@@ -56,7 +68,16 @@
 			require VIEW_PATH . '_templates/footer.php';
 		}
 
+		public function sendagentemail() {
+            $objAgentsModel = $this->loadModel('agents');
+            $iUserId = $_POST['id'];
+            $arrAgent = $objAgentsModel->getAgent($iUserId);
+            $arrOptions['emailid'] = $arrAgent->EMAILID;
+            $arrOptions['subject'] = "Your Promocode As an Agent";
 
+            include EMAIL_TEMPLATES;
+            echo $this->sendEmail($arrOptions, AGENT_PROMOCODE_TEMP );
+        }
 
 		public function sendapp() {
 			require VIEW_PATH . '_templates/header.php';

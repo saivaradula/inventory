@@ -1,6 +1,17 @@
 <?php
 	class locationModel extends Model {
 
+	    function getLocByAddress($arrAddress){
+            $arrData[ 'FIELDS' ] = "L.ID";
+            $arrData[ 'TABLE' ] = LOCATION . " L";
+            $arrData[ 'WHERE' ] = " L.status = " . ACTIVE;
+            $arrData[ 'WHERE' ] .= " AND LOWER( L.ADDRESS_1 ) = '" . strtolower( $arrAddress['address_1'] ) . "'";
+            $arrData[ 'WHERE' ] .= " AND LOWER( L.ADDRESS_2 ) = '" . strtolower( $arrAddress['address_2'] ) . "'";
+            $arrData[ 'WHERE' ] .= " AND LOWER( L.STATE ) = '" . strtolower( $arrAddress['state'] ) . "'";
+            $arrData[ 'WHERE' ] .= " AND L.ZIPCODE = '" . trim( $arrAddress['zipcode'] ) . "'";
+            return $this->getData($arrData, false);
+        }
+
 	    function getUserLocation( $iUserId ) {
             $arrData[ 'FIELDS' ] = "*";
             $arrData[ 'TABLE' ] = LOCATION . " L";
@@ -21,7 +32,6 @@
                 if( $strType == 'shipping' ) {
                     $arrData[ 'WHERE' ] .= " AND L.IS_SELF = " . INACTIVE;
                 }
-
                 if( $strType == 'assign' ) {
                     $arrData[ 'WHERE' ] .= " AND L.IS_SELF = " . ACTIVE;
                 }
@@ -58,13 +68,23 @@
 		}
 
 		function updateLocation( $arrPost ) {
+
 			$arrData[ 'NAME' ] = strtoupper( $arrPost[ 'locname' ]);
 			$arrData[ 'ADDRESS' ] = $arrPost[ 'address' ];
 			$arrData[ 'ADDRESS_1' ] = $arrPost[ 'address_1' ];
 			$arrData[ 'ADDRESS_2' ] = $arrPost[ 'address_2' ];
 			$arrData[ 'ZIPCODE' ] = $arrPost[ 'zipcode' ];
 			$arrData[ 'SUBCONTRACTOR' ] = $arrPost[ 'subc' ];
+            //$arrData[ 'COMPANY' ] = $arrPost[ 'company' ];
             $arrData[ 'IS_SELF' ] = $arrPost[ 'is_self' ];
+            if( $arrPost[ 'is_self' ] == 1 ){
+                $arrUData[ 'IS_SELF' ] = 0;
+                if( $arrPost['subc'] != '' ){
+                    $this->updateData(LOCATION, $arrUData, "COMPANY = " . $arrPost['company'] . " AND SUBCONTRACTOR = " . $arrPost['subc']);
+                } else {
+                    $this->updateData(LOCATION, $arrUData, "COMPANY = " . $arrPost['company']);
+                }
+            }
             $arrData[ 'STATE' ] = $arrPost[ 'state' ];
 			return $this->updateData(LOCATION, $arrData, "ID = " . $arrPost['location_id']);
 		}
@@ -85,6 +105,18 @@
 				return $this->getData($arrData, true);
 			}
 		}
+
+        function getLocationSubCnt($iLid = 0) {
+            $arrData[ 'FIELDS' ] = "L.SUBCONTRACTOR, L.NAME AS LOCATION_NAME, ( SELECT M.NAME FROM " . COMPANY_USERS . " M WHERE M.USER_ID = L.SUBCONTRACTOR 
+			        AND M.STATUS = " . ACTIVE . " ) AS SUB_CONT_NAME, L.IS_SELF";
+            $arrData[ 'TABLE' ] = LOCATION . " L";
+            if( $iLid ){
+                $arrData[ 'WHERE' ] = "L.ID = " . $iLid;
+                return $this->getData($arrData);
+            } else {
+                return $this->getData($arrData, true);
+            }
+        }
 
 		function getLocationsList($iCmpny = 0, $bHasSubc = 1, $iUserId = 0, $iUserRoleId = 0 ) {
 

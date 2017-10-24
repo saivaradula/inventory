@@ -16,33 +16,17 @@
 							<div class="profile-info-name"> Last Name </div>
 							<div class="profile-info-value"><?php echo $arrAgent->LAST_NAME ?></div>
 						</div>
-						<div class="profile-info-row">
-							<div class="profile-info-name"> Enrollment Number </div>
-							<div class="profile-info-value"><?php echo $arrAgent->ENROLLMENT_NUMBER ?></div>
-							<div class="profile-info-name">Enrollment Channel</div>
-							<div class="profile-info-value"><?php echo $arrAgent->ENROLLMENT_CHANNEL ?></div>
-						</div>
+
 						<div class="profile-info-row">
 							<div class="profile-info-name"> State </div>
 							<div class="profile-info-value"><?php echo $arrAgent->STATE ?></div>
 							<div class="profile-info-name"> Zipcode </div>
 							<div class="profile-info-value"><?php echo $arrAgent->ZIPCODE ?></div>
 						</div>
+
 						<div class="profile-info-row">
-							<div class="profile-info-name"> USAC Form </div>
-							<div class="profile-info-value"> <?php echo $arrAgent->USAC_FORM ?> </div>
-							<div class="profile-info-name">Batch Date </div>
-							<div class="profile-info-value"><?php echo $arrAgent->BATCH_DATE ?></div>
-						</div>
-						<div class="profile-info-row">
-							<div class="profile-info-name"> Group </div>
-							<div class="profile-info-value"><?php echo $arrAgent->AG_GROUP ?></div>
-							<div class="profile-info-name">DMA</div>
-							<div class="profile-info-value"><?php echo $arrAgent->DMA ?></div>
-						</div>
-						<div class="profile-info-row">
-							<div class="profile-info-name"> Batch Year </div>
-							<div class="profile-info-value"><?php echo $arrAgent->BATCH_YEAR ?></div>
+                            <div class="profile-info-name"> DOB </div>
+                            <div class="profile-info-value"><?php echo $arrAgent->DOB ?></div>
 							<div class="profile-info-name">Phone</div>
 							<div class="profile-info-value"><?php echo $arrAgent->PHONE ?></div>
 						</div>
@@ -53,8 +37,7 @@
 							<div class="profile-info-value"><?php echo $arrAgent->EMAILID ?></div>
 						</div>
                         <div class="profile-info-row">
-                            <div class="profile-info-name"> DOB </div>
-                            <div class="profile-info-value"><?php echo $arrAgent->DOB ?></div>
+
                         </div>
 					</div>
 				</div>

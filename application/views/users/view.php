@@ -76,7 +76,7 @@
 						<div>&nbsp;</div>
 						<div class="clearfix form-actions">
 							<div class="text-right">
-								<button class="btn btn-success" type="button" onclick="javascript:location.href='/users/<?php echo $strType?>/edit/<?php echo $arrUser->USER_ID ?>'"> <i class="ace-icon fa fa-fw fa-check"></i> Edit User<span></span> </button>
+								<button class="btn btn-success" type="button" onclick="javascript:location.href='/users/<?php echo $strType?>/edit/<?php echo $arrUser->USER_ID ?>'"> <i class="ace-icon fa fa-fw fa-check"></i> Edit <?php echo $strType?> <span></span> </button>
 								&nbsp;
 								<button class="btn btn-danger" type="button"  onclick="javascript:location.href='/users/<?php echo $strType?>'">
 									<i class="ace-icon fa fa-fw fa-times"></i> Go Back<span></span>

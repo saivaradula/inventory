@@ -49,15 +49,15 @@
 
             <?php if( $arrOptions['ida'] ) { ?>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 1</label>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address 1</label>
                     <div class="col-sm-4">
                         <input value="<?php echo $arrUser->ADDRESS_ONE?>" type="text"
-                               id="address_one" name="address_one" placeholder="Address Line One" class="required col-xs-10 col-sm-9" />
+                               id="address_one" name="address_one" placeholder="Address 1" class="required col-xs-10 col-sm-9" />
                     </div>
-                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address Line 2</label>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-1">Address 2</label>
                     <div class="col-sm-4">
                         <input value="<?php echo $arrUser->ADDRESS_TWO?>" type="text"
-                               id="address_two" name="address_two" placeholder="Address Line Two" class="col-xs-10 col-sm-9" />
+                               id="address_two" name="address_two" placeholder="Address 2" class="col-xs-10 col-sm-9" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -96,9 +96,14 @@
 						if( $arrUser->USER_NAME != '' ){
 							?><input disabled value="<?php echo $arrUser->USER_NAME?>" type="text" id="username" name="username" placeholder="Login Name/Username" class="required col-xs-10 col-sm-9" /><?php
 						} else {
-							?><input type="text" id="username" name="username" placeholder="Login Name/Username" class="required col-xs-10 col-sm-9" /><?php
+							?>
+                            <input type="text" id="username" name="username" placeholder="Login Name/Username" class="required col-xs-10 col-sm-9" />
+                            <br /><br />
+                            <span style="font-size: 10px; font-style: italic">** Username should be atleast 6 charecters</span>
+                            <?php
 						}
 					?>
+
 				</div>
 			</div>
 

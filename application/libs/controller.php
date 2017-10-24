@@ -184,13 +184,20 @@
 
 		function revDate($strDate, $strSprt = '-') {
 			$arrDate = explode($strSprt, $strDate);
-			return $arrDate[ 2 ] . "/" . $arrDate[ 1 ] . "/" . $arrDate[ 0 ];
+			//return $arrDate[ 2 ] . "/" . $arrDate[ 1 ] . "/" . $arrDate[ 0 ];
+            return $arrDate[ 1 ] . "/" . $arrDate[ 2 ] . "/" . $arrDate[ 0 ];
 		}
+
+        function USDateFormat($strDate, $strSprt = '-') {
+            $arrDate = explode($strSprt, $strDate);
+            return $arrDate[ 1 ] . "/" . $arrDate[ 2 ] . "/" . $arrDate[ 0 ];
+        }
 
 		function revDateTime($strDate, $strSprt = '-') {
 			$arrDateTime = explode(" ", $strDate);
 			$arrDate = explode($strSprt, $arrDateTime[ 0 ]);
-			return $arrDate[ 2 ] . "/" . $arrDate[ 1 ] . "/" . $arrDate[ 0 ] . " " . substr( $arrDateTime[1], 0, 5);
+			//return $arrDate[ 2 ] . "/" . $arrDate[ 1 ] . "/" . $arrDate[ 0 ] . " " . substr( $arrDateTime[1], 0, 5);
+			return $arrDate[ 1 ] . "/" . $arrDate[ 2 ] . "/" . $arrDate[ 0 ] . " " . substr( $arrDateTime[1], 0, 5);
 		}
 
 		function revDateTimeWT($strDate, $strSprt = '-') {
@@ -205,7 +212,8 @@
 
 		function swapDate($strDate) {
 			$arrDate = explode('/', $strDate);
-			return trim($arrDate[ 2 ]) . "-" . trim($arrDate[ 1 ]) . "-" . trim($arrDate[ 0 ]);
+			//return trim($arrDate[ 2 ]) . "-" . trim($arrDate[ 1 ]) . "-" . trim($arrDate[ 0 ]);
+			return trim($arrDate[ 2 ]) . "-" . trim($arrDate[ 0 ]) . "-" . trim($arrDate[ 1 ]);
 		}
 
 		function stripString($strString) {
@@ -253,5 +261,5 @@
 			}
 
 		}
-		/* *************** end of functions ************************ */
+		/* *************** end of functions *************************/
 	}

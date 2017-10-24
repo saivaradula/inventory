@@ -22,6 +22,7 @@
             $arrData[ 'TABLE' ] = LOG . " I";
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
             $arrData[ 'WHERE' ] .= " AND I.IMEI = '" . $strIMEI . "'";
+
             $arrData[ 'ORDER' ] = "I.ID DESC";
             //return $this->getData($arrData, true);
             return $this->getData($arrData);

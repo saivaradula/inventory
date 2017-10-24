@@ -2,6 +2,15 @@
 
 	class usersModel extends Model {
 
+	    function getCompanyUserFrom( $iCompany, $iUserId  ) {
+            $arrData[ 'FIELDS' ] = "U.USER_ID";
+            $arrData[ 'TABLE' ] = COMPANY_USERS . " U";
+            $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            //$arrData[ 'WHERE' ] .= " AND LOWER( U.COMPANY ) = '" . $iCompany . "'";
+            $arrData[ 'WHERE' ] .= " AND U.PARENT = " . $iUserId;
+           return $this->getData($arrData, true);
+        }
+
 		function validateUserEmail($strEmail ) {
 			$arrData[ 'FIELDS' ] = "U.USER_ID, 'AGENT' ";
 			$arrData[ 'TABLE' ] = AGENTS . " U";

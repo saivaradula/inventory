@@ -35,6 +35,7 @@
             <input value="<?php echo $arrAgent->DOB ?>"  type="text" id="dob" name="dob" placeholder="Date of Birth" class="required col-xs-10 col-sm-5"/>
         </div>
     </div>
+    <!--
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Enrollment Number </label>
 
@@ -42,6 +43,7 @@
 		<input  value="<?php echo $arrAgent->ENROLLMENT_NUMBER ?>" type="text" id="enrollnumber" name="enrollnumber" placeholder="Enrollment Number" class=" col-xs-10 col-sm-5"/>
 	</div>
 </div>
+
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Enrollment Channel </label>
 
@@ -49,6 +51,7 @@
 		<input value="<?php echo $arrAgent->ENROLLMENT_CHANNEL ?>" type="text" id="enrollchannel" name="enrollchannel" placeholder="Enrollment Channel" class=" col-xs-10 col-sm-5"/>
 	</div>
 </div>
+    -->
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> State </label>
 
@@ -115,6 +118,7 @@
 		<input value="<?php echo $arrAgent->ZIPCODE ?>" class="required zipcodeUS input-sm" type="text" id="zipcode" name="zipcode" placeholder="Zip Code"/>
 	</div>
 </div>
+    <!--
 <div class="form-group">
 	<label class="required col-sm-3 control-label no-padding-right" for="form-field-1">USAC Form </label>
 
@@ -127,18 +131,7 @@
 		</select>
 	</div>
 </div>
-<div class="form-group">
-	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Batch Date </label>
 
-	<div class="col-sm-4">
-		<div class="input-group">
-			<input value="<?php echo $arrAgent->BATCH_DATE ?>" class="required form-control input-mask-date" type="text" id="batchdate" name="batchdate">
-                    <span class="input-group-btn">
-
-                    </span>
-		</div>
-	</div>
-</div>
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1">Group</label>
 
@@ -146,6 +139,7 @@
 		<input value="<?php echo $arrAgent->AG_GROUP ?>" type="text" id="group" name="group" placeholder="Group" class="required col-xs-10 col-sm-5"/>
 	</div>
 </div>
+
 <div class="form-group">
 	<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> DMA </label>
 
@@ -153,7 +147,7 @@
 		<input type="text" id="dma" value="<?php echo $arrAgent->DMA ?>"  name="dma" placeholder="DMA" class="required col-xs-10 col-sm-5"/>
 	</div>
 </div>
-
+    -->
 
 
 <div class="form-group">
@@ -240,7 +234,7 @@
         $( "#dob" ).datepicker({
             changeMonth: true,
             changeYear: true,
-            dateFormat: "dd/mm/yy",
+            dateFormat: "mm/dd/yy",
             maxDate: '0',
             yearRange: "-60:+0"
         });
@@ -262,20 +256,9 @@
 			},
 			submitHandler: function (form, e) {
 				$('#saction').val('submit');
-				$('#agent_add_form').submit();
+				//$('#agent_add_form').submit();
+                $('#agent_add_form').unbind().submit();
 			}
 		});
 	});
-</script>
-
-<script language="javascript">
-
-	/*$( "#batchdate" ).datepicker( {
-		dateFormat:  "dd/mm/yy",
-		changeYear:  true,
-		changeMonth: true,
-		maxDate:     0
-	} );*/
-
-
 </script>

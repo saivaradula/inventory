@@ -83,6 +83,14 @@
 			return $this->getData($arrData);
 		}
 
+		function getSubCntSelfLocation($iUserId) {
+            $arrData[ 'FIELDS' ] = "L.ID, L.NAME";
+            $arrData[ 'TABLE' ] = LOCATION . " L";
+            $arrData[ 'WHERE' ] = "L.SUBCONTRACTOR = " . $iUserId;
+            $arrData[ 'WHERE' ] .= " AND L.IS_SELF = " . ACTIVE;
+            return $this->getData($arrData, false);
+        }
+
 		function getManagerLocation($iUserId) {
 			$arrData[ 'FIELDS' ] = "L.NAME, L.ID, L.SUBCONTRACTOR, U.NAME AS SUBNAME";
 			$arrData[ 'TABLE' ] = LOCATION . " L, " . COMPANY_USERS . " U";

@@ -2,6 +2,32 @@
 
 class reportsModel extends Model {
 
+    function getIMEILog( $strIMEI ) {
+        $arrData[ 'FIELDS' ] = "L.*";
+        $arrData[ 'TABLE' ] .= LOG . " L";
+        $arrData[ 'WHERE' ] = " L.IMEI = " . $strIMEI;
+        $arrData['ORDER'] = 'L.ID DESC';
+        return $this->getData($arrData, true);
+    }
+
+    function getIMEIByAgents($iAgentId){
+        $arrData[ 'FIELDS' ] = "DISTINCT ( I.ID ), I.IMEI, I.IMEI_STATUS, I.UNIQUE_ID, I.HAVE_ACCESS, I.PO_NUMBER,
+					( SELECT U.NAME FROM " . LOCATION . " U WHERE U.ID = I.ASSIGNED_TO  ) AS ASSIGNEDTO,
+					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ASSIGNED_TO  ) AS ASSIGNEDTOUSER,
+					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.USER_ID  ) AS CU,
+					( SELECT CONCAT( U.FIRST_NAME, \" \", U.LAST_NAME ) FROM " . AGENTS . " U WHERE U.USER_ID = I.USER_ID  ) AS CUA,
+					( SELECT U.NAME FROM " . COMPANY_USERS . " U WHERE U.USER_ID = I.ADDED_BY  ) AS ADDEDBY, I.ADDED_ON, I.MODIFIED_ON";
+        $arrData[ 'TABLE' ] = INV . " I";
+
+        $arrData[ 'WHERE' ] .= " I.ASSIGNED_TO IN ( " . $iAgentId . ")";
+
+        if( isset( $arrOptions['low_limit'] ) ){
+            $arrData['LIMIT_PER_PAGE'] = $arrOptions['limit_per_page'];
+            $arrData [ 'LIMIT' ] = $arrOptions['low_limit'];
+        }
+        return $this->getData($arrData, true);
+    }
+
     function getIMEIByHaveAccess( $arrOptions ) {
 
         $arrData[ 'FIELDS' ] = "DISTINCT ( I.ID ), I.IMEI, I.IMEI_STATUS, I.UNIQUE_ID, I.HAVE_ACCESS, I.PO_NUMBER,
@@ -24,7 +50,23 @@ class reportsModel extends Model {
             $arrData[ 'WHERE' ] = "I.STATUS = " . ACTIVE;
         }
 
-        $arrData[ 'WHERE' ] .= ( $arrOptions['HVACESS'] != '' ) ? " AND I.HAVE_ACCESS IN ('" . $arrOptions['HVACESS'] . "')" : "";
+        //$arrData[ 'WHERE' ] .= ( $arrOptions['HVACESS'] != '' ) ? " AND I.HAVE_ACCESS IN ('" . $arrOptions['HVACESS'] . "')" : "";
+
+        if( $arrOptions['HVACESS'] == 0 ) {
+            $arrData[ 'WHERE' ] .= " AND I.HAVE_ACCEESS = 0";
+        } else {
+            $arrP = explode(",", $arrOptions['HVACESS']);
+            $str = '';
+            for( $i=0; $i <= count($arrP); $i++ ){
+                if( $arrP[$i] != ''){
+                    $str .= " I.HAVE_ACCESS LIKE ('%" . $arrP[$i]. "%') OR";
+                }
+            }
+            $str = substr($str, 0 , strlen($str)-3);
+            $arrData[ 'WHERE' ] .= " AND ( " . $str . ")";
+        }
+
+            //" I.HAVE_ACCESS LIKE ('%20170825011424%') ";
         $arrData['FIELDS'] .= ( $arrOptions['user_id'] != '' ) ? ", 
 			    ( SELECT P.PO_NUMBER FROM inventory_po P WHERE P.ADDED_BY = " . $arrOptions['user_id'] . " 
 			        AND I.MODIFIED_BY = " . $arrOptions['user_id'] . " 

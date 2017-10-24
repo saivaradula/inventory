@@ -56,7 +56,7 @@
                                     ?>
                                         <tr>
                                             <td><input type="checkbox" class="chkbox checkbox"
-                                                       value="<?php echo $arrUnActivated[$i]->imei?>"></td>
+                                                       value="<?php echo $arrUnActivated[$i]->imei?>||<?php echo $arrUnActivated[$i]->promocode?>"></td>
                                             <td><?php echo $arrUnActivated[$i]->imei?></td>
                                             <td><?php echo $arrUnActivated[$i]->promocode?></td>
                                             <td><?php echo $arrUnActivated[$i]->added_on?></td>

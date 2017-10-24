@@ -29,24 +29,25 @@
 			}
 
 			$arrAgent = $objAgentsModel->getAgent($iUserId);
-			$arrAgent->BATCH_DATE = $this->revDate($arrAgent->BATCH_DATE);
-			$arrAgent->DOB = $this->revDate($arrAgent->DOB);
+
+			if( $arrAgent->DOB != '0000-00-00'){
+                $arrAgent->DOB = $this->revDate($arrAgent->DOB);
+            } else {
+                $arrAgent->DOB = '';
+            }
+
 			if( $arrAgent->SELF_ACTION == 'submit' ){
 				require VIEW_PATH . 'agents/view.php';
 			} else {
 				require VIEW_PATH . 'agents/add.php';
 			}
-
-
 			require VIEW_PATH . '_templates/footer.php';
 		}
 
 		public function add() {
-
 			$arrPost = $this->validateUserInput($_POST);
 			$arrPost['batchdate'] = $this->swapDate($arrPost['batchdate']);
 			$arrPost['dob'] = $this->swapDate($arrPost['dob']);
-
 
 			if( $_FILES['headshotfile']['name'] != '' ){
 				$arrPost['HEADSHOT_FILE'] = $this->uploadDocument( $_FILES['headshotfile'], AGENTFILES, $_POST['lastname'] . "_HSF" );
@@ -68,16 +69,14 @@
 				$arrPost['COMP_CERT_FILE'] = $this->uploadDocument( $_FILES['compcertfile'], AGENTFILES, $_POST['lastname'] . "_COMP" );
 			}
 
-
 			$objAgentsModel = $this->loadModel('agents');
 			$objAgentsModel->updateAgent( $arrPost );
+
 			if( $arrPost['saction'] == 'save' ) {
 				$this->startup( $arrPost['userid'], $objAgentsModel);
 			} else {
 				$this->view( $arrPost['userid'], $objAgentsModel);
 			}
-
 		}
-
 
 	}

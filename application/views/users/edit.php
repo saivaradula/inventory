@@ -42,7 +42,7 @@
         $( "#dob" ).datepicker({
             changeMonth: true,
             changeYear: true,
-            dateFormat: "dd/mm/yy",
+            dateFormat: "mm/dd/yy",
             maxDate: '0'
         });
 

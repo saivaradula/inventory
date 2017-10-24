@@ -23,8 +23,21 @@
 								<div class="col-sm-12">
 									<div class="col-sm-2">
 										<input VALUE="<?php echo $_POST['ponumber']?>"
-                                               type="text" class="form-control" name="ponumber" id="ponum" placeholder="Search by PO Number" />
+                                               type="text" class="form-control" name="ponumber" id="ponum"
+                                               placeholder="Search by PO#/IMEI" />
 									</div>
+                                    <?php if( $iLocDD == 1 ){ ?>
+                                        <div class="col-sm-2">
+                                            <select id="shpto_manager" name="shpto_manager" class="<?php echo $strMgrR?> col-sm-12">
+                                                <option value="">Select Location</option>
+                                                <?php foreach ( $arrObjLocation AS $arrObjCMm ) { ?>
+                                                    <option value="<?php echo $arrObjCMm->ID?>">
+                                                        <?php echo $arrObjCMm->NAME?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    <?php } ?>
 									<div class="col-sm-2">
 										<select name="q_status" class="form-control" id="q_status">
 											<option value="">By Status</option>
@@ -37,7 +50,8 @@
 											<option value="SHIPPED [R]">Returned</option>
 										</select>
 									</div>
-									<div class="col-sm-8">
+
+									<div class="col-sm-<?php echo $sm ?>">
 										<button id="getInvBtn" type="button" class="btn btn-warning f-left m-r">
                                             <i class="fa fa-filter"></i>
                                         </button>
@@ -47,13 +61,13 @@
 
 										<div class="f-right">
                                             <?php if ( $objC->isAllowedModule('CINV') ) { ?>
-                                                <?php if( $_SESSION['IS_SELF'] == 0 ){ ?>
+                                                <?php // if( $_SESSION['IS_SELF'] == 0 ){ ?>
                                                     <button class="btn btn-success" type="button"
                                                             onclick="javascript:location.href='/inventory/checkin'">
                                                         <i class="ace-icon fa fa-fw fa-check"></i>
                                                         Checkin
                                                     </button>
-                                                <?php } ?>
+                                                <?php // } ?>
                                             <?php } ?>
 
                                             <?php if ( $objC->isAllowedModule('SINV') ) { ?>
@@ -130,7 +144,16 @@
             });
 
 
+
+
 		});
+
+		function deleteInv( id ) {
+            if( confirm("Do you want to delete this Inventory") ) {
+              location.href = "/inventory/deleteInv/" + id;
+            }
+        }
+
 		function applyTS() {
 			$('#simple-table').dataTable({
 				"aoColumnDefs": [{
@@ -152,7 +175,6 @@
                         content:function(){
                             return $(this).attr('title');
                         }
-
                     });
                 }
             });

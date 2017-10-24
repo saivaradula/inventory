@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="c79e6cbf-0ada-4d31-9ecc-5d3de57f8cb9" name="aio" url="http://aio.tech3sixty5.co.in">
-        <fileTransfer host="aio.tech3sixty5.co.in" port="21" rootFolder="/aio">
+      <webServer id="c79e6cbf-0ada-4d31-9ecc-5d3de57f8cb9" name="aio" url="http://tech3sixty5.co.in">
+        <fileTransfer host="tech3sixty5.co.in" port="21" rootFolder="/aioqa">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

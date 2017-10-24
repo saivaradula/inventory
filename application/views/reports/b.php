@@ -14,38 +14,51 @@
                     <h4>Report By</h4>
                 </div>
                 <div class="panel-body">
+                    <input type="hidden" id="role" value="<?php echo $iRoleId; ?>" />
                     <form id="filter_form" method="post" >
                         <input type="hidden" id="page" name="page" value="1" />
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="col-sm-2">
-                                    <select class="form-control required" id="company" name="company">
-                                        <option value="">By Company</option>
-                                        <?php foreach ( $arrObjC AS $arrObjCm ) { ?>
-                                            <option value="<?php echo $arrObjCm->ID?>"><?php echo $arrObjCm->NAME?></option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
+                                <?php if ( $iAdmin ) { ?>
 
-                                 <div class="col-sm-2" id="subcholder">
-                                    <select class="form-control required" id="subc" name="subc">
-                                        <option value="">By Sub Contractor</option>
+                                    <div class="col-sm-2">
+                                        <select class="form-control required" id="company" name="company">
+                                            <option value="">By Company</option>
+                                            <?php foreach ( $arrObjC AS $arrObjCm ) { ?>
+                                                <option value="<?php echo $arrObjCm->ID?>"><?php echo $arrObjCm->NAME?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                <?php } ?>
 
-                                    </select>
-                                </div>
-                                <div class="col-sm-2" id="locationholder">
-                                    <select class="form-control" id="location" name="location">
-                                        <option value="">By Location</option>
-                                    </select>
-                                </div>
+                                <?php if ( $bSubC ) { ?>
+                                     <div class="col-sm-2" id="subcholder">
+                                        <select class="form-control required" id="subc" name="subc">
+                                            <option value="">By Sub Contractor</option>
+
+                                        </select>
+                                    </div>
+                                <?php } ?>
+
+                                <?php if ( $bLDD ) { ?>
+                                    <div class="col-sm-2" id="locationholder">
+                                        <select class="form-control" id="location" name="location">
+                                            <option value="">By Location</option>
+                                        </select>
+                                    </div>
+                                <?php } ?>
 
                                 <div class="col-sm-2">
                                     <select name="q_status" class="form-control" id="q_status">
                                         <option value="">By Status</option>
                                         <option value="CHECKED_IN">Checked In </option>
-                                        <option value="ACTIVATED">Quaified</option>
+                                        <option value="SHIPPED_IN">Shipped</option>
+                                        <option value="ASSIGNED">Assigned</option>
+                                        <option value="ACTIVATED">Activated</option>
+                                        <option value="RECEIVE">Re-Checkin</option>
                                         <option value="SHIPPED [R]">Returned</option>
                                     </select>
+
                                 </div>
 
                                 <!--
@@ -53,12 +66,40 @@
                                     <input type="text" class="form-control" name="ponumber" id="ponumber" placeholder="By PO Number" />
                                 </div> -->
 
-                                <div class="col-sm-2">
-                                    <button type="button" id="getreports" class="btn btn-warning f-left m-r">
+                                <div class="col-sm-4">
+                                    <button type="button" id="getreports" class="getreports btn btn-warning f-left m-r">
                                         <i class="fa fa-filter"></i> Get Report
+                                    </button>
+                                    <button class="btn btn-warning f-left m-r" onclick="javascript:location.href='/reports/basic'">
+                                        Clear All
                                     </button>
                                 </div>
 
+                            </div>
+
+                        </div>
+                        <div><hr /></div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="col-sm-4">
+                                    <input type="text" placeholder="By IMEI Number" name="IMEI" id="imei_s" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" class="getreports_i btn btn-warning f-left m-r">
+                                        <i class="fa fa-filter"></i> Get IMEI Report
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="col-sm-4">
+                                    <input type="text" placeholder="By Promocode" name="promocode" id="promocode_s" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" class="getreports_p btn btn-warning f-left m-r">
+                                        <i class="fa fa-filter"></i> Get Promocode Report
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
@@ -69,7 +110,7 @@
 
             <div class="panel">
                 <div class="page-header">
-                    <h4>Inventory List</h4>
+                    <h4>Inventory Report</h4>
                 </div>
                 <div class="panel-body">
                     <div class="reports_results">
@@ -80,7 +121,6 @@
                                 <th>PO NUMBER</th>
                                 <th>STATUS</th>
                                 <th>CURRENT USER</th>
-
                             </tr>
                             </thead>
                             <tbody>
@@ -112,7 +152,7 @@
                             } else {
                                 ?>
                                 <tr>
-                                    <td colspan="8">No <?php echo ucfirst($strType)?> Found</td>
+                                    <td colspan="8">No Inventory Found</td>
                                 </tr>
                                 <?php
                             }
@@ -127,7 +167,57 @@
 
     <script type="text/javascript">
         $(function () {
-            $('#getreports').click(function() {
+
+            if( $('#role').val() == 3 ){
+                changeSubC( <?php echo $iCompany?>, <?php echo $iSubCID?> );
+            }
+
+            $('.tt').tooltip({
+                content:function(){
+                    return $(this).attr('title');
+                }
+            });
+
+            if( $('#role').val() == 2 ){
+                $.ajax({
+                    url: "/ajaxcall/getSubContofCompy",
+                    type: "POST",
+                    data: "id=" + <?php echo $iCompany?>,
+                    success: function (response) {
+                        if(response == 0) {
+                            $('#subcholder').hide();
+                        } else {
+                            $('#subcholder').show().html( response );
+                            $('#subc option:first').html('By Sub Contractor');
+                            $('#subc').change(function(){
+                                changeSubC( <?php echo $iCompany?>, $('#subc').val() );
+                            });
+                        }
+                    }
+                });
+            }
+
+
+
+            $('.getreports_p').click(function(){
+                if($('#promocode_s').val() == '' ){
+                    alert("Please enter Promocode to get reports"); return false;
+                } else {
+                    $('#q_status, #imei_s, #location, #company, #subc').val('');
+                    $('.getreports').click();
+                }
+            });
+
+            $('.getreports_i').click(function(){
+                if($('#imei_s').val() == '' ){
+                    alert("Please enter IMEI to get reports"); return false;
+                } else {
+                    $('#q_status, #promocode_s, #location, #company, #subc').val('');
+                    $('.getreports').click();
+                }
+            })
+
+            $('.getreports').click(function() {
                 $('#page').val( 1 );
                 $.ajax({
                     url: "/reports/getBasicReport",
@@ -135,6 +225,12 @@
                     data: $('#filter_form').serialize(),
                     success: function (response) {
                         $('.reports_results').html(response);
+                        $('.tt').tooltip({
+                            content:function(){
+                                return $(this).attr('title');
+                            }
+                        });
+
                         $('#gobtn').click(function () {
                             $('#page').val( $('#shwpage').val() );
                             getReports();
@@ -187,9 +283,6 @@
                 changeSubC( $('#company').val(), $('#subc').val() );
             });
 
-
-
-
         });
 
         function getReportsByPage( p ) {
@@ -200,6 +293,11 @@
                 data: $('#filter_form').serialize(),
                 success: function (response) {
                     $('.reports_results').html(response);
+                    $('.tt').tooltip({
+                        content:function(){
+                            return $(this).attr('title');
+                        }
+                    });
                     $('#gobtn').click(function () {
                         $('#page').val( $('#shwpage').val() );
                         getReports();
@@ -215,10 +313,18 @@
                 data: $('#filter_form').serialize(),
                 success: function (response) {
                     $('.reports_results').html(response);
+
                     $('#gobtn').click(function () {
                         $('#page').val( $('#shwpage').val() );
                         getReports();
                     });
+
+                    $('.tt').tooltip({
+                        content:function(){
+                            return $(this).attr('title');
+                        }
+                    });
+
                 }
             });
         }
@@ -238,10 +344,5 @@
                 }
             });
         }
-
-
-        
-        
-
 
     </script>

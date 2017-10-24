@@ -5,40 +5,78 @@
 	    public function activate() {
             $objInvModel = $this->loadModel('inventory');
             $objLogModel = $this->loadModel('log');
+            $objAgentModel = $this->loadModel('agents');
+            $objReportModel = $this->loadModel('reports');
+            $objUserModel = $this->loadModel('users');
+
+            $strID = '';
             $arrID = explode( ",", $_POST['id']);
             foreach($arrID AS $key => $value ) {
                 if( $value != '' ){
-                    $strID .= "'" . trim( $value ). "', ";
+                    $arrV = explode("||", $value);
+                    $strID .= "'" . trim( $arrV[0] ). "', ";
                 }
             }
             $strID = substr($strID, 0, strlen( $strID ) - 6 );
             $arrP['modified_on'] = $this->now();
             $arrP['modified_by'] = $this->loggedInUserId();
+            //print_r( $arrID ); exit;
             $objInvModel->setActive( $strID, $arrP );
 
-            $arrPost['user_type'] = $this->getLoggedUserRole();
-            $arrPost['status'] = 'ACTIVATED';
             $arrPost['user_id'] = $this->loggedInUserId();
+
+            $arrPost['status'] = 'ACTIVATED';
+
             $arrPost['modified_on'] = $this->now();
             $arrPost['assigned_to'] = 0;
-            $arrPost['desc'] = "IMEI has been activated.";
+
+
             $arrPost['reason'] = '';
             foreach($arrID AS $key => $value ) {
                 $value = trim($value);
-                ///echo $value . "<br />";
+                $arrPost['desc'] = '';
+
+               // echo $value . "<br />";
+
+
                 if( $value != '' ){
-                    $arrInv = $objInvModel->getImeiDetails($value);
-                    $arrPost['imei'] = $value;
+                    $arrV = explode("||", $value);
+                    $arrInv = $objInvModel->getImeiDetails($arrV[0]);
+                    $arrLog = $objReportModel->getIMEILog( $arrV[0] );
+                    //print_r( $arrLog );
+                    if($arrLog[0]->ASSIGNED_TO > 0 ) {
+                        // chech in agent.
+                        $arrAg = $objAgentModel->getAgent( $arrLog[0]->ASSIGNED_TO );
+
+                        if( $arrAg->ID == '' ) {
+                            $arrAg = $objUserModel->getUserDetailsByUserId( $arrLog[0]->ASSIGNED_TO );
+                            if( $arrAg->ID != '' ) {
+                                $arrPost['user_type'] = $arrAg->ROLE_NAME;
+                            } else {
+                                $arrPost['user_type'] = $arrLog[0]->USER_TYPE;
+                            }
+                        } else {
+                            $arrPost['user_type'] = "AGENT";
+                        }
+                    } else {
+                        $arrPost['user_type'] = $arrLog[0]->USER_TYPE;
+                    }
+
+                    $arrAssignee = $objAgentModel->getAgent( $arrInv->ASSIGNED_TO );
+                    $arrActivatee = $objAgentModel->getAgentPromocodes( "'" . $arrV[1] . "'" );
+
+                    if( $arrAssignee->ID != '' ) {
+                        $arrPost['desc'] = "IMEI has been assigned to " . $arrAssignee->FIRST_NAME . " " . $arrAssignee->LAST_NAME . "( " . $arrAssignee->PROMOCODE . " ). ";
+                    }
+                   $arrPost['desc'] .= "IMEI has been activated by " . $arrActivatee[0]->FIRST_NAME . " " . $arrActivatee[0]->LAST_NAME . "( " . $arrActivatee[0]->PROMOCODE . " ).";
+
+                    $arrPost['imei'] = $arrV[0];
                     $arrPost['unique'] = $arrInv->UNIQUE_ID;
                     $arrPost['ponumber'] = $arrInv->PO_NUMBER;
                     $arrPost['tracking'] = $arrInv->TRACKING;
                     $objLogModel->logInventory($arrPost);
                 }
             }
-
-           //
-
-
         }
 
         public function getIMEILog( $objLogModel, $strIMEI) {
@@ -124,9 +162,9 @@
 			$arrOptions['subc'] = $_POST['subc'];
 
 			if( $this->doesContainSubC() ) {
-				$arrObjLocation = $objLocModel->getLocationByUserId($_POST['subc'], 'SUB CONTRACTOR');
+				$arrObjLocation = $objLocModel->getLocationByUserId($_POST['subc'], 'SUB CONTRACTOR', 'all');
 			} else {
-				$arrObjLocation = $objLocModel->getLocationByUserId($_POST['subc'], 'DIRECTOR');
+				$arrObjLocation = $objLocModel->getLocationByUserId($_POST['subc'], 'DIRECTOR', 'all');
 			}
 
 			switch( $this->getParameters(1) ) {

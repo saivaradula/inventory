@@ -1,10 +1,12 @@
 <?php
 	class agentsModel extends Model {
 
+
 	    function getAgentPromocodes( $strChkPImp ) {
-            $arrData[ 'FIELDS' ] = "U.USER_ID ";
-            $arrData[ 'TABLE' ] = AGENTS . " U";
+            $arrData[ 'FIELDS' ] = "U.USER_ID, U.PROMOCODE, U.FIRST_NAME, U.LAST_NAME, L.NAME, L.ADDRESS_1, L.ADDRESS_2, L.STATE, L.ZIPCODE";
+            $arrData[ 'TABLE' ] = AGENTS . " U, " . LOCATION . " L";
             $arrData[ 'WHERE' ] = "U.STATUS = " . ACTIVE ;
+            $arrData[ 'WHERE' ] .= " AND L.ID = U.LOCATION_ID";
             $arrData[ 'WHERE' ] .= " AND U.PROMOCODE IN (" . $strChkPImp . ")";
             $arrUser = $this->getData($arrData, true);
             return $arrUser;
@@ -26,6 +28,10 @@
 
 		function getAgent( $strAgent ) {
 			$arrData[ 'FIELDS' ] = "A.*";
+			$arrData[ 'FIELDS' ] .= ", ( SELECT S.NAME FROM " . COMPANY_USERS . " S WHERE S.USER_ID = A.SUBCNT ) AS SUBC";
+			$arrData[ 'FIELDS' ] .= ", ( SELECT L.NAME FROM " . LOCATION . " L WHERE A.LOCATION_ID = L.ID ) AS LOCATION";
+			$arrData[ 'FIELDS' ] .= ", ( SELECT L2.ADDRESS FROM " . LOCATION . " L2 WHERE A.LOCATION_ID = L2.ID ) AS ADDRESS";
+
 			$arrData[ 'TABLE' ] = AGENTS . " A";
 			$arrData[ 'WHERE' ] = "A.USER_ID = '" . $strAgent . "'";
 			return $this->getData($arrData);
@@ -42,13 +48,18 @@
 			$arrData[ 'WHERE' ] .= ($arrOptions['company']) ? " AND A.PARENT_CMPNY = '" . $arrOptions['company'] . "'" : "";
 			$arrData[ 'WHERE' ] .= ($arrOptions['created'] > 0) ? " AND A.CREATED_BY = '" . $arrOptions['created'] . "'" : "";
 			$arrData[ 'WHERE' ] .= ($arrOptions['action'] != '' ) ? " AND A.ACTION = '" . $arrOptions['action'] . "'" : "";
-			$arrData[ 'WHERE' ] .= ($arrOptions['location'] != '' ) ? " AND A.LOCATION_ID = '" . $arrOptions['location'] . "'" : "";
+			$arrData[ 'WHERE' ] .= ($arrOptions['location'] != '' ) ? " AND A.LOCATION_ID IN (" . $arrOptions['location'] . ") " : "";
 			$arrData[ 'WHERE' ] .= ($arrOptions['id'] != '' ) ? " AND A.USER_ID = '" . $arrOptions['id'] . "'" : "";
 
 			return $this->getData($arrData, true);
 		}
 
 		function updateAgent( $arrPost ) {
+
+	        if($arrPost['company'] != '' ) {
+                $arrData['PARENT_CMPNY'] = $arrPost['company'];
+            }
+
 			$arrData['FIRST_NAME'] = $arrPost['firstname'];
 			$arrData['LAST_NAME'] = $arrPost['lastname'];
 
@@ -112,7 +123,7 @@
 
 			$arrData['ENROLLMENT_NUMBER'] = $arrPost['enrollnumber'];
 			$arrData['ENROLLMENT_CHANNEL'] = $arrPost['enrollchannel'];
-			$arrData['Q_STATUS'] = 'QUALIFIED';
+			$arrData['Q_STATUS'] = $arrPost['q_status'];
 			$arrData['STATUS_ID'] = 1;
 			$arrData['CREATED_ON'] = $arrPost['createdon'];
 			$arrData['CREATED_BY'] = $arrPost['createdby'];

@@ -48,10 +48,22 @@ ob_start();
             if( $_POST['import'] == 1 ) {
                 $bProceed = 1;
 
-                if( $_FILES['importeddata']['type'] != 'application/vnd.ms-excel' ) {
-                    $strMsg = "Invalid Data File. Please upload ONLY CSV file.";
-                    $bProceed = 0;
+                switch ($_FILES['importeddata']['type']) {
+                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : {
+                        break;
+                    }
+
+                    case "application/vnd.ms-excel" : {
+                        break;
+                    }
+
+                    default : {
+                        $strMsg = "Invalid Data File. Please upload ONLY CSV/XLS file.";
+                        $bProceed = 0;
+                    }
                 }
+
+
 
                 if( $_FILES['importeddata']['error'] > 0 ) {
                     $strMsg = "Error in Uploaded file. Please verify and re-upload file.";
@@ -61,95 +73,16 @@ ob_start();
                 if( $bProceed ) {
                     $tmp_name = $_FILES["importeddata"]["tmp_name"];
                     $name = basename($_FILES["importeddata"]["name"]);
-                    if( move_uploaded_file($tmp_name, IMP_DATA . "/" . $name) ) {
 
-                        $handle = fopen(IMP_DATA . "/" . $name, "r");
-                        $i =0;
-                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                            if( $data[0] != 'IMEI' ){
-                                $arrEsc = explode("`", $data[0]);
-                                $data[0] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-                                if( $data[0] != '' ){
-                                    $arrVData[$i] = $data[0];
+                    $strType =  end( explode(".", $name));
 
-                                    $i++;
-                                }
-                            }
-                        }
-
-                        $handle = fopen(IMP_DATA . "/" . $name, "r");
-                        $i =0;
-                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                            if( $data[0] != 'IMEI' ){
-                                $arrEsc = explode("`", $data[0]);
-                                $data[0] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-                                if( $data[0] != '' ){
-                                    $arrPData[$i] = $data[1];
-
-                                    $i++;
-                                }
-                            }
-                        }
-
-                        $arrPData = $this->removeDups($arrPData);
-
-
-                        if( $this->showDups($arrVData) == 1 ) {
-                            $strMsg = "Data Import failed. Your data contains duplicate entries. 
-                                    Please check uploaded CSV file and re-upload again.";
-                        } else {
-                            $strChkImp = '';
-                            for( $i=0; $i < count($arrVData); $i++ ){
-                                $strChkImp .= "'" . $arrVData[$i] . "', ";
-                                $strChkPImp .= "'" . $arrPData[$i] . "', ";
-                            }
-                            $strChkImp = substr($strChkImp, 0, strlen($strChkImp)-2);
-                            $strChkPImp = substr($strChkPImp, 0, strlen($strChkPImp)-2);
-
-                            $arrRes = $objInvModel->getImportActivationRecord($strChkImp);
-
-                            if( $arrRes !== false ){
-                                $strMsg = "Data Import failed. Your CSV data contains IMEI numbers which are already uploaded or Activated.";
-                            } else {
-
-                                $arrRes = $objAgentModel->getAgentPromocodes($strChkPImp);
-
-                                if( count($arrRes) == count( $arrPData ) ){
-                                    $handle = fopen(IMP_DATA . "/" . $name, "r");
-                                    $arrData['added_on'] = $this->now();
-                                    $arrData['added_by'] = $this->loggedInUserId();
-                                    $arrData['company'] = $this->getLoggedInUserCompanyID();
-                                    $i = 0;
-                                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                                        if( $data[0] != 'IMEI' ){
-                                            $arrEsc = explode("`", $data[0]);
-                                            $data[0] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-                                            $arrData['imei'] = $data[0];
-                                            $arrData['promocode'] = $data[1];
-                                            $objInvModel->importActivatedRecord($arrData);
-                                        }
-                                    }
-                                    $strMsg = "Data Import Success. Please Activate by Checking data.";
-                                } else {
-                                    $strMsg = "Data Import failed. Your CSV data contains Invalid PROMOCODES";
-                                }
-                            }
-
-                        }
-
-                        /*// Read CSV and add to DB.
-                        $handle = fopen(IMP_DATA . "/" . $name, "r");
-                        $arrData['added_on'] = $this->now();
-                        $i = 0;
-                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                            if( $data[0] != 'IMEI' ){
-                                $arrData['imei'] = $data[0];
-                                $objInvModel->importActivatedRecord($arrData);
-
-                            }
-                        }
-                        $strMsg = "Data Import Success. Please Activate by Checking data.";*/
+                    if ($strType == 'csv') {
+                        include 'csv_act.php';
+                    } else {
+                        include 'xls_act.php';
                     }
+
+
                 }
             }
 
@@ -175,10 +108,24 @@ ob_start();
             if( $_POST['import'] == 1 ) {
                 $bProceed = 1;
 
-                if( $_FILES['importeddata']['type'] != 'application/vnd.ms-excel' ) {
-                    $strMsg = "Invalid Data File. Please upload ONLY CSV file.";
-                    $bProceed = 0;
+
+
+                switch ($_FILES['importeddata']['type']) {
+                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : {
+                        break;
+                    }
+
+                    case "application/vnd.ms-excel" : {
+                        break;
+                    }
+
+                    default : {
+                        $strMsg = "Invalid Data File. Please upload ONLY CSV/XLS file.";
+                        $bProceed = 0;
+                    }
                 }
+
+
 
                 if( $_FILES['importeddata']['error'] > 0 ) {
                     $strMsg = "Error in Uploaded file. Please verify and re-upload file.";
@@ -188,82 +135,14 @@ ob_start();
                 if( $bProceed ) {
                     $tmp_name = $_FILES["importeddata"]["tmp_name"];
                     $name = basename($_FILES["importeddata"]["name"]);
-                    if( move_uploaded_file($tmp_name, IMP_DATA . "/" . $name) ) {
+                    $strType =  end( explode(".", $name));
 
-                        $handle = fopen(IMP_DATA . "/" . $name, "r");
-                        $i =0;
-
-                        $bProceed = 0;
-                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                            if( $data[0] != 'PO_NUMBER' ){
-                                if( $data[0] != '' ){
-                                    if( $data[1] != '' ){
-                                        $bProceed = 1;
-                                    } else {
-                                        $bProceed = 0;
-                                    }
-                                } else {
-                                    $bProceed = 0;
-                                }
-                            }
-                        }
-
-                        if( $bProceed  ) {
-                            $handle = fopen(IMP_DATA . "/" . $name, "r");
-                            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                                if( $data[0] != 'PO_NUMBER' ){
-                                    $arrEsc = explode("`", $data[1]);
-                                    $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-                                    if( $data[1] != '' ){
-                                        $arrVData[$i] = $data[1];
-                                        $i++;
-                                    }
-                                }
-                            }
-
-                            if( $this->showDups($arrVData) == 1 ) {
-                                $strMsg = "Data Import failed. Your data contains duplicate entries. Please check uploaded CSV file and re-upload again.";
-                            } else {
-                                // remove duplicate IMEI from array which are already in DB.
-                                $strChkImp = '';
-                                for( $i=0; $i < count($arrVData); $i++ ){
-                                    $strChkImp .= "'" . $arrVData[$i] . "', ";
-                                }
-                                $strChkImp = substr($strChkImp, 0, strlen($strChkImp)-2);
-                                $arrRes = $objInvModel->getImportRecord($strChkImp);
-                                //var_dump($arrRes ); exit;
-                                //echo count( $arrRes );
-
-
-                                //if( $arrRes !== false ){
-                                if( count( $arrRes ) ){
-                                    $strMsg = "Data Import failed. Your CSV data contains 
-                                            IMEI numbers which are already uploaded on <strong>" . $this->revDateTime($arrRes->added_on) . "</strong>";
-                                } else {
-                                    $handle = fopen(IMP_DATA . "/" . $name, "r");
-                                    $arrData['added_on'] = $this->now();
-                                    $arrData['added_by'] = $this->loggedInUserId();
-                                    $arrData['company'] = $this->getLoggedInUserCompanyID();
-                                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                                        if( $data[0] != 'PO_NUMBER' ){
-                                            if( $data[1] != '' ){
-                                                $arrData['po_num'] = $data[0];
-                                                $arrEsc = explode("`", $data[1]);
-                                                $data[1] = ($arrEsc[1] != '' ) ? $arrEsc[1] : $arrEsc[0];
-
-                                                $arrData['imei'] = $data[1];
-                                                $objInvModel->importRecord($arrData);
-                                            }
-
-                                        }
-                                    }
-                                    $strMsg = "Data Import Success. Please verify data.";
-                                }
-                            }
-                        } else {
-                            $strMsg = "Error in Uploaded file. Please verify and re-upload file. Some data is empty!!";
-                        }
+                    if ($strType == 'csv') {
+                        include 'csv_import.php';
+                    } else {
+                        include 'xls_import.php';
                     }
+
                 }
             }
 
@@ -272,14 +151,26 @@ ob_start();
 
         }
 
+        function addUpthisMgrIdtoHaveAcess($iUserId, $iLID, $objInvModel ) {
+            # first get Inv with LID as location_id and does not have $iUserId.
+            $arrInv = $objInvModel->getInvWithLidNotUserId( $iUserId, $iLID);
+           // print_r( $arrInv );
+            foreach ($arrInv AS $arrI ) {
+                $strHA = $iUserId . " " . $arrI->HAVE_ACCESS;
+                $objInvModel->updateInvAccess( $arrI->ID, $strHA);
+            }
+        }
+
         function getInvList() {
 
             $objInvModel = $this->loadModel('inventory');
             $objLogModel = $this->loadModel('log');
             $objCompModel = $this->loadModel('company');
             $objUserModel = $this->loadModel('users');
+            $objC = new Controller();
 
-            $strPO = $this->getParameters(0);
+
+                $strPO = $this->getParameters(0);
             $bSearch = 0;
             if( $_POST['ponumber'] != '' ){
                 //  $bSearch = 1;
@@ -315,12 +206,51 @@ ob_start();
                 }
 
             } else {
+                $objLocModel = $this->loadModel('location');
+                $arrOptions['user_id_s'] = '';
+                $arrOptions['user_id'] = '';
                 $arrOptions['ponumber'] = $_POST['ponumber'];
                 $arrOptions['q_status'] = $_POST['q_status'];
-                $arrOptions['user_id'] = $this->loggedInUserId();
+                if( $_POST['shpto_manager'] != ''){
+
+                    $arrU = $objLocModel->getLocationManager( $_POST['shpto_manager'] );
+                    if( $arrU->MANAGER > 0 ){
+                        $arrOptions['user_id'] = $arrU->MANAGER;
+                    } else {
+                        // this is for subcontractor only.
+                        if($this->getLoggedUserRoleID() == SUBCONTRACTOR ) {
+                            $arrU = $objLocModel->getLocationSubCnt( $_POST['shpto_manager'] );
+                            if( $arrU->IS_SELF) {
+                                $arrOptions['user_id_s'] = $arrU->SUBCONTRACTOR;
+                            } else {
+                                $arrOptions['user_id'] = -5;
+                            }
+                        } else {
+                            $arrOptions['user_id'] = -5;
+                        }
+                    }
+                } else {
+                    if( $this->getLoggedUserRoleID() == MANAGER ) {
+                       // print_r( $_SESSION );
+                        if( $_SESSION['IS_SELF'] ) {
+                            $arrU = $objLocModel->getLocationSubCnt( $_SESSION['L_ID'] );
+                            $arrOptions['user_id_s'] = $arrU->SUBCONTRACTOR;
+                        } else {
+                            //$arrOptions['l_id'] = $_SESSION['L_ID'];
+                            // update Inventory access field which has this L_ID as assigned to.
+                            $this->addUpthisMgrIdtoHaveAcess( $this->loggedInUserId(), $_SESSION['L_ID'], $objInvModel );
+                            $arrOptions['user_id'] = $this->loggedInUserId();
+                        }
+                        //
+                    } else {
+                        $arrOptions['user_id'] = $this->loggedInUserId();
+                    }
+
+                }
+
                 $arrOptions['user_type'] = $this->getLoggedUserRole();
                 //$arrInventory = $objInvModel->getPO($arrOptions);
-                $arrInventory = $objInvModel->getInventory($arrOptions);
+                    $arrInventory = $objInvModel->getInventory($arrOptions);
 
                 $arrOptions['limit_per_page'] = 10;
                 $iTotalRecords = count( $arrInventory ) ;
@@ -380,14 +310,39 @@ ob_start();
         }
 
 		public function index() {
-			require VIEW_PATH . '_templates/header.php';
+            //ini_set('display_errors', 1 );
+
+            require VIEW_PATH . '_templates/header.php';
 			$objInvModel = $this->loadModel('inventory');
 			$objLogModel = $this->loadModel('log');
 			$objCompModel = $this->loadModel('company');
 			$objUserModel = $this->loadModel('users');
 
+
+
 			if( $_POST['action'] ){
 				switch( $_POST['action'] ) {
+
+                    case "edit" : {
+
+                        $arrPost['IMEI'] = $_POST['imei'];
+                        $arrPost['pre_imei'] = $_POST['pre_imei'];
+                        $arrPost['ponumber'] = $_POST['ponumber'];
+                        $arrPost['pre_po'] = $_POST['pre_po'];
+                        $arrPost['id'] = $_POST['id'];
+
+                        if( $_POST['pre_imei'] != $_POST['imei'] ) {
+                            $objInvModel->updateInventoryByID( $arrPost );
+                        }
+
+                        if( $_POST['pre_po'] != $_POST['ponumber'] ) {
+                            $arrPost['pre_po'] = $_POST['pre_po'];
+                            $arrPost['ponumber'] = $_POST['ponumber'];
+                            $objInvModel->updatePOByID( $arrPost );
+                        }
+
+                        break;
+                    }
 
                     case "receive": {
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
@@ -412,13 +367,28 @@ ob_start();
                         $arrPost['desc'] = "Received by "  . $arrU->NAME . " ( " . $arrU->ROLE_NAME . ")";
                         $arrPost[ 'assigned_to' ] = 0;
 
+                        $iSubCntMgr = 0;
+                        if($_SESSION['IS_SELF']) {
+                            if($this->getLoggedUserRoleID() == MANAGER ) {
+                                $iSubCntMgr = 1;
+                            }
+                        }
+
+                        if($iSubCntMgr) {
+                            $objLocModel = $this->loadModel('location');
+                            $arrU = $objLocModel->getLocationSubCnt($_SESSION['L_ID']);
+                            $strHA = $arrU->SUBCONTRACTOR;
+                        } else {
+                            $strHA = '';
+                        }
+
                         for($i=0; $i < count($_POST['imei']); $i++){
                             if( $_POST['imei'][$i] != '' ) {
                                 $arrC = $objInvModel->isInvenCheckedIn( $_POST['imei'][$i] );
                                 $arrPost['imei'] = $_POST['imei'][$i];
                                     //$arrPost['added_on'] = $this->now();
                                     $arrPost['modified_by'] = $this->loggedInUserId();
-                                    $arrPost['have_access'] = $this->loggedInUserId();
+                                    $arrPost['have_access'] = $strHA . " " . $this->loggedInUserId();
                                     $arrPost['unique'] = $arrC->UNIQUE_ID;
                                     $objInvModel->updateInventory($arrPost);
                                     $arrPost['ponumber'] = $arrC->PO_NUMBER;
@@ -500,6 +470,14 @@ ob_start();
                             $strAdditionalAcceess = $arrR->USER_ID;
                         }
 
+                        if($this->getLoggedUserRoleID() == MANAGER ) {
+					        if($_SESSION['IS_SELF']) {
+                                $objLocModel = $this->loadModel('location');
+                                $arrU = $objLocModel->getLocationSubCnt( $_SESSION['L_ID'] );
+                                $strAdditionalAcceess = $arrU->SUBCONTRACTOR;
+                            }
+                        }
+
                         $arrIMEI = preg_split("/\\r\\n|\\r|\\n/", $_POST['imei']);
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
@@ -569,6 +547,7 @@ ob_start();
                         $arrIMEI = array_map('trim',$arrIMEI);
                         $arrIMEI = array_unique($arrIMEI);
                         $_POST['imei'] = $arrIMEI;
+                        $strHvAcess = '';
 
 						$arrPost['status'] = "SHIPPED_IN";
 						$arrPost['ponumber'] = date('YmdHims');
@@ -580,18 +559,41 @@ ob_start();
                         $arrPost['added_on'] = $this->now();
                         $arrPost['added_by'] = $this->loggedInUserId();
 
+
 						if( $_POST['shpto_manager'] != '' ) {
 							$arrPost['assigned_to'] =  $_POST['shpto_manager'];
                             $objLocModel = $this->loadModel('location');
                             $arrU = $objLocModel->getLocation( $arrPost['assigned_to'] );
+                            /*if( $arrU->IS_SELF ) {
+                                $arrPost['assigned_to'] =  $_POST['shpto_subc'];
+                                $arrUSCNT = $objUserModel->getUserDetailsByUserId(  $arrPost['assigned_to'] );
+                                $strHvAcess = $arrUSCNT->USER_ID;
+                            }*/
+                            $strHvAcess = $arrU->USER_ID;
+
                             $arrPost['desc'] = "Shipped to "  . $arrU->NAME;
 
+                            if( $_POST['shpto_subc'] > 0 ){
+                                $arrUS = $objUserModel->getUserDetailsByUserId(  $_POST['shpto_subc'] );
+                                $strHvAcess .= " " . $arrUS->USER_ID;
+
+                                //if( $arrU->NAME == '' ) {
+                                    if( $arrU->IS_SELF ) {
+                                        $arrPost['assigned_to'] =  $_POST['shpto_subc'];
+                                    } else {
+                                        $arrPost['desc'] = "Shipped to "  . $arrUS->NAME . " ( " . $arrUS->ROLE_NAME . ")";
+                                    }
+                                //}
+                            }
 						} else {
+                            $arrPost['assigned_to'] =  $_POST['shpto_subc'];
                             $arrU = $objUserModel->getUserDetailsByUserId(  $arrPost['assigned_to'] );
+                            $strHvAcess = $arrU->USER_ID;
                             $arrPost['desc'] = "Shipped to "  . $arrU->NAME . " ( " . $arrU->ROLE_NAME . ")";
                         }
 
-						//Get Unique Number from Checkin.
+
+                        //Get Unique Number from Checkin.
                         $arrCPost['imei'] = $_POST['imei'][0];
                         $arrC = $objInvModel->getInventory( $arrCPost, true );
                         $arrPost['unique'] = $arrC[0]->UNIQUE_ID;
@@ -600,7 +602,7 @@ ob_start();
 						for($i=0; $i < count($_POST['imei']); $i++) {
 							if( $_POST['imei'][$i] != '' ) {
                                 $arrC = $objInvModel->isInvenCheckedIn( $_POST['imei'][$i] );
-                                $arrPost['have_access'] = $arrC->HAVE_ACCESS . " " . $arrU->USER_ID;
+                                $arrPost['have_access'] = $arrC->HAVE_ACCESS . " " . $strHvAcess;
 								$arrPost['imei'] = $_POST['imei'][$i];
 
 								$objInvModel->shipInventory($arrPost);
@@ -633,7 +635,7 @@ ob_start();
                             $arrPost['assigned_to'] =  $_POST['shpto_manager'];
                         }
 
-                        if( $this->getLoggedUserRoleID() == MANAGER ){
+                        if( $this->getLoggedUserRoleID() == MANAGER  || $this->getLoggedUserRoleID() == SUBCONTRACTOR ){
                             // Assigning to Agent.
                             $objAgentModel = $this->loadModel('agents');
                             $arrO['id'] = $arrPost['assigned_to'];
@@ -671,8 +673,17 @@ ob_start();
 				}
 				header("Location: /inventory");
 			}
-
-
+            $iLocDD = 0;
+			$sm = 6;
+			switch ($this->getLoggedUserRoleID()) {
+                case DIRECTOR: { $sm = 7;break;}
+            }
+			if( $this->getLoggedUserRoleID() == SUBCONTRACTOR){
+			    // get location of sub contractor.
+                $iLocDD = 1;
+                $objLocModel = $this->loadModel('location');
+                $arrObjLocation = $objLocModel->getLocationByUserId($this->loggedInUserId(), $this->getLoggedUserRole(), 'all');
+            }
             require VIEW_PATH . 'inventory/index.php';
 			require VIEW_PATH . '_templates/footer.php';
 		}
@@ -749,8 +760,21 @@ ob_start();
                 }
 			} else { // for below directors level.
 				$objLocModel = $this->loadModel('location');
+
 				//$arrObjCMUsers = $objCompanyModel->getCompanyUsers('MANAGER', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
-				$arrObjLocation = $objLocModel->getLocationByUserId($this->loggedInUserId(), $this->getLoggedUserRole(), 'shipping');
+				//$arrObjLocation = $objLocModel->getLocationByUserId($this->loggedInUserId(), $this->getLoggedUserRole(), 'shipping');
+
+                if( $this->getLoggedUserRoleID() == SUPERADMIN ) {
+                    $arrObjLocation = $objLocModel->getLocationsList( $this->getLoggedInUserCompanyID(),
+                        -1, $this->loggedInUserId(), $this->getLoggedUserRoleID() );
+                    $iAdmin = 1 ;
+                } else {
+
+                    $arrObjLocation = $objLocModel->getLocationByUserId($this->loggedInUserId(), $this->getLoggedUserRole(), 'shipping');
+                    //$arrObjLocation = $objLocModel->getLocationsList( $this->getLoggedInUserCompanyID(),
+                      //$_SESSION['HAS_SCS'], $this->loggedInUserId(), $this->getLoggedUserRoleID() );
+                }
+
 			}
 			require VIEW_PATH . 'inventory/shipping.php';
 			require VIEW_PATH . '_templates/footer.php';
@@ -761,7 +785,7 @@ ob_start();
             $objCompanyModel = $this->loadModel('company');
             $bSubC = $_SESSION['HAS_SCS'];
             $bShowLocDet = 1;
-            if( $this->getLoggedUserRoleID() == MANAGER ) {
+            if( $this->getLoggedUserRoleID() == MANAGER || $this->getLoggedUserRoleID() == SUBCONTRACTOR ) {
                 $bShowLocDet = 0;
             }
             if( $bSubC ) {
@@ -776,9 +800,10 @@ ob_start();
                 $arrObjCUsers = $objCompanyModel->getCompanyUsers('SUB CONTRACTOR', $this->getLoggedInUserCompanyID(), $this->loggedInUserId(), $arrOptions);
             } else { // for below directors level.
                 $objLocModel = $this->loadModel('location');
-                $arrL = $objCompanyModel->getManagerLocation($this->loggedInUserId());
+
                 if( $this->getLoggedUserRoleID() == MANAGER ) {
                     // get Agents.
+                    $arrL = $objCompanyModel->getManagerLocation($this->loggedInUserId());
                     $strSelTxt = "Select Agent";
                     $objAgentModel = $this->loadModel('agents');
                     $arrOptions['location'] = $arrL->ID;
@@ -789,8 +814,20 @@ ob_start();
                         $arrObj[$i]->ID = $arrObj[$i]->USER_ID;
                     }
                 } else {
-                    $strSelTxt = "Select Location";
-                    $arrObj = $objLocModel->getLocationByUserId($this->loggedInUserId(), $this->getLoggedUserRole(), 'assign');
+
+                    $arrL = $objCompanyModel->getSubCntSelfLocation($this->loggedInUserId());
+                    $strSelTxt = "Select Agent";
+                    $objAgentModel = $this->loadModel('agents');
+                    $arrOptions['location'] = $arrL->ID;
+                    $arrOptions['q_status'] = 'QUALIFIED';
+                    $arrObj = $objAgentModel->getAgents( $arrOptions );
+                    for( $i=0; $i < count($arrObj); $i++ ) {
+                        $arrObj[$i]->NAME = $arrObj[$i]->FIRST_NAME . " " . $arrObj[$i]->LAST_NAME;
+                        $arrObj[$i]->ID = $arrObj[$i]->USER_ID;
+                    }
+
+                    /*$strSelTxt = "Select Location";
+                    $arrObj = $objLocModel->getLocationByUserId($this->loggedInUserId(), $this->getLoggedUserRole(), 'assign');*/
                 }
 
             }
@@ -799,6 +836,24 @@ ob_start();
 
             require VIEW_PATH . 'inventory/assign.php';
             require VIEW_PATH . '_templates/footer.php';
+        }
+
+        public function edit() {
+            require VIEW_PATH . '_templates/header.php';
+            $invId = $this->getParameters();
+
+            $objInvModel = $this->loadModel('inventory');
+            $arrInv = $objInvModel->getInvById( $invId );
+
+            require VIEW_PATH . 'inventory/edit.php';
+            require VIEW_PATH . '_templates/footer.php';
+        }
+
+        public function deleteInv() {
+            $invId = $this->getParameters();
+            $objInvModel = $this->loadModel('inventory');
+            $arrInv = $objInvModel->deleteInvById( $invId );
+            header("Location: /inventory");
         }
 
 	}

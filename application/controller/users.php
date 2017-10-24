@@ -109,13 +109,21 @@
 					//$arrPost['director'] = $this->loggedInUserId();
 
 					$arrPost['manager'] = 0;
-                    $arrPost['address'] = $_POST['address_1'] . " " . $_POST['address_1'] . " " . $_POST['zipcode'];
+                    $arrPost['address'] = $_POST['address_1'] . " " . $_POST['address_2'] . " " . $_POST['zipcode'];
                     $arrPost['is_self'] = ( $_POST['is_self'] == 'on') ? 1: 0;
 					$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
 					$arrPost['ADDED_BY'] = $this->loggedInUserId();
 					$arrPost['ADDED_ON'] = $this->now();
-					$objLocationModel->addLocation( $arrPost );
-					header("Location:" . URL . "users/location/");
+
+                    $arrAlLoc = $objLocationModel->getLocByAddress($arrPost);
+
+                    if( $arrAlLoc->ID != '' ){
+                        $strMsg = "A Location with Specified Address already Exits.";
+                        //header("Location:" . URL . "users/location/add");
+                    } else {
+                        $objLocationModel->addLocation( $arrPost );
+                        header("Location:" . URL . "users/location/");
+                    }
 				}
 			}
 
@@ -127,6 +135,53 @@
 					break;
 				}
 				case "add" : {
+
+                    if( $_POST['locname'] != '' ) {
+                        $arrPost = $this->validateUserInput($_POST);
+
+                        switch ($this->getLoggedUserRole()) {
+
+                            case "SUPERADMIN" : {
+                                $arrCD = $objCompanyModel->getCompanyDirector( $arrPost['company']);
+                                $arrPost['director'] = $arrCD->USER_ID;
+                                $arrPost['subc'] = $_POST['subc'];
+                                break;
+                            }
+
+                            case "DIRECTOR" : {
+                                $arrPost['director'] = $this->loggedInUserId();
+                                $arrPost['subc'] = $_POST['subc'];
+                                break;
+                            }
+
+                            case "SUB CONTRACTOR" : {
+                                $arrPost['subc'] = $this->loggedInUserId();
+                                $arrD = $objUserModel->getUserDetailsByUserId( $this->loggedInUserId() );
+
+                                $arrPost['director'] = $arrD->PARENT;
+                                break;
+                            }
+                        }
+                        //$arrPost['director'] = $this->loggedInUserId();
+
+                        $arrPost['manager'] = 0;
+                        $arrPost['address'] = $_POST['address_1'] . " " . $_POST['address_2'] . " " . $_POST['zipcode'];
+                        $arrPost['is_self'] = ( $_POST['is_self'] == 'on') ? 1: 0;
+                        $arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
+                        $arrPost['ADDED_BY'] = $this->loggedInUserId();
+                        $arrPost['ADDED_ON'] = $this->now();
+
+                        $arrAlLoc = $objLocationModel->getLocByAddress($arrPost);
+
+                        if( $arrAlLoc->ID != '' ){
+                            $strMsg = "A Location with " . $_POST['address_1'] . ", " . $_POST['address_2'] . " already Exits. Please add new address.";
+                            //header("Location:" . URL . "users/location/add");
+                        } else {
+                            $objLocationModel->addLocation( $arrPost );
+                            header("Location:" . URL . "users/location/");
+                        }
+                    }
+
                     $iAdmin = 0;
                     if($this->getLoggedUserRoleID() == SUPERADMIN ){$iAdmin = 1;}
                     $arrObjC = $objCompanyModel->getCompanies('COMPANY');
@@ -135,6 +190,9 @@
 				}
 
 				case "edit" : {
+                    $iAdmin = 0;
+                    if($this->getLoggedUserRoleID() == SUPERADMIN ){$iAdmin = 1;}
+                    $arrObjC = $objCompanyModel->getCompanies('COMPANY');
 					$arrLoc = $objLocationModel->getLocation($this->getParameters(2));
 					require VIEW_PATH . 'users/addlocation.php';
 					break;
@@ -199,6 +257,7 @@
 
 				case "view" : {
 					$arrUser = $objCompanyModel->getCUserDetails( $this->getParameters(2) );
+                    $arrUser->DOB = $this->revDate( $arrUser->DOB );
 					require VIEW_PATH . 'users/view.php';
 					break;
 				}
@@ -213,6 +272,7 @@
 					if($_POST['user_id'] != ''){
 						$iUserId = $_POST['user_id'];
 						$arrPost = $_POST;
+                        $arrPost['dob'] = $this->swapDate($arrPost['dob']);
 						$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
 						$objCompanyModel->updateCUser( $arrPost );
 						header('Location:' . URL . 'users/staff'); exit;
@@ -220,6 +280,7 @@
 						$iUserId = $this->getParameters(2);
 					}
 					$arrUser = $objCompanyModel->getCUserDetails( $iUserId );
+                    $arrUser->DOB = $this->revDate( $arrUser->DOB );
 					require VIEW_PATH . 'users/index.php';
 					require VIEW_PATH . 'users/edit.php';
 					break;
@@ -305,6 +366,7 @@
 					if($_POST['user_id'] != ''){
 						$iUserId = $_POST['user_id'];
 						$arrPost = $_POST;
+                        $arrPost['dob'] = $this->swapDate($arrPost['dob']);
 						$arrPost['company'] = ( $_POST['company'] != '' ) ? $_POST['company'] : $this->getLoggedInUserCompanyID();
 						$objCompanyModel->updateCUser( $arrPost );
 						header('Location:' . URL . 'users/employee'); exit;
@@ -312,6 +374,7 @@
 						$iUserId = $this->getParameters(2);
 					}
 					$arrUser = $objCompanyModel->getCUserDetails( $iUserId );
+                    $arrUser->DOB  = $this->revDate( $arrUser->DOB  );
 					require VIEW_PATH . 'users/index.php';
 					require VIEW_PATH . 'users/edit.php';
 					break;
@@ -662,6 +725,7 @@
 					if( $_POST['userid'] ){
 
 						$arrPost = $this->validateUserInput($_POST);
+                        $arrPost['dob'] = $this->swapDate($arrPost['dob']);
 						switch ($arrPost['qstatus']) {
                             case "PENDING" : $arrPost['status_id'] = 0; break;
                             case "QUALIFIED" : $arrPost['status_id'] = 1; break;
@@ -703,6 +767,7 @@
 
 					$arrAgent = $objAgentsModel->getAgent($this->getParameters(2));
 					$arrAgent->BATCH_DATE  = $this->revDate( $arrAgent->BATCH_DATE  );
+                    $arrAgent->DOB  = $this->revDate( $arrAgent->DOB  );
                     $shwLocation = 0;
 
 					if( $this->getLoggedUserRoleID() == EMPLOYEE ){
@@ -751,6 +816,7 @@
 
 				case "view" : {
 					$arrAgent = $objAgentsModel->getAgent($this->getParameters(2));
+                    $arrAgent->DOB  = $this->revDate( $arrAgent->DOB  );
 					require VIEW_PATH . 'users/viewagent.php';
 					break;
 				}
@@ -780,11 +846,9 @@
                         //$objLocModel = $this->loadModel('location');
                         if( $this->getLoggedUserRoleID() == MANAGER ) {
                             $arrL = $objCompanyModel->getManagerLocation($this->loggedInUserId());
-                            //print_r( $arrL );
                         } else {
                             $strSelTxt = "Select Location";
-                            $arrObj = $objLocationModel->getLocationsList( $this->getLoggedInUserCompanyID(), $bSubC);
-                            //print_r( $arrObj );
+                            $arrLocations = $objLocationModel->getLocationByUserId( $this->loggedInUserId(), $this->getLoggedUserRole(), 'all');
                         }
 
                     }
@@ -811,6 +875,7 @@
 
 					if( $_POST['firstname'] != '' ){
 						$arrPost = $this->validateUserInput($_POST);
+                        $arrPost['dob'] = $this->swapDate($arrPost['dob']);
 						if( $this->isSuperAdmin() ) {
 							$arrPost['parent'] = $arrPost['company'];
 							$arrPost['subc'] = $arrPost['subc'];
@@ -822,6 +887,7 @@
 						$arrPost['createdby'] = $this->loggedInUserId();
 						$arrPost['userid'] = date('Ymdhis') ;
 						$arrPost['batchdate'] = $this->swapDate($arrPost['batchdate']);
+                        $arrPost['q_status'] = $arrPost['qstatus'];
 
 						$arrPost['HEADSHOT_FILE'] = ( $_FILES['headshotfile']['name'] != '' ) ? $this->uploadDocument( $_FILES['headshotfile'], AGENTFILES, $_POST['lastname'] . "_HSF" ) : "";
 						$arrPost['GOVID_FILE'] = ( $_FILES['govidfile']['name'] != '' ) ? $this->uploadDocument( $_FILES['govidfile'], AGENTFILES, $_POST['lastname'] . "_GOVID" ) : "";
@@ -838,6 +904,23 @@
                         //$arrOptions['created'] =  $this->loggedInUserId();
                         $arrOptions['location'] =  $_SESSION['L_ID'];
                     }
+
+                    switch($this->getLoggedUserRoleID()) {
+                        case SUBCONTRACTOR : {
+                            // get subcontractors locations.
+                            $arrLocations = $objLocationModel->getLocationByUserId( $this->loggedInUserId(), $this->getLoggedUserRole(), 'all');
+
+                            $strL = '';
+                            foreach ($arrLocations as $arrL ) {
+                                $strL .= $arrL->ID . ",";
+                            }
+                            $strL = substr($strL, 0,strlen($strL)-1 );
+                            $arrOptions['location'] = $strL ;
+                            break;
+                        }
+                    }
+
+
 
 					$arrAgents = $objAgentsModel->getAgents($arrOptions);
 					$arrAgents = $this->classifyStatus( $arrAgents );
