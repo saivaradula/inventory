@@ -41,7 +41,7 @@
 			</li>
 		<?php } ?>
 
-        <?php if ( $objC->isAllowedModule('AGAP') ) { ?>
+        <?php  if ( $objC->isAllowedModule('AGAP') ) { ?>
             <li class="agentapp_menu">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-users"></i>
@@ -64,7 +64,7 @@
                     </li>
                 </ul>
             </li>
-        <?php } ?>
+        <?php }  ?>
 
 		<?php if ( $objC->isAllowedModule('UL') ) { ?>
 			<li class="users_menu">

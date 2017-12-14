@@ -57,7 +57,7 @@
 			}
 
 			$strQuery = "SELECT " . $fields . " FROM " . $table . $where . $groupby . $orderby . $limit;
-			///echo $strQuery . "<br /<br />";
+			//echo $strQuery . "<br /<br />";
 			$objStmt = $this->objDBConn->prepare($strQuery);
 			$objStmt->execute();
 			return ( $getAll ) ? $objStmt->fetchAll() : $objStmt->fetch();

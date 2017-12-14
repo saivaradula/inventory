@@ -201,9 +201,6 @@
                         ?>chkIM = false;<?php
                     }
                 ?>
-
-
-
                 if( chkIM ){
                     $.ajax({
                         url: "/validate/returnIMEI",

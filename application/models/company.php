@@ -158,9 +158,9 @@
 
         function getUserDirector( $iUserId ) {
             $arrData[ 'FIELDS' ] = "(SELECT S.NAME FROM " . COMPANY_USERS . " S WHERE S.COMPANY = U.COMPANY
-                AND S.ROLE_NAME = 'DIRECTOR') AS NAME,
-                (SELECT S.USER_ID FROM " . COMPANY_USERS . " S WHERE S.COMPANY = U.COMPANY
-                AND S.ROLE_NAME = 'DIRECTOR') AS ID
+                AND S.ROLE_NAME = 'DIRECTOR' AND S.STATUS = 1 ) AS NAME,
+                (SELECT S.USER_ID FROM " . COMPANY_USERS . " S WHERE S.COMPANY = U.COMPANY 
+                AND S.ROLE_NAME = 'DIRECTOR' AND S.STATUS = 1 ) AS ID
                 ";
             $arrData[ 'TABLE' ] = COMPANY_USERS . " U";
             $arrData[ 'WHERE' ] = "U.status = " . ACTIVE;

@@ -16,7 +16,7 @@
 	
 	
 	define('DB_TYPE', 'mysql');
-	define('DB_HOST', 'http://ec2-52-207-228-156.compute-1.amazonaws.com');
+	define('DB_HOST', 'localhost');
 	define('DB_NAME', 'aoipdbqa');
 	define('DB_USER', 'root');
 	define('DB_PASS', 'root');
