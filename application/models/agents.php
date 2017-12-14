@@ -100,7 +100,10 @@
 
 			$arrData['PHONE'] = $arrPost['phone'];
             $arrData['SUBCNT'] = $arrPost['subc'];
-            $arrData['LOCATION_ID'] = $arrPost['location'];
+            if( $arrPost['location'] != '' ){
+                $arrData['LOCATION_ID'] = $arrPost['location'];
+            }
+
 			//$arrData['SELF_ACTION'] = $arrPost['saction'];
 			$this->updateData(AGENTS, $arrData, "USER_ID = '" . $arrPost['userid'] . "' ");
 		}

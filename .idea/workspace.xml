@@ -2,54 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0a8b5fc2-6723-453d-8b8c-646d951c2d1e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/controller/csv_act.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/controller/csv_import.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/controller/xls_act.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/controller/xls_import.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/views/inventory/edit.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/views/reports/imei.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/application/views/reports/promocode.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/agentapp.php" afterPath="$PROJECT_DIR$/application/controller/agentapp.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/agents.php" afterPath="$PROJECT_DIR$/application/controller/agents.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/ajaxcall.php" afterPath="$PROJECT_DIR$/application/controller/ajaxcall.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/inventory.php" afterPath="$PROJECT_DIR$/application/controller/inventory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/reports.php" afterPath="$PROJECT_DIR$/application/controller/reports.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/users.php" afterPath="$PROJECT_DIR$/application/controller/users.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/controller/validate.php" afterPath="$PROJECT_DIR$/application/controller/validate.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/libs/controller.php" afterPath="$PROJECT_DIR$/application/libs/controller.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/libs/email_templates.php" afterPath="$PROJECT_DIR$/application/libs/email_templates.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/libs/model.php" afterPath="$PROJECT_DIR$/application/libs/model.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.htaccess" afterPath="$PROJECT_DIR$/.htaccess" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/agents.php" afterPath="$PROJECT_DIR$/application/models/agents.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/company.php" afterPath="$PROJECT_DIR$/application/models/company.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/inventory.php" afterPath="$PROJECT_DIR$/application/models/inventory.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/location.php" afterPath="$PROJECT_DIR$/application/models/location.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/log.php" afterPath="$PROJECT_DIR$/application/models/log.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/reports.php" afterPath="$PROJECT_DIR$/application/models/reports.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/models/users.php" afterPath="$PROJECT_DIR$/application/models/users.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/_templates/header.php" afterPath="$PROJECT_DIR$/application/views/_templates/header.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/_templates/side.php" afterPath="$PROJECT_DIR$/application/views/_templates/side.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/agents/add.php" afterPath="$PROJECT_DIR$/application/views/agents/add.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/agents/view.php" afterPath="$PROJECT_DIR$/application/views/agents/view.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/inventory/activate.php" afterPath="$PROJECT_DIR$/application/views/inventory/activate.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/inventory/index.php" afterPath="$PROJECT_DIR$/application/views/inventory/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/inventory/inv.php" afterPath="$PROJECT_DIR$/application/views/inventory/inv.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/inventory/shipping.php" afterPath="$PROJECT_DIR$/application/views/inventory/shipping.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/reports/b.php" afterPath="$PROJECT_DIR$/application/views/reports/b.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/reports/bp.php" afterPath="$PROJECT_DIR$/application/views/reports/bp.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/add.php" afterPath="$PROJECT_DIR$/application/views/users/add.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/addagent.php" afterPath="$PROJECT_DIR$/application/views/users/addagent.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/addlocation.php" afterPath="$PROJECT_DIR$/application/views/users/addlocation.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/edit.php" afterPath="$PROJECT_DIR$/application/views/users/edit.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/editagent.php" afterPath="$PROJECT_DIR$/application/views/users/editagent.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/index.php" afterPath="$PROJECT_DIR$/application/views/users/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/location.php" afterPath="$PROJECT_DIR$/application/views/users/location.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/view.php" afterPath="$PROJECT_DIR$/application/views/users/view.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application/views/users/viewagent.php" afterPath="$PROJECT_DIR$/application/views/users/viewagent.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/css/ace.min.css" afterPath="$PROJECT_DIR$/public/css/ace.min.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/css/jquery-ui.min.css" afterPath="$PROJECT_DIR$/public/css/jquery-ui.min.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/imei_data/IMEI_DATA.csv" afterPath="$PROJECT_DIR$/public/imei_data/IMEI_DATA.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/additional-methods.js" afterPath="$PROJECT_DIR$/public/js/additional-methods.js" />
     </list>
     <ignored path="aio.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -73,8 +28,8 @@
       <file leaf-file-name="inventory.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/controller/inventory.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="81" column="44" lean-forward="false" selection-start-line="81" selection-start-column="33" selection-end-line="81" selection-end-column="44" />
+            <state relative-caret-position="303">
+              <caret line="711" column="61" lean-forward="false" selection-start-line="711" selection-start-column="46" selection-end-line="711" selection-end-column="61" />
               <folding>
                 <element signature="n#clean#0;n#Inventory#0;n#!!top" expanded="false" />
                 <element signature="n#removeDups#0;n#Inventory#0;n#!!top" expanded="false" />
@@ -85,7 +40,6 @@
                 <element signature="e#16499#18948#0#PHP" expanded="false" />
                 <element signature="e#26668#30033#0#PHP" expanded="false" />
                 <element signature="n#getIMEILog#0;n#Inventory#0;n#!!top" expanded="false" />
-                <element signature="n#returnItem#0;n#Inventory#0;n#!!top" expanded="false" />
                 <element signature="n#checkin#0;n#Inventory#0;n#!!top" expanded="false" />
                 <element signature="n#receive#0;n#Inventory#0;n#!!top" expanded="false" />
                 <element signature="n#shipping#0;n#Inventory#0;n#!!top" expanded="false" />
@@ -98,10 +52,63 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="company.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/models/company.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="303">
+              <caret line="162" column="62" lean-forward="false" selection-start-line="162" selection-start-column="62" selection-end-line="162" selection-end-column="62" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="users.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/controller/users.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="456">
+              <caret line="760" column="52" lean-forward="false" selection-start-line="760" selection-start-column="41" selection-end-line="760" selection-end-column="52" />
+              <folding>
+                <element signature="n#logout#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#classifyStatus#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#location#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#staff#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#employee#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#manager#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#director#0;n#Users#0;n#!!top" expanded="false" />
+                <element signature="n#subcontractor#0;n#Users#0;n#!!top" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="agents.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/application/models/agents.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="96" column="4" lean-forward="false" selection-start-line="96" selection-start-column="4" selection-end-line="96" selection-end-column="4" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="model.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/libs/model.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="380">
+              <caret line="59" column="14" lean-forward="false" selection-start-line="59" selection-start-column="14" selection-end-line="59" selection-end-column="14" />
+              <folding>
+                <marker date="1513262357970" expanded="true" signature="713:797" ph="INSERT INTO ${$strTable}... " />
+                <marker date="1513262357970" expanded="true" signature="2601:2634" ph="DELETE FROM " />
+                <marker date="1513262357970" expanded="true" signature="2674:2686" ph="DELETE FROM " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="xls_act.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/controller/xls_act.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-371">
+            <state relative-caret-position="442">
               <caret line="26" column="57" lean-forward="false" selection-start-line="26" selection-start-column="57" selection-end-line="26" selection-end-column="57" />
               <folding />
             </state>
@@ -111,14 +118,14 @@
       <file leaf-file-name="csv_act.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/controller/csv_act.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
+            <state relative-caret-position="1224">
               <caret line="72" column="42" lean-forward="false" selection-start-line="72" selection-start-column="42" selection-end-line="72" selection-end-column="42" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="xls_import.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="xls_import.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/controller/xls_import.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1326">
@@ -128,11 +135,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="csv_import.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/controller/csv_import.php">
+      <file leaf-file-name="side.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/views/_templates/side.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1292">
-              <caret line="76" column="99" lean-forward="false" selection-start-line="76" selection-start-column="6" selection-end-line="76" selection-end-column="99" />
+            <state relative-caret-position="272">
+              <caret line="66" column="16" lean-forward="false" selection-start-line="66" selection-start-column="16" selection-end-line="66" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="return.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/application/views/inventory/return.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="372">
+              <caret line="86" column="91" lean-forward="false" selection-start-line="86" selection-start-column="78" selection-end-line="86" selection-end-column="91" />
               <folding />
             </state>
           </provider>
@@ -149,10 +166,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getLocationByUserIdgetLocationByUserId</find>
-      <find>getLocationByUserId</find>
-      <find>getUserDetailsByUserId</find>
-      <find>getLocation</find>
       <find>checkInvBelongsAssignTo</find>
       <find>assignCheckInventory</find>
       <find>assignCheckIMEI</find>
@@ -179,6 +192,10 @@
       <find>checkInventory</find>
       <find>updateIn</find>
       <find>header(</find>
+      <find>returnI</find>
+      <find>getUserDirector</find>
+      <find>getAgents</find>
+      <find>agent</find>
     </findStrings>
   </component>
   <component name="FindManager">
@@ -194,7 +211,6 @@
       <list>
         <option value="$PROJECT_DIR$/application/controller/admin.php" />
         <option value="$PROJECT_DIR$/application/views/company/index.php" />
-        <option value="$PROJECT_DIR$/application/views/inventory/return.php" />
         <option value="$PROJECT_DIR$/application/views/appagent/index.php" />
         <option value="$PROJECT_DIR$/application/views/users/list.php" />
         <option value="$PROJECT_DIR$/application/views/users/location.php" />
@@ -215,7 +231,6 @@
         <option value="$PROJECT_DIR$/application/views/agents/view.php" />
         <option value="$PROJECT_DIR$/application/views/users/index.php" />
         <option value="$PROJECT_DIR$/application/models/location.php" />
-        <option value="$PROJECT_DIR$/application/models/company.php" />
         <option value="$PROJECT_DIR$/application/controller/users.php" />
         <option value="$PROJECT_DIR$/application/views/users/addagent.php" />
         <option value="$PROJECT_DIR$/application/controller/home.php" />
@@ -227,14 +242,11 @@
         <option value="$PROJECT_DIR$/application/models/log.php" />
         <option value="$PROJECT_DIR$/application/views/reports/b.php" />
         <option value="$PROJECT_DIR$/application/controller/reports.php" />
-        <option value="$PROJECT_DIR$/application/models/agents.php" />
         <option value="$PROJECT_DIR$/application/views/inventory/activate.php" />
         <option value="$PROJECT_DIR$/application/controller/ajaxcall.php" />
-        <option value="$PROJECT_DIR$/application/views/_templates/side.php" />
         <option value="$PROJECT_DIR$/application/views/users/addlocation.php" />
         <option value="$PROJECT_DIR$/application/controller/validate.php" />
         <option value="$PROJECT_DIR$/application/views/inventory/edit.php" />
-        <option value="$PROJECT_DIR$/application/libs/model.php" />
         <option value="$PROJECT_DIR$/application/models/inventory.php" />
         <option value="$PROJECT_DIR$/application/views/inventory/index.php" />
         <option value="$PROJECT_DIR$/application/views/inventory/inv.php" />
@@ -243,6 +255,11 @@
         <option value="$PROJECT_DIR$/application/controller/inventory.php" />
         <option value="$PROJECT_DIR$/application/controller/csv_act.php" />
         <option value="$PROJECT_DIR$/application/controller/xls_act.php" />
+        <option value="$PROJECT_DIR$/application/views/_templates/side.php" />
+        <option value="$PROJECT_DIR$/application/views/inventory/return.php" />
+        <option value="$PROJECT_DIR$/application/models/company.php" />
+        <option value="$PROJECT_DIR$/application/libs/model.php" />
+        <option value="$PROJECT_DIR$/application/models/agents.php" />
       </list>
     </option>
   </component>
@@ -383,6 +400,28 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="_templates" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aio" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="application" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="models" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
@@ -401,43 +440,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aio" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aio" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="application" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -615,11 +618,13 @@
       <workItem from="1507041489390" duration="9299000" />
       <workItem from="1507645612349" duration="11034000" />
       <workItem from="1507705536670" duration="4320000" />
+      <workItem from="1510625691736" duration="855000" />
+      <workItem from="1513259130444" duration="1940000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="556918000" />
+    <option name="totallyTimeSpent" value="559713000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1370" height="745" extended-state="0" />
@@ -631,12 +636,12 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21118012" sideWeight="0.28851965" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42362204" sideWeight="0.7114804" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -752,35 +757,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/models/company.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="86" column="0" lean-forward="false" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/application/views/users/addagent.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="428">
           <caret line="238" column="10" lean-forward="false" selection-start-line="238" selection-start-column="10" selection-end-line="238" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/controller/users.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="832" column="26" lean-forward="false" selection-start-line="832" selection-start-column="20" selection-end-line="832" selection-end-column="26" />
-          <folding>
-            <element signature="n#logout#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#classifyStatus#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#location#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#staff#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#employee#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#manager#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#director#0;n#Users#0;n#!!top" expanded="false" />
-            <element signature="n#subcontractor#0;n#Users#0;n#!!top" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -811,13 +791,6 @@
         <state relative-caret-position="270">
           <caret line="79" column="36" lean-forward="false" selection-start-line="79" selection-start-column="17" selection-end-line="79" selection-end-column="36" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/views/inventory/return.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3536">
-          <caret line="208" column="50" lean-forward="false" selection-start-line="208" selection-start-column="40" selection-end-line="208" selection-end-column="50" />
         </state>
       </provider>
     </entry>
@@ -901,14 +874,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/models/agents.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="39" column="25" lean-forward="false" selection-start-line="39" selection-start-column="17" selection-end-line="39" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/application/views/inventory/activate.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="321">
@@ -921,13 +886,6 @@
         <state relative-caret-position="374">
           <caret line="70" column="179" lean-forward="false" selection-start-line="70" selection-start-column="179" selection-end-line="70" selection-end-column="179" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/views/_templates/side.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="162" column="28" lean-forward="false" selection-start-line="162" selection-start-column="28" selection-end-line="162" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -949,18 +907,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
           <caret line="41" column="89" lean-forward="false" selection-start-line="41" selection-start-column="44" selection-end-line="41" selection-end-column="89" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/application/libs/model.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
-          <folding>
-            <marker date="1507050227116" expanded="true" signature="713:797" ph="INSERT INTO ${$strTable}... " />
-            <marker date="1507050227116" expanded="true" signature="2602:2635" ph="DELETE FROM " />
-            <marker date="1507050227116" expanded="true" signature="2675:2687" ph="DELETE FROM " />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1033,16 +979,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/application/controller/csv_act.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
+        <state relative-caret-position="1224">
           <caret line="72" column="42" lean-forward="false" selection-start-line="72" selection-start-column="42" selection-end-line="72" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controller/xls_act.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="26" column="57" lean-forward="false" selection-start-line="26" selection-start-column="57" selection-end-line="26" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controller/xls_import.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1326">
+          <caret line="78" column="5" lean-forward="false" selection-start-line="78" selection-start-column="5" selection-end-line="78" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/views/_templates/side.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="66" column="16" lean-forward="false" selection-start-line="66" selection-start-column="16" selection-end-line="66" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/views/inventory/return.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="372">
+          <caret line="86" column="91" lean-forward="false" selection-start-line="86" selection-start-column="78" selection-end-line="86" selection-end-column="91" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application/controller/inventory.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="81" column="44" lean-forward="false" selection-start-line="81" selection-start-column="33" selection-end-line="81" selection-end-column="44" />
+        <state relative-caret-position="303">
+          <caret line="711" column="61" lean-forward="false" selection-start-line="711" selection-start-column="46" selection-end-line="711" selection-end-column="61" />
           <folding>
             <element signature="n#clean#0;n#Inventory#0;n#!!top" expanded="false" />
             <element signature="n#removeDups#0;n#Inventory#0;n#!!top" expanded="false" />
@@ -1053,7 +1031,6 @@
             <element signature="e#16499#18948#0#PHP" expanded="false" />
             <element signature="e#26668#30033#0#PHP" expanded="false" />
             <element signature="n#getIMEILog#0;n#Inventory#0;n#!!top" expanded="false" />
-            <element signature="n#returnItem#0;n#Inventory#0;n#!!top" expanded="false" />
             <element signature="n#checkin#0;n#Inventory#0;n#!!top" expanded="false" />
             <element signature="n#receive#0;n#Inventory#0;n#!!top" expanded="false" />
             <element signature="n#shipping#0;n#Inventory#0;n#!!top" expanded="false" />
@@ -1065,18 +1042,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/controller/xls_act.php">
+    <entry file="file://$PROJECT_DIR$/application/models/company.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-371">
-          <caret line="26" column="57" lean-forward="false" selection-start-line="26" selection-start-column="57" selection-end-line="26" selection-end-column="57" />
+        <state relative-caret-position="303">
+          <caret line="162" column="62" lean-forward="false" selection-start-line="162" selection-start-column="62" selection-end-line="162" selection-end-column="62" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/controller/xls_import.php">
+    <entry file="file://$PROJECT_DIR$/application/libs/model.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1326">
-          <caret line="78" column="5" lean-forward="false" selection-start-line="78" selection-start-column="5" selection-end-line="78" selection-end-column="5" />
+        <state relative-caret-position="380">
+          <caret line="59" column="14" lean-forward="false" selection-start-line="59" selection-start-column="14" selection-end-line="59" selection-end-column="14" />
+          <folding>
+            <marker date="1513262357970" expanded="true" signature="713:797" ph="INSERT INTO ${$strTable}... " />
+            <marker date="1513262357970" expanded="true" signature="2601:2634" ph="DELETE FROM " />
+            <marker date="1513262357970" expanded="true" signature="2674:2686" ph="DELETE FROM " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/controller/users.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="760" column="52" lean-forward="false" selection-start-line="760" selection-start-column="41" selection-end-line="760" selection-end-column="52" />
+          <folding>
+            <element signature="n#logout#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#classifyStatus#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#location#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#staff#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#employee#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#manager#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#director#0;n#Users#0;n#!!top" expanded="false" />
+            <element signature="n#subcontractor#0;n#Users#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/models/agents.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="96" column="4" lean-forward="false" selection-start-line="96" selection-start-column="4" selection-end-line="96" selection-end-column="4" />
           <folding />
         </state>
       </provider>
